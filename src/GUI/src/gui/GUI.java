@@ -8,15 +8,27 @@ import javax.swing.JLabel;
 import java.awt.GridBagConstraints;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 
 import java.awt.Insets;
 import java.awt.Color;
 import javax.swing.border.SoftBevelBorder;
+import javax.swing.text.PlainDocument;
+
+import org.w3c.dom.Document;
+
 import javax.swing.border.BevelBorder;
 import javax.swing.JEditorPane;
 import java.awt.SystemColor;
 import javax.swing.DropMode;
 import java.awt.Font;
+import javax.swing.JSplitPane;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+
+import javax.swing.Box;
+import javax.swing.JFileChooser;
 
 public class GUI {
 
@@ -29,46 +41,61 @@ public class GUI {
 	private void initialize() {
 		frame = new JFrame();
 		frame.getContentPane().setBackground(Color.LIGHT_GRAY);
-		frame.setBackground(Color.LIGHT_GRAY);
-		frame.setBounds(100, 100, 450, 300);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[]{15, 0, 15, 0};
-		gridBagLayout.rowHeights = new int[]{15, 42, 220, 26, 15, 0};
-		gridBagLayout.columnWeights = new double[]{0.0, 1.0, 0.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
-		frame.getContentPane().setLayout(gridBagLayout);
+		frame.getContentPane().setLayout(new BorderLayout(0, 0));
+		
+		JPanel panelCentral = new JPanel();
+		panelCentral.setBackground(Color.GRAY);
+		frame.getContentPane().add(panelCentral, BorderLayout.CENTER);
+		GridBagLayout gbl_panelCentral = new GridBagLayout();
+		gbl_panelCentral.columnWidths = new int[]{0, 0};
+		gbl_panelCentral.rowHeights = new int[]{0, 0};
+		gbl_panelCentral.columnWeights = new double[]{1.0, Double.MIN_VALUE};
+		gbl_panelCentral.rowWeights = new double[]{1.0, Double.MIN_VALUE};
+		panelCentral.setLayout(gbl_panelCentral);
+		
+		JEditorPane editorPane_1 = new JEditorPane();
+		editorPane_1.setForeground(SystemColor.window);
+		editorPane_1.setBackground(Color.GRAY);
+		GridBagConstraints gbc_editorPane_1 = new GridBagConstraints();
+		gbc_editorPane_1.fill = GridBagConstraints.BOTH;
+		gbc_editorPane_1.gridx = 0;
+		gbc_editorPane_1.gridy = 0;
+		
+		javax.swing.text.Document doc = editorPane_1.getDocument();
+		doc.putProperty(PlainDocument.tabSizeAttribute, 2);
+
+		
+		JScrollPane scrollPane = new JScrollPane(editorPane_1);
+		TextLineNumber tln = new TextLineNumber(editorPane_1);
+		scrollPane.setRowHeaderView( tln );
+		panelCentral.add(scrollPane, gbc_editorPane_1);
+		
+		JPanel panelLeft = new JPanel();
+		panelLeft.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		panelLeft.setBackground(Color.LIGHT_GRAY);
+		frame.getContentPane().add(panelLeft, BorderLayout.WEST);
+		
+		Component horizontalStrut = Box.createHorizontalStrut(110);
+		panelLeft.add(horizontalStrut);
 		
 		JPanel panelTop = new JPanel();
 		panelTop.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		panelTop.setBackground(Color.LIGHT_GRAY);
-		GridBagConstraints gbc_panelTop = new GridBagConstraints();
-		gbc_panelTop.insets = new Insets(0, 0, 5, 5);
-		gbc_panelTop.fill = GridBagConstraints.BOTH;
-		gbc_panelTop.gridx = 1;
-		gbc_panelTop.gridy = 1;
-		frame.getContentPane().add(panelTop, gbc_panelTop);
-		GridBagLayout gbl_panelTop = new GridBagLayout();
-		gbl_panelTop.columnWidths = new int[]{0};
-		gbl_panelTop.rowHeights = new int[]{0};
-		gbl_panelTop.columnWeights = new double[]{Double.MIN_VALUE};
-		gbl_panelTop.rowWeights = new double[]{Double.MIN_VALUE};
-		panelTop.setLayout(gbl_panelTop);
+		frame.getContentPane().add(panelTop, BorderLayout.NORTH);
 		
-		JPanel panelMiddle = new JPanel();
-		panelMiddle.setBackground(Color.GRAY);
-		GridBagConstraints gbc_panelMiddle = new GridBagConstraints();
-		gbc_panelMiddle.insets = new Insets(0, 0, 5, 5);
-		gbc_panelMiddle.fill = GridBagConstraints.BOTH;
-		gbc_panelMiddle.gridx = 1;
-		gbc_panelMiddle.gridy = 2;
-		frame.getContentPane().add(panelMiddle, gbc_panelMiddle);
-		GridBagLayout gbl_panelMiddle = new GridBagLayout();
-		gbl_panelMiddle.columnWidths = new int[]{0, 0};
-		gbl_panelMiddle.rowHeights = new int[]{0, 0};
-		gbl_panelMiddle.columnWeights = new double[]{1.0, Double.MIN_VALUE};
-		gbl_panelMiddle.rowWeights = new double[]{1.0, Double.MIN_VALUE};
-		panelMiddle.setLayout(gbl_panelMiddle);
+		Component verticalStrut = Box.createVerticalStrut(50);
+		panelTop.add(verticalStrut);
+		
+		JPanel panelDown = new JPanel();
+		panelDown.setBackground(Color.LIGHT_GRAY);
+		frame.getContentPane().add(panelDown, BorderLayout.SOUTH);
+		
+		JPanel panelRight = new JPanel();
+		panelRight.setBackground(Color.LIGHT_GRAY);
+		frame.getContentPane().add(panelRight, BorderLayout.EAST);
+		frame.setBackground(Color.LIGHT_GRAY);
+		frame.setBounds(100, 100, 450, 300);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		JEditorPane editorPane = new JEditorPane();
 		editorPane.setFont(new Font("Dialog", Font.PLAIN, 15));
@@ -78,27 +105,6 @@ public class GUI {
 		gbc_editorPane.fill = GridBagConstraints.BOTH;
 		gbc_editorPane.gridx = 0;
 		gbc_editorPane.gridy = 0;
-		
-		JScrollPane scrollPane = new JScrollPane(editorPane);
-		TextLineNumber tln = new TextLineNumber(editorPane);
-		scrollPane.setRowHeaderView(tln);
-		
-		panelMiddle.add(scrollPane, gbc_editorPane);
-		
-		JPanel panelDown = new JPanel();
-		panelDown.setBackground(Color.LIGHT_GRAY);
-		GridBagConstraints gbc_panelDown = new GridBagConstraints();
-		gbc_panelDown.insets = new Insets(0, 0, 5, 5);
-		gbc_panelDown.fill = GridBagConstraints.BOTH;
-		gbc_panelDown.gridx = 1;
-		gbc_panelDown.gridy = 3;
-		frame.getContentPane().add(panelDown, gbc_panelDown);
-		GridBagLayout gbl_panelDown = new GridBagLayout();
-		gbl_panelDown.columnWidths = new int[]{0};
-		gbl_panelDown.rowHeights = new int[]{0};
-		gbl_panelDown.columnWeights = new double[]{Double.MIN_VALUE};
-		gbl_panelDown.rowWeights = new double[]{Double.MIN_VALUE};
-		panelDown.setLayout(gbl_panelDown);
 	}
 
 }
