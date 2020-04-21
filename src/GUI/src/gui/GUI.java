@@ -7,12 +7,16 @@ import java.awt.GridBagLayout;
 import javax.swing.JLabel;
 import java.awt.GridBagConstraints;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
 import java.awt.Insets;
 import java.awt.Color;
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.border.BevelBorder;
 import javax.swing.JEditorPane;
 import java.awt.SystemColor;
+import javax.swing.DropMode;
+import java.awt.Font;
 
 public class GUI {
 
@@ -67,13 +71,19 @@ public class GUI {
 		panelMiddle.setLayout(gbl_panelMiddle);
 		
 		JEditorPane editorPane = new JEditorPane();
+		editorPane.setFont(new Font("Dialog", Font.PLAIN, 15));
 		editorPane.setForeground(SystemColor.controlHighlight);
 		editorPane.setBackground(Color.GRAY);
 		GridBagConstraints gbc_editorPane = new GridBagConstraints();
 		gbc_editorPane.fill = GridBagConstraints.BOTH;
 		gbc_editorPane.gridx = 0;
 		gbc_editorPane.gridy = 0;
-		panelMiddle.add(editorPane, gbc_editorPane);
+		
+		JScrollPane scrollPane = new JScrollPane(editorPane);
+		TextLineNumber tln = new TextLineNumber(editorPane);
+		scrollPane.setRowHeaderView(tln);
+		
+		panelMiddle.add(scrollPane, gbc_editorPane);
 		
 		JPanel panelDown = new JPanel();
 		panelDown.setBackground(Color.LIGHT_GRAY);
