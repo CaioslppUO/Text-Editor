@@ -40,6 +40,7 @@ public class TextLineNumber extends JPanel
 	private Color currentLineForeground;
 	private float digitAlignment;
 	private int minimumDisplayDigits;
+	private Color backGroundColor;
 
 	//  Keep history information to reduce the number of times the component
 	//  needs to be repainted
@@ -70,12 +71,15 @@ public class TextLineNumber extends JPanel
 	 */
 	public TextLineNumber(JTextComponent component, int minimumDisplayDigits)
 	{
+		backGroundColor = new Color(92, 92, 92);
 		this.component = component;
 
 		setFont( component.getFont() );
 
-		setBorderGap( 5 );
-		setCurrentLineForeground( Color.MAGENTA );
+		setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+		setBorderGap( 1 );
+		setCurrentLineForeground( Color.WHITE );
+		setBackground(this.backGroundColor);
 		setDigitAlignment( RIGHT );
 		setMinimumDisplayDigits( minimumDisplayDigits );
 
