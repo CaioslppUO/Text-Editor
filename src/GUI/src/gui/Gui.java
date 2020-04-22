@@ -1,8 +1,11 @@
 package gui;
 
 import java.awt.EventQueue;
+import java.awt.FlowLayout;
 
 import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
+
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -13,6 +16,7 @@ import javax.swing.JOptionPane;
 import java.awt.GridBagConstraints;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.SwingUtilities;
 
 import java.awt.Insets;
@@ -32,8 +36,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 import javax.swing.DropMode;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+
 import java.awt.Font;
 import javax.swing.JSplitPane;
+import javax.swing.JWindow;
 import javax.swing.KeyStroke;
 
 import java.awt.BorderLayout;
@@ -57,12 +65,16 @@ public class Gui implements ActionListener{
 	private Color MenuBarColor;
 	private Color sideAreasColor;
 	private Color MenuForeGroundColor;
+	
+	private Integer fontSize;
+	private JEditorPane editorPane;
 
 	public Gui() {
 		this.PaneEditorColor = new Color(51, 51, 51);
 		this.sideAreasColor = new Color(82, 82, 82);
 		this.MenuBarColor = new Color(28, 28, 28);
 		this.MenuForeGroundColor = new Color(137, 163, 201);
+		this.fontSize = 12;
 		initialize();
 	}
 	
@@ -71,8 +83,8 @@ public class Gui implements ActionListener{
 	}
 	
 	public void defineMainFrame() {
-		this.frame = new JFrame();
-		this.frame.getContentPane().setBackground(new Color(89, 89, 128));
+		this.frame = new JFrame("Text Editor");
+		this.frame.getContentPane().setBackground(this.sideAreasColor);
 		this.frame.getContentPane().setLayout(new BorderLayout(0, 0));
 	}
 	
@@ -119,25 +131,26 @@ public class Gui implements ActionListener{
 	}
 	
 	public void defineEditorPane() {
-		JEditorPane editorPane;
-		editorPane = new JEditorPane();
-		editorPane.setForeground(SystemColor.window);
-		editorPane.setBackground(this.PaneEditorColor);
+		this.editorPane = new JEditorPane();
+		this.editorPane.setForeground(SystemColor.window);
+		this.editorPane.setBackground(this.PaneEditorColor);
 		GridBagConstraints gbc_editorPane_1 = new GridBagConstraints();
 		gbc_editorPane_1.fill = GridBagConstraints.BOTH;
 		gbc_editorPane_1.gridx = 0;
 		gbc_editorPane_1.gridy = 0;
-		editorPane.setCaretColor(Color.WHITE);
+		
+		this.editorPane.setCaretColor(Color.WHITE);
+		this.editorPane.setFont(new Font(Font.MONOSPACED, Font.PLAIN, this.fontSize));
 		
 		//Mudando a quantidade de espaçõs da tecla TAB
-		javax.swing.text.Document doc = editorPane.getDocument();
+		javax.swing.text.Document doc = this.editorPane.getDocument();
 		doc.putProperty(PlainDocument.tabSizeAttribute, 2);
 		
 		//Incluindo o contador de linhas
 		
 		//Comentar as pŕoximas 4 linhas para utilizar o Design do eclipse
-		JScrollPane scrollPane = new JScrollPane(editorPane);
-		TextLineNumber tln = new TextLineNumber(editorPane);
+		JScrollPane scrollPane = new JScrollPane(this.editorPane);
+		TextLineNumber tln = new TextLineNumber(this.editorPane);
 		scrollPane.setRowHeaderView( tln );
 		this.panelCentral.add(scrollPane, gbc_editorPane_1);
 	}
@@ -211,9 +224,30 @@ public class Gui implements ActionListener{
 		this.defineMenuBar();
 		
 		//Definições finais do Main Frame
-		frame.setBackground(Color.LIGHT_GRAY);
-		frame.setBounds(100, 100, 450, 300);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.frame.setBackground(Color.LIGHT_GRAY);
+		this.frame.setBounds(100, 100, 450, 300);
+		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+	
+	private void launchEditorConfigFrame() {		
+		JDialog editorConfigFrame;
+		editorConfigFrame = new JDialog();
+		editorConfigFrame.setBackground(this.sideAreasColor);
+		editorConfigFrame.setLayout(new BorderLayout(0, 0));
+		editorConfigFrame.setSize(300, 300);
+		editorConfigFrame.setLocationRelativeTo(null);
+		editorConfigFrame.setTitle("Editor Settings");
+		editorConfigFrame.setLayout(new FlowLayout());
+		
+		JButton buttonOk = new JButton("OK");
+		buttonOk.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				editorConfigFrame.dispose();
+			}
+		});
+		editorConfigFrame.add(buttonOk);
+		editorConfigFrame.setVisible(true);
 	}
 
 	@Override
@@ -221,7 +255,7 @@ public class Gui implements ActionListener{
 		if("buttonThemesPressed".equals(e.getActionCommand())) {
 			JOptionPane.showMessageDialog(null, "Button Themes Pressed");
 		}else if("buttonEditorPressed".equals(e.getActionCommand())) {
-			JOptionPane.showMessageDialog(null, "Button Editor Pressed");
+			this.launchEditorConfigFrame();
 		}else if("buttonNewFilePressed".equals(e.getActionCommand())) {
 			JOptionPane.showMessageDialog(null, "Button New File Pressed");
 		}
