@@ -132,6 +132,7 @@ public class Gui {
 		doc.putProperty(PlainDocument.tabSizeAttribute, 2);
 		
 		//Incluindo o contador de linhas
+		
 		//Comentar as pŕoximas 4 linhas para utilizar o Design do eclipse
 		JScrollPane scrollPane = new JScrollPane(editorPane);
 		TextLineNumber tln = new TextLineNumber(editorPane);
@@ -143,30 +144,45 @@ public class Gui {
 		JMenuBar menuBar;
 		JMenu menu;
 		JMenuItem menuItem;
-		//Starting MenuBar
+		//Inicializando a barra do menu
 		menuBar = new JMenuBar();
 		menuBar.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 		menuBar.setBackground(this.MenuBarColor);
 		
-		//Starting menu and menu itens
+		//Inicializando os menus e os itens dos menus
+		
+		//Botão new
 		menu = new JMenu("New");
+		menu.setBackground(this.sideAreasColor);
 		menu.setForeground(this.MenuForeGroundColor);
+		
+		//Sub botão new file
 		menuItem = new JMenuItem("New File");
 		menuItem.setForeground(this.MenuForeGroundColor);
 		menuItem.setBackground(this.sideAreasColor);
 		menu.add(menuItem);
+		
+		//Adicionando o botão new ao menu bar
 		menuBar.add(menu);
 		
+		//Botão settings
 		menu = new JMenu("Settings");
+		menu.setBackground(this.sideAreasColor);
 		menu.setForeground(this.MenuForeGroundColor);
+		
+		//Sub botão editor
 		menuItem = new JMenuItem("Editor");
 		menuItem.setForeground(this.MenuForeGroundColor);
 		menuItem.setBackground(this.sideAreasColor);
 		menu.add(menuItem);
+		
+		//Sub botão themes
 		menuItem = new JMenuItem("Themes");
 		menuItem.setForeground(this.MenuForeGroundColor);
 		menuItem.setBackground(this.sideAreasColor);
 		menu.add(menuItem);
+		
+		//Adicionando o botão settings ao menu bar
 		menuBar.add(menu);
 		
 		//Adding Itens
