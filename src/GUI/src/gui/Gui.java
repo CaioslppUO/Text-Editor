@@ -57,9 +57,9 @@ public class Gui {
 	private Color MenuForeGroundColor;
 
 	public Gui() {
-		this.PaneEditorColor = new Color(54, 54, 64);
-		this.sideAreasColor = new Color(86, 93, 105);
-		this.MenuBarColor = new Color(49, 69, 99);
+		this.PaneEditorColor = new Color(51, 51, 51);
+		this.sideAreasColor = new Color(82, 82, 82);
+		this.MenuBarColor = new Color(28, 28, 28);
 		this.MenuForeGroundColor = new Color(137, 163, 201);
 		initialize();
 	}
@@ -125,6 +125,7 @@ public class Gui {
 		gbc_editorPane_1.fill = GridBagConstraints.BOTH;
 		gbc_editorPane_1.gridx = 0;
 		gbc_editorPane_1.gridy = 0;
+		editorPane.setCaretColor(Color.WHITE);
 		
 		//Mudando a quantidade de espaçõs da tecla TAB
 		javax.swing.text.Document doc = editorPane.getDocument();
