@@ -152,14 +152,20 @@ public class Gui {
 		menu = new JMenu("New");
 		menu.setForeground(this.MenuForeGroundColor);
 		menuItem = new JMenuItem("New File");
+		menuItem.setForeground(this.MenuForeGroundColor);
+		menuItem.setBackground(this.sideAreasColor);
 		menu.add(menuItem);
 		menuBar.add(menu);
 		
 		menu = new JMenu("Settings");
 		menu.setForeground(this.MenuForeGroundColor);
 		menuItem = new JMenuItem("Editor");
+		menuItem.setForeground(this.MenuForeGroundColor);
+		menuItem.setBackground(this.sideAreasColor);
 		menu.add(menuItem);
 		menuItem = new JMenuItem("Themes");
+		menuItem.setForeground(this.MenuForeGroundColor);
+		menuItem.setBackground(this.sideAreasColor);
 		menu.add(menuItem);
 		menuBar.add(menu);
 		
