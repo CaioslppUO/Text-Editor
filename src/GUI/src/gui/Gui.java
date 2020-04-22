@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 import java.awt.GridBagConstraints;
 import javax.swing.JPanel;
@@ -27,6 +28,7 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.JEditorPane;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 import javax.swing.DropMode;
@@ -42,7 +44,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JFileChooser;
 
-public class Gui {
+public class Gui implements ActionListener{
 
 	private JFrame frame;
 	private JPanel panelCentral;
@@ -160,6 +162,8 @@ public class Gui {
 		menuItem = new JMenuItem("New File");
 		menuItem.setForeground(this.MenuForeGroundColor);
 		menuItem.setBackground(this.sideAreasColor);
+		menuItem.setActionCommand("buttonNewFilePressed");
+		menuItem.addActionListener(this);
 		menu.add(menuItem);
 		
 		//Adicionando o botão new ao menu bar
@@ -174,12 +178,16 @@ public class Gui {
 		menuItem = new JMenuItem("Editor");
 		menuItem.setForeground(this.MenuForeGroundColor);
 		menuItem.setBackground(this.sideAreasColor);
+		menuItem.setActionCommand("buttonEditorPressed");
+		menuItem.addActionListener(this);
 		menu.add(menuItem);
 		
 		//Sub botão themes
 		menuItem = new JMenuItem("Themes");
 		menuItem.setForeground(this.MenuForeGroundColor);
 		menuItem.setBackground(this.sideAreasColor);
+		menuItem.setActionCommand("buttonThemesPressed");
+		menuItem.addActionListener(this);
 		menu.add(menuItem);
 		
 		//Adicionando o botão settings ao menu bar
@@ -206,5 +214,16 @@ public class Gui {
 		frame.setBackground(Color.LIGHT_GRAY);
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if("buttonThemesPressed".equals(e.getActionCommand())) {
+			JOptionPane.showMessageDialog(null, "Button Themes Pressed");
+		}else if("buttonEditorPressed".equals(e.getActionCommand())) {
+			JOptionPane.showMessageDialog(null, "Button Editor Pressed");
+		}else if("buttonNewFilePressed".equals(e.getActionCommand())) {
+			JOptionPane.showMessageDialog(null, "Button New File Pressed");
+		}
 	}
 }
