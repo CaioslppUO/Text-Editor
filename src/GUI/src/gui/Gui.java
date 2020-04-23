@@ -7,6 +7,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.KeyboardFocusManager;
 import java.awt.SystemColor;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -61,6 +62,7 @@ public class Gui implements ActionListener, KeyListener{
 	private Color MenuBarColor;
 	private Color sideAreasColor;
 	private Color MenuForeGroundColor;
+	private Color editorPaneFontColor;
 	
 	//Fonte
 	private Integer fontSize;
@@ -74,19 +76,28 @@ public class Gui implements ActionListener, KeyListener{
 	private JDialog saveFileFrame;
 	private JDialog openFileFrame;
 	private JDialog createNewFileFrame;
+	private JFileChooser chooseSaveDirectory;
 	
 	//Variáveis "globais"
 	private File currentFile;
 
 	//Construtor da classe
 	public Gui() {
+		//Cores padrões
 		this.PaneEditorColor = new Color(51, 51, 51);
 		this.sideAreasColor = new Color(82, 82, 82);
 		this.MenuBarColor = new Color(28, 28, 28);
 		this.MenuForeGroundColor = new Color(137, 163, 201);
+		this.editorPaneFontColor = new Color(191, 191, 191);
+		
+		//Fonte padrão
 		this.fontSize = 12;
 		this.fontType = "Monospaced";
+		
+		//Arquivo inicialmente aberto
 		this.currentFile = null;
+		
+		//Iniciando os componentes visuais
 		initialize();
 	}
 	
@@ -107,11 +118,13 @@ public class Gui implements ActionListener, KeyListener{
 		this.panelCentral = new JPanel();
 		this.panelCentral.setBackground(this.PaneEditorColor);
 		this.frame.getContentPane().add(this.panelCentral, BorderLayout.CENTER);
+		
 		GridBagLayout gbl_panelCentral = new GridBagLayout();
 		gbl_panelCentral.columnWidths = new int[]{0, 0};
 		gbl_panelCentral.rowHeights = new int[]{0, 0};
 		gbl_panelCentral.columnWeights = new double[]{1.0, Double.MIN_VALUE};
 		gbl_panelCentral.rowWeights = new double[]{1.0, Double.MIN_VALUE};
+		
 		this.panelCentral.setLayout(gbl_panelCentral);
 	}
 	
@@ -121,7 +134,9 @@ public class Gui implements ActionListener, KeyListener{
 		this.panelLeft.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		this.panelLeft.setBackground(this.sideAreasColor);
 		this.frame.getContentPane().add(this.panelLeft, BorderLayout.WEST);
+		
 		Component horizontalStrut = Box.createHorizontalStrut(110);
+		
 		this.panelLeft.add(horizontalStrut);
 	}
 	
@@ -131,7 +146,9 @@ public class Gui implements ActionListener, KeyListener{
 		this.panelTop.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		this.panelTop.setBackground(this.sideAreasColor);
 		frame.getContentPane().add(this.panelTop, BorderLayout.NORTH);
+		
 		Component verticalStrut = Box.createVerticalStrut(50);
+		
 		this.panelTop.add(verticalStrut);
 	}
 	
@@ -149,11 +166,20 @@ public class Gui implements ActionListener, KeyListener{
 		this.frame.getContentPane().add(this.panelRight, BorderLayout.EAST);
 	}
 	
+	public void decideEditorEnabled() {
+		if(this.currentFile != null) {
+			this.editorPane.setEnabled(true);
+		}else {
+			this.editorPane.setEnabled(false);
+		}
+	}
+	
 	//Definições do painel do editor
 	public void defineEditorPane() {
 		this.editorPane = new JEditorPane();
-		this.editorPane.setForeground(SystemColor.window);
+		this.editorPane.setForeground(this.editorPaneFontColor);
 		this.editorPane.setBackground(this.PaneEditorColor);
+		
 		GridBagConstraints gbc_editorPane_1 = new GridBagConstraints();
 		gbc_editorPane_1.fill = GridBagConstraints.BOTH;
 		gbc_editorPane_1.gridx = 0;
@@ -167,105 +193,89 @@ public class Gui implements ActionListener, KeyListener{
 		doc.putProperty(PlainDocument.tabSizeAttribute, 2);
 		
 		//Incluindo o contador de linhas
-		
-		//Comentar as pŕoximas 4 linhas para utilizar o Design do eclipse
+		//Comentar as pŕoximas 10 linhas para utilizar o Design do eclipse
 		JScrollPane scrollPane = new JScrollPane(this.editorPane);
 		TextLineNumber tln = new TextLineNumber(this.editorPane);
 		scrollPane.setRowHeaderView( tln );
 		this.panelCentral.add(scrollPane, gbc_editorPane_1);
 		this.editorPane.addKeyListener(this);
-		if(this.currentFile != null) {
-			this.editorPane.setEnabled(true);
-		}else {
-			this.editorPane.setEnabled(false);
+		this.decideEditorEnabled();
+	}
+	
+	//Cria e retorna um sub item de menu
+	//Entrada: Nome do sub menu e comando ativado ao clicar no sub menu gerado
+	//Retorno: Menu Item gerado
+	//Pŕe-condição: Nenhuma
+	//Pós-condição: O Menu Item é gerado e retornado
+	private JMenuItem createMenuItem(String name, String actionCommand) {
+		JMenuItem menuItem;
+		menuItem = new JMenuItem(name);
+		menuItem.setForeground(this.MenuForeGroundColor);
+		menuItem.setBackground(this.sideAreasColor);
+		menuItem.setActionCommand(actionCommand);
+		menuItem.addActionListener(this);
+		return menuItem;
+	}
+	
+	//Cria e retorna um menu
+	//Entrada: Nome do menu e array contendo todos os JMenuItems do menu
+	//Retorno: Menu gerado
+	//Pŕe-condição: Nenhuma
+	//Pós-condição: O Menu é gerado e retornado
+	private JMenu createMenu(String name, JMenuItem[] itens) {
+		JMenu menu;
+		menu = new JMenu(name);
+		menu.setBackground(this.sideAreasColor);
+		menu.setForeground(this.MenuForeGroundColor);
+		for(JMenuItem j:itens) {
+			menu.add(j);
 		}
+		return menu;
 	}
 	
 	//Definições da barra de menu
 	private void defineMenuBar() {
 		JMenuBar menuBar;
-		JMenu menu;
-		JMenuItem menuItem;
+		
 		//Inicializando a barra do menu
 		menuBar = new JMenuBar();
 		menuBar.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 		menuBar.setBackground(this.MenuBarColor);
 		
-		//Inicializando os menus e os itens dos menus
-		
-		//Botão new
-		menu = new JMenu("File");
-		menu.setBackground(this.sideAreasColor);
-		menu.setForeground(this.MenuForeGroundColor);
-		
-		//Sub botão new file
-		menuItem = new JMenuItem("New File");
-		menuItem.setForeground(this.MenuForeGroundColor);
-		menuItem.setBackground(this.sideAreasColor);
-		menuItem.setActionCommand("buttonNewFilePressed");
-		menuItem.addActionListener(this);
-		menu.add(menuItem);
-		
-		//Sub botão open file
-		menuItem = new JMenuItem("Open File");
-		menuItem.setForeground(this.MenuForeGroundColor);
-		menuItem.setBackground(this.sideAreasColor);
-		menuItem.setActionCommand("buttonOpenFilePressed");
-		menuItem.addActionListener(this);
-		menu.add(menuItem);
-		
-		//Adicionando o botão new ao menu bar
-		menuBar.add(menu);
-		
+		//Botão File
+		menuBar.add(
+			this.createMenu(
+			    "File", //Menu File
+				new JMenuItem[]{
+					this.createMenuItem("New File","buttonNewFilePressed"), //Sub botão new file
+					this.createMenuItem("Open File", "buttonOpenFilePressed") //Sub botão open file
+				}
+			)
+		);
+				
 		//Botão save
-		menu = new JMenu("Save");
-		menu.setBackground(this.sideAreasColor);
-		menu.setForeground(this.MenuForeGroundColor);
-		
-		//Sub botão save as
-		menuItem = new JMenuItem("Save as");
-		menuItem.setForeground(this.MenuForeGroundColor);
-		menuItem.setBackground(this.sideAreasColor);
-		menuItem.setActionCommand("buttonSaveAsPressed");
-		menuItem.addActionListener(this);
-		menu.add(menuItem);
-		
-		//Sub botão save
-		menuItem = new JMenuItem("Save");
-		menuItem.setForeground(this.MenuForeGroundColor);
-		menuItem.setBackground(this.sideAreasColor);
-		menuItem.setActionCommand("buttonSavePressed");
-		menuItem.addActionListener(this);
-		menu.add(menuItem);
-		
-		//Adicionando o botão save ao menu bar
-		menuBar.add(menu);
+		menuBar.add(
+			this.createMenu(
+				"Save", //Menu Save
+				new JMenuItem[] {
+					this.createMenuItem("Save as", "buttonSaveAsPressed"), //Sub botão Save as
+					this.createMenuItem("Save", "buttonSavePressed") //Sub botão Save
+				}
+			)
+		);
 		
 		//Botão settings
-		menu = new JMenu("Settings");
-		menu.setBackground(this.sideAreasColor);
-		menu.setForeground(this.MenuForeGroundColor);
+		menuBar.add(
+			this.createMenu(
+				"Settings", //Menu Settings
+				new JMenuItem[] {
+					this.createMenuItem("Editor", "buttonEditorPressed"), //Sub botão Editor
+					this.createMenuItem("Themes", "buttonThemesPressed") //Sub botão Themes
+				}
+			)
+		);
 		
-		//Sub botão editor
-		menuItem = new JMenuItem("Editor");
-		menuItem.setForeground(this.MenuForeGroundColor);
-		menuItem.setBackground(this.sideAreasColor);
-		menuItem.setActionCommand("buttonEditorPressed");
-		menuItem.addActionListener(this);
-		menu.add(menuItem);
-		
-		//Sub botão themes
-		menuItem = new JMenuItem("Themes");
-		menuItem.setForeground(this.MenuForeGroundColor);
-		menuItem.setBackground(this.sideAreasColor);
-		menuItem.setActionCommand("buttonThemesPressed");
-		menuItem.addActionListener(this);
-		menu.add(menuItem);
-		
-		//Adicionando o botão settings ao menu bar
-		menuBar.add(menu);
-		
-		//Adding Itens
+		//Adicionando a menuBar à interface
 		this.frame.setJMenuBar(menuBar);
 	}
 	
@@ -277,12 +287,15 @@ public class Gui implements ActionListener, KeyListener{
 		this.editorConfigFrame.setLocationRelativeTo(null);
 		this.editorConfigFrame.setTitle("Editor Settings");
 		this.editorConfigFrame.setLayout(null);
+		this.editorConfigFrame.addKeyListener(this);
 		
+		//Botão para salvar as configurações escolhidas
 		JButton buttonOk = new JButton("OK");
 		buttonOk.setActionCommand("FontSizeChanged");
 		buttonOk.addActionListener(this);
 		buttonOk.setSize(55, 30);
 		buttonOk.setLocation(125, 230);
+		this.editorConfigFrame.add(buttonOk);
 		
 		JLabel labelFontSize;
 		labelFontSize = new JLabel();
@@ -292,6 +305,7 @@ public class Gui implements ActionListener, KeyListener{
 		labelFontSize.setForeground(this.MenuForeGroundColor);
 		this.editorConfigFrame.add(labelFontSize);
 		
+		//Spinner para escolher o tamanho da fonte
 		this.fontSizeSpinner = new JSpinner();
 		this.fontSizeSpinner.setValue(this.fontSize);
 		this.fontSizeSpinner.setSize(35, 20);
@@ -306,6 +320,7 @@ public class Gui implements ActionListener, KeyListener{
 		labelFontType.setForeground(this.MenuForeGroundColor);
 		this.editorConfigFrame.add(labelFontType);
 		
+		//ComboBox para escolher o tipo da fonte
 		@SuppressWarnings("deprecation")
 		String fontTypes[] = Toolkit.getDefaultToolkit().getFontList();
 		
@@ -315,9 +330,8 @@ public class Gui implements ActionListener, KeyListener{
 		this.fontTypeList.setLocation(100, 42);
 		this.editorConfigFrame.add(this.fontTypeList);
 		
-		this.editorConfigFrame.add(buttonOk);
-		
 		this.editorConfigFrame.setVisible(true);
+		this.editorConfigFrame.setFocusable(true);
 	}
 	
 	//Função que salva o arquivo que está aberto na variável this.currentFile
@@ -327,18 +341,34 @@ public class Gui implements ActionListener, KeyListener{
 	//Pós-condição: O arquivo aberto na variável this.currentFile é salvo
 	private void saveFile() {
 		if(this.currentFile != null) {
-			String contentToSave = this.editorPane.getText();
-			FileWriter writer;
 			try {
-				writer = new FileWriter(this.currentFile.toString());
-				PrintWriter print_line = new PrintWriter(writer);
-				print_line.printf("%s", contentToSave);
+				PrintWriter print_line = new PrintWriter(new FileWriter(this.currentFile.toString()));
+				print_line.printf("%s", this.editorPane.getText());
 				print_line.close();
 				JOptionPane.showMessageDialog(null, "File Saved");
 			} catch (IOException e) {
 				JOptionPane.showMessageDialog(null, "Error while trying to save the file");
 			}
+		}else {
+			JOptionPane.showMessageDialog(null, "No Files Open");
 		}
+	}
+	
+	private int defineSaveFileFrame() {
+		this.saveFileFrame = new JDialog();
+		this.saveFileFrame.getContentPane().setBackground(this.sideAreasColor);
+		this.saveFileFrame.setSize(600, 600);
+		this.saveFileFrame.setLocationRelativeTo(null);
+		this.saveFileFrame.setTitle("Save File As");
+		
+		this.chooseSaveDirectory = new JFileChooser();
+		this.chooseSaveDirectory.setCurrentDirectory(new File("."));
+		this.chooseSaveDirectory.setDialogTitle("Save to");
+		this.chooseSaveDirectory.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		this.saveFileFrame.add(chooseSaveDirectory);
+		this.saveFileFrame.setVisible(true);
+		this.saveFileFrame.dispose();
+		return chooseSaveDirectory.showOpenDialog(null);
 	}
 	
 	//Função que salva o arquivo que está aberto na variável this.currentFile
@@ -350,44 +380,30 @@ public class Gui implements ActionListener, KeyListener{
 		if(this.currentFile != null) {
 			String fileSeparator = System.getProperty("file.separator");
 			
-			this.saveFileFrame = new JDialog();
-			this.saveFileFrame.getContentPane().setBackground(this.sideAreasColor);
-			this.saveFileFrame.setSize(600, 600);
-			this.saveFileFrame.setLocationRelativeTo(null);
-			this.saveFileFrame.setTitle("Save File As");
-			
-			String contentToSave;
-			contentToSave = this.editorPane.getText();
-			
-			JFileChooser chooseSaveDirectory;
-			chooseSaveDirectory = new JFileChooser();
-			chooseSaveDirectory.setCurrentDirectory(new File("."));
-			chooseSaveDirectory.setDialogTitle("Save to");
-			chooseSaveDirectory.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-			int result = chooseSaveDirectory.showOpenDialog(null);
-			if(result == JFileChooser.APPROVE_OPTION) { //Salvar o arquivo
-				File directory = chooseSaveDirectory.getSelectedFile();
-				String fileName;
-				fileName = JOptionPane.showInputDialog("File Name");
-				File newFile = new File(directory.toString() + fileSeparator + fileName);
-				try {
-					if(newFile.createNewFile()) {
-						FileWriter writer = new FileWriter(directory.toString() + fileSeparator + fileName, false);
-						PrintWriter print_line = new PrintWriter(writer);
-						print_line.printf("%s", contentToSave);
-						print_line.close();
-						JOptionPane.showMessageDialog(null, "File Saved");
+			if(this.defineSaveFileFrame() == JFileChooser.APPROVE_OPTION) { //Salvar o arquivo
+				File directory = this.chooseSaveDirectory.getSelectedFile();
+				if(directory != null) {	
+					String fileName;
+					fileName = JOptionPane.showInputDialog("File Name");
+					if(fileName != null) {
+						File newFile = new File(directory.toString() + fileSeparator + fileName);
+						try {
+							if(newFile.createNewFile()) {
+								this.currentFile = newFile;
+								this.saveFile();
+							}else {
+								JOptionPane.showMessageDialog(null, "File Already Exists");
+							}
+						} catch (IOException e) {
+							JOptionPane.showMessageDialog(null, "Error while trying to save the file");
+						}
 					}else {
-						JOptionPane.showMessageDialog(null, "File Already Exists");
+						JOptionPane.showMessageDialog(null, "Invalid File Name");
 					}
-				} catch (IOException e) {
-					JOptionPane.showMessageDialog(null, "Error while trying to save the file");
+				}else {
+					JOptionPane.showMessageDialog(null, "Invalid Directory");
 				}
 			}
-			this.saveFileFrame.add(chooseSaveDirectory);
-			
-			this.saveFileFrame.setVisible(true);
-			this.saveFileFrame.dispose();
 		}else {
 			JOptionPane.showMessageDialog(null, "No Files Open");
 		}
@@ -423,7 +439,7 @@ public class Gui implements ActionListener, KeyListener{
 					}
 					this.editorPane.setText(contentToLoad);
 					this.currentFile = file;
-					this.editorPane.setEnabled(true);
+					this.decideEditorEnabled();
 				} catch (IOException e) {
 					//do Nothing
 				}
@@ -431,11 +447,8 @@ public class Gui implements ActionListener, KeyListener{
 			} catch (FileNotFoundException e) {
 				JOptionPane.showMessageDialog(null, "Error while trying to load file");
 			}
-		}else {
-			JOptionPane.showMessageDialog(null, "Invalid File Type");
 		}
 		this.openFileFrame.add(chooseOpenFile);
-		
 		this.openFileFrame.setVisible(true);
 		this.openFileFrame.dispose();
 	}
@@ -477,17 +490,21 @@ public class Gui implements ActionListener, KeyListener{
 				File directory = chooseNewFileDirectory.getSelectedFile();
 				String fileName;
 				fileName = JOptionPane.showInputDialog("File Name");
-				File newFile = new File(directory.toString() + fileSeparator + fileName);
-				try {
-					if(newFile.createNewFile()) {
-						JOptionPane.showMessageDialog(null, "File Created");
-						this.currentFile = newFile;
-						this.editorPane.setEnabled(true);
-					}else {
-						JOptionPane.showMessageDialog(null, "File Already Exists");
+				if(fileName != null) {
+					File newFile = new File(directory.toString() + fileSeparator + fileName);
+					try {
+						if(newFile.createNewFile()) {
+							JOptionPane.showMessageDialog(null, "File Created");
+							this.currentFile = newFile;
+							this.editorPane.setEnabled(true);
+						}else {
+							JOptionPane.showMessageDialog(null, "File Already Exists");
+						}
+					} catch (IOException e) {
+						JOptionPane.showMessageDialog(null, "Error while trying to create the file");
 					}
-				} catch (IOException e) {
-					JOptionPane.showMessageDialog(null, "Error while trying to create the file");
+				}else {
+					JOptionPane.showMessageDialog(null, "Invalid File Name");
 				}
 			}
 			this.createNewFileFrame.add(chooseNewFileDirectory);
@@ -556,6 +573,10 @@ public class Gui implements ActionListener, KeyListener{
 		if (e.isControlDown() && e.getKeyChar() != 's' && e.getKeyCode() == 83) {
 			this.saveFile();
 		}	
+		
+		if(this.editorConfigFrame != null && this.editorConfigFrame.isActive() && e.getKeyCode() == 27) {
+			this.updateFont();
+		}
 	}
 
 	@Override
