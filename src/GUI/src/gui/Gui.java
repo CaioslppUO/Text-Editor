@@ -570,9 +570,13 @@ public class Gui implements ActionListener, KeyListener{
 	@Override
 	public void keyReleased(KeyEvent e) {
 		//Salva o arquivo aberto ao apertar ctrl+s
-		if (e.isControlDown() && e.getKeyChar() != 's' && e.getKeyCode() == 83) {
+		if (e.isShiftDown() == false && e.isControlDown() && e.getKeyChar() != 's' && e.getKeyCode() == 83) {
 			this.saveFile();
 		}	
+		
+		if (e.isShiftDown() && e.isControlDown() && e.getKeyChar() != 's' && e.getKeyCode() == 83) {
+			this.saveFileAs();
+		}
 		
 		if(this.editorConfigFrame != null && this.editorConfigFrame.isActive() && e.getKeyCode() == 27) {
 			this.updateFont();
