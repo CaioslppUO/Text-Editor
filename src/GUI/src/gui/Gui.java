@@ -71,6 +71,7 @@ public class Gui implements ActionListener, KeyListener{
 	
 	private File currentFile;
 	private JDialog openFileFrame;
+	private JDialog createNewFileFrame;
 
 	public Gui() {
 		this.PaneEditorColor = new Color(51, 51, 51);
@@ -216,7 +217,6 @@ public class Gui implements ActionListener, KeyListener{
 		
 		//Sub botão save
 		menuItem = new JMenuItem("Save");
-		menuItem = new JMenuItem("Save as");
 		menuItem.setForeground(this.MenuForeGroundColor);
 		menuItem.setBackground(this.sideAreasColor);
 		menuItem.setActionCommand("buttonSavePressed");
@@ -408,6 +408,57 @@ public class Gui implements ActionListener, KeyListener{
 		this.openFileFrame.setVisible(true);
 		this.openFileFrame.dispose();
 	}
+	
+	private void updateFont() {
+		this.editorConfigFrame.dispose();
+		this.fontSize = Integer.parseInt(this.fontSizeSpinner.getValue().toString());
+		this.fontType = this.fontTypeList.getSelectedItem().toString();
+		this.editorPane.setFont(new Font(this.fontType, Font.PLAIN, this.fontSize));
+	}
+	
+	private void createNewFile() {
+		if(this.currentFile == null) {
+			String fileSeparator = System.getProperty("file.separator");
+			
+			this.createNewFileFrame = new JDialog();
+			this.createNewFileFrame.getContentPane().setBackground(this.sideAreasColor);
+			this.createNewFileFrame.setSize(600, 600);
+			this.createNewFileFrame.setLocationRelativeTo(null);
+			this.createNewFileFrame.setTitle("Save File As");
+			
+			JFileChooser chooseNewFileDirectory;
+			chooseNewFileDirectory = new JFileChooser();
+			chooseNewFileDirectory.setCurrentDirectory(new File("."));
+			chooseNewFileDirectory.setDialogTitle("Save to");
+			chooseNewFileDirectory.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			int result = chooseNewFileDirectory.showOpenDialog(null);
+			if(result == JFileChooser.APPROVE_OPTION) { //Salvar o arquivo
+				File directory = chooseNewFileDirectory.getSelectedFile();
+				String fileName;
+				fileName = JOptionPane.showInputDialog("File Name");
+				File newFile = new File(directory.toString() + fileSeparator + fileName);
+				try {
+					if(newFile.createNewFile()) {
+						JOptionPane.showMessageDialog(null, "File Created");
+						this.currentFile = newFile;
+						this.editorPane.setEnabled(true);
+					}else {
+						JOptionPane.showMessageDialog(null, "File Already Exists");
+					}
+				} catch (IOException e) {
+					JOptionPane.showMessageDialog(null, "Error while trying to create the file");
+				}
+			}
+			this.createNewFileFrame.add(chooseNewFileDirectory);
+			
+			this.createNewFileFrame.setVisible(true);
+			this.createNewFileFrame.dispose();
+		}else {
+			this.saveFile();
+			this.currentFile = null;
+			this.createNewFile();
+		}
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -416,12 +467,9 @@ public class Gui implements ActionListener, KeyListener{
 		}else if("buttonEditorPressed".equals(e.getActionCommand())) {
 			this.launchEditorConfigFrame();
 		}else if("buttonNewFilePressed".equals(e.getActionCommand())) {
-			JOptionPane.showMessageDialog(null, "Button New File Pressed");
+			this.createNewFile();
 		}else if("FontSizeChanged".equals(e.getActionCommand())) {
-			this.editorConfigFrame.dispose();
-			this.fontSize = Integer.parseInt(this.fontSizeSpinner.getValue().toString());
-			this.fontType = this.fontTypeList.getSelectedItem().toString();
-			this.editorPane.setFont(new Font(this.fontType, Font.PLAIN, this.fontSize));
+			this.updateFont();
 		}else if("buttonSaveAsPressed".equals(e.getActionCommand())) {
 			this.saveFileAs();
 		}else if("buttonOpenFilePressed".equals(e.getActionCommand())) {
