@@ -47,7 +47,8 @@ import javax.swing.border.SoftBevelBorder;
 import javax.swing.text.PlainDocument;
 
 public class Gui implements ActionListener, KeyListener{
-
+	
+	//Frame e Painéis principais
 	private JFrame frame;
 	private JPanel panelCentral;
 	private JPanel panelLeft;
@@ -55,24 +56,29 @@ public class Gui implements ActionListener, KeyListener{
 	private JPanel panelDown;
 	private JPanel panelRight;
 	
+	//Cores do editor
 	private Color PaneEditorColor;
 	private Color MenuBarColor;
 	private Color sideAreasColor;
 	private Color MenuForeGroundColor;
 	
+	//Fonte
 	private Integer fontSize;
 	private String fontType;
+	private JSpinner fontSizeSpinner;
+	private JComboBox<String> fontTypeList;
+	
+	//Painéis secundários
 	private JEditorPane editorPane;
 	private JDialog editorConfigFrame;
-	private JSpinner fontSizeSpinner;
-	private JComboBox fontTypeList;
-	
 	private JDialog saveFileFrame;
-	
-	private File currentFile;
 	private JDialog openFileFrame;
 	private JDialog createNewFileFrame;
+	
+	//Variáveis "globais"
+	private File currentFile;
 
+	//Construtor da classe
 	public Gui() {
 		this.PaneEditorColor = new Color(51, 51, 51);
 		this.sideAreasColor = new Color(82, 82, 82);
@@ -84,16 +90,19 @@ public class Gui implements ActionListener, KeyListener{
 		initialize();
 	}
 	
+	//Getter do frame principal
 	public JFrame getMainFrame() {
 		return this.frame;
 	}
 	
+	//Definições do frame principal
 	public void defineMainFrame() {
 		this.frame = new JFrame("Text Editor");
 		this.frame.getContentPane().setBackground(this.sideAreasColor);
 		this.frame.getContentPane().setLayout(new BorderLayout(0, 0));
 	}
 	
+	//Definições do painel central
 	public void definePanelCentral() {
 		this.panelCentral = new JPanel();
 		this.panelCentral.setBackground(this.PaneEditorColor);
@@ -106,6 +115,7 @@ public class Gui implements ActionListener, KeyListener{
 		this.panelCentral.setLayout(gbl_panelCentral);
 	}
 	
+	//Definições do painel da esquerda
 	private void definePanelLeft() {
 		this.panelLeft = new JPanel();
 		this.panelLeft.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
@@ -115,6 +125,7 @@ public class Gui implements ActionListener, KeyListener{
 		this.panelLeft.add(horizontalStrut);
 	}
 	
+	//Definições do painel do topo
 	private void definePanelTop() {
 		this.panelTop = new JPanel();
 		this.panelTop.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
@@ -124,18 +135,21 @@ public class Gui implements ActionListener, KeyListener{
 		this.panelTop.add(verticalStrut);
 	}
 	
+	//Definições do painel de baixo
 	private void definePanelDown() {
 		this.panelDown = new JPanel();
 		this.panelDown.setBackground(this.sideAreasColor);
 		this.frame.getContentPane().add(this.panelDown, BorderLayout.SOUTH);
 	}
 	
+	//Definições do painel da direita
 	private void definePanelRight() {
 		this.panelRight = new JPanel();
 		this.panelRight.setBackground(this.sideAreasColor);
 		this.frame.getContentPane().add(this.panelRight, BorderLayout.EAST);
 	}
 	
+	//Definições do painel do editor
 	public void defineEditorPane() {
 		this.editorPane = new JEditorPane();
 		this.editorPane.setForeground(SystemColor.window);
@@ -167,6 +181,7 @@ public class Gui implements ActionListener, KeyListener{
 		}
 	}
 	
+	//Definições da barra de menu
 	private void defineMenuBar() {
 		JMenuBar menuBar;
 		JMenu menu;
@@ -254,6 +269,7 @@ public class Gui implements ActionListener, KeyListener{
 		this.frame.setJMenuBar(menuBar);
 	}
 	
+	//Launcher da tela de configuração do editor
 	private void launchEditorConfigFrame() {		
 		this.editorConfigFrame = new JDialog();
 		this.editorConfigFrame.getContentPane().setBackground(this.sideAreasColor);
@@ -304,6 +320,11 @@ public class Gui implements ActionListener, KeyListener{
 		this.editorConfigFrame.setVisible(true);
 	}
 	
+	//Função que salva o arquivo que está aberto na variável this.currentFile
+	//Entrada: Nenhuma
+	//Retorno: Nenhum
+	//Pŕe-condição: Nenhuma
+	//Pós-condição: O arquivo aberto na variável this.currentFile é salvo
 	private void saveFile() {
 		if(this.currentFile != null) {
 			String contentToSave = this.editorPane.getText();
@@ -320,6 +341,11 @@ public class Gui implements ActionListener, KeyListener{
 		}
 	}
 	
+	//Função que salva o arquivo que está aberto na variável this.currentFile
+	//Entrada: Nenhuma
+	//Retorno: Nenhum
+	//Pŕe-condição: Nenhum
+	//Pós-condição: É aberto um menu para escolher como e onde salvar o arquivo aberto na variável this.currentFile
 	private void saveFileAs(){
 		if(this.currentFile != null) {
 			String fileSeparator = System.getProperty("file.separator");
@@ -367,6 +393,11 @@ public class Gui implements ActionListener, KeyListener{
 		}
 	}
 	
+	//Função que abre um menu para escolher um arquivo para abrir
+	//Entrada: Nenhuma
+	//Retorno: Nenhum
+	//Pŕe-condição: Nenhuma
+	//Pós-condição: O arquivo é aberto no editor
 	private void openFile() {			
 		this.openFileFrame = new JDialog();
 		this.openFileFrame.getContentPane().setBackground(this.sideAreasColor);
@@ -409,6 +440,11 @@ public class Gui implements ActionListener, KeyListener{
 		this.openFileFrame.dispose();
 	}
 	
+	//Função que atualiza a fonte utilizada no editor
+	//Entrada: Nenhuma
+	//Retorno: Nenhum
+	//Pŕe-condição: Nenhuma
+	//Pós-condição: A fonte é atualizada para as opções definidas no menu
 	private void updateFont() {
 		this.editorConfigFrame.dispose();
 		this.fontSize = Integer.parseInt(this.fontSizeSpinner.getValue().toString());
@@ -416,6 +452,11 @@ public class Gui implements ActionListener, KeyListener{
 		this.editorPane.setFont(new Font(this.fontType, Font.PLAIN, this.fontSize));
 	}
 	
+	//Função que cria um novo arquivo caso ele já não exista
+	//Entrada: Nenhuma
+	//Retorno: Nenhum
+	//Pŕe-condição: Nenhuma
+	//Pós-condição: O arquivo é criado e salvo no disco
 	private void createNewFile() {
 		if(this.currentFile == null) {
 			String fileSeparator = System.getProperty("file.separator");
@@ -479,6 +520,11 @@ public class Gui implements ActionListener, KeyListener{
 		}
 	}
 	
+	//Função que inicializa todos os componentes visuais da interface
+	//Entrada: Nenhuma
+	//Retorno: Nenhum
+	//Pŕe-condição: Nenhuma
+	//Pós-condição: Todas as interfaces são inicializadas
 	private void initialize() {
 		//Definições dos elementos principais da tela
 		this.defineMainFrame();
@@ -506,6 +552,7 @@ public class Gui implements ActionListener, KeyListener{
 
 	@Override
 	public void keyReleased(KeyEvent e) {
+		//Salva o arquivo aberto ao apertar ctrl+s
 		if (e.isControlDown() && e.getKeyChar() != 's' && e.getKeyCode() == 83) {
 			this.saveFile();
 		}	
