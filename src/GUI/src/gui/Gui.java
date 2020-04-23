@@ -8,16 +8,19 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.SystemColor;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -45,9 +48,11 @@ public class Gui implements ActionListener{
 	private Color MenuForeGroundColor;
 	
 	private Integer fontSize;
+	private String fontType;
 	private JEditorPane editorPane;
 	private JDialog editorConfigFrame;
 	private JSpinner fontSizeSpinner;
+	private JComboBox fontTypeList;
 
 	public Gui() {
 		this.PaneEditorColor = new Color(51, 51, 51);
@@ -55,6 +60,7 @@ public class Gui implements ActionListener{
 		this.MenuBarColor = new Color(28, 28, 28);
 		this.MenuForeGroundColor = new Color(137, 163, 201);
 		this.fontSize = 12;
+		this.fontType = "Monospaced";
 		initialize();
 	}
 	
@@ -120,7 +126,7 @@ public class Gui implements ActionListener{
 		gbc_editorPane_1.gridy = 0;
 		
 		this.editorPane.setCaretColor(Color.WHITE);
-		this.editorPane.setFont(new Font(Font.MONOSPACED, Font.PLAIN, this.fontSize));
+		this.editorPane.setFont(new Font(this.fontType, Font.PLAIN, this.fontSize));
 		
 		//Mudando a quantidade de espaçõs da tecla TAB
 		javax.swing.text.Document doc = this.editorPane.getDocument();
@@ -216,8 +222,25 @@ public class Gui implements ActionListener{
 		this.fontSizeSpinner = new JSpinner();
 		this.fontSizeSpinner.setValue(this.fontSize);
 		this.fontSizeSpinner.setSize(35, 20);
-		this.fontSizeSpinner.setLocation(85, 7);
+		this.fontSizeSpinner.setLocation(100, 7);
 		this.editorConfigFrame.add(this.fontSizeSpinner);
+		
+		JLabel labelFontType;
+		labelFontType = new JLabel();
+		labelFontType.setText("Font Type");
+		labelFontType.setSize(75, 20);
+		labelFontType.setLocation(10, 40);
+		labelFontType.setForeground(this.MenuForeGroundColor);
+		this.editorConfigFrame.add(labelFontType);
+		
+		@SuppressWarnings("deprecation")
+		String fontTypes[] = Toolkit.getDefaultToolkit().getFontList();
+		
+		this.fontTypeList = new JComboBox(fontTypes);
+		this.fontTypeList.setSelectedItem(this.fontType);
+		this.fontTypeList.setSize(120, 20);
+		this.fontTypeList.setLocation(100, 42);
+		this.editorConfigFrame.add(this.fontTypeList);
 		
 		this.editorConfigFrame.add(buttonOk);
 		
@@ -235,7 +258,8 @@ public class Gui implements ActionListener{
 		}else if("FontSizeChanged".equals(e.getActionCommand())) {
 			this.editorConfigFrame.dispose();
 			this.fontSize = Integer.parseInt(this.fontSizeSpinner.getValue().toString());
-			this.editorPane.setFont(new Font(Font.MONOSPACED, Font.PLAIN, this.fontSize));
+			this.fontType = this.fontTypeList.getSelectedItem().toString();
+			this.editorPane.setFont(new Font(this.fontType, Font.PLAIN, this.fontSize));
 		}
 	}
 	
