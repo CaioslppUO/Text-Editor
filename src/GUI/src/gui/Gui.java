@@ -1,56 +1,34 @@
 package gui;
 
-import java.awt.EventQueue;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
-
-import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
-
+import java.awt.Font;
+import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.SystemColor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JEditorPane;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-
-import java.awt.GridBagConstraints;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
-import javax.swing.SwingUtilities;
-
-import java.awt.Insets;
-import java.awt.Color;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.EtchedBorder;
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.text.PlainDocument;
-
-import org.w3c.dom.Document;
-
-import javax.swing.border.BevelBorder;
-import javax.swing.border.Border;
-import javax.swing.border.EtchedBorder;
-import javax.swing.JEditorPane;
-import java.awt.SystemColor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-
-import javax.swing.DropMode;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-
-import java.awt.Font;
-import javax.swing.JSplitPane;
-import javax.swing.JWindow;
-import javax.swing.KeyStroke;
-
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.JFileChooser;
 
 public class Gui implements ActionListener{
 
@@ -68,6 +46,8 @@ public class Gui implements ActionListener{
 	
 	private Integer fontSize;
 	private JEditorPane editorPane;
+	private JDialog editorConfigFrame;
+	private JSpinner fontSizeSpinner;
 
 	public Gui() {
 		this.PaneEditorColor = new Color(51, 51, 51);
@@ -209,7 +189,56 @@ public class Gui implements ActionListener{
 		//Adding Itens
 		this.frame.setJMenuBar(menuBar);
 	}
+	
+	private void launchEditorConfigFrame() {		
+		this.editorConfigFrame = new JDialog();
+		this.editorConfigFrame.getContentPane().setBackground(this.sideAreasColor);
+		this.editorConfigFrame.setLayout(new BorderLayout(0, 0));
+		this.editorConfigFrame.setSize(300, 300);
+		this.editorConfigFrame.setLocationRelativeTo(null);
+		this.editorConfigFrame.setTitle("Editor Settings");
+		this.editorConfigFrame.setLayout(null);
+		
+		JButton buttonOk = new JButton("OK");
+		buttonOk.setActionCommand("FontSizeChanged");
+		buttonOk.addActionListener(this);
+		buttonOk.setSize(55, 30);
+		buttonOk.setLocation(125, 230);
+		
+		JLabel labelFontSize;
+		labelFontSize = new JLabel();
+		labelFontSize.setText("Font Size");
+		labelFontSize.setSize(75, 20);
+		labelFontSize.setLocation(10, 5);
+		labelFontSize.setForeground(this.MenuForeGroundColor);
+		this.editorConfigFrame.add(labelFontSize);
+		
+		this.fontSizeSpinner = new JSpinner();
+		this.fontSizeSpinner.setValue(this.fontSize);
+		this.fontSizeSpinner.setSize(35, 20);
+		this.fontSizeSpinner.setLocation(85, 7);
+		this.editorConfigFrame.add(this.fontSizeSpinner);
+		
+		this.editorConfigFrame.add(buttonOk);
+		
+		this.editorConfigFrame.setVisible(true);
+	}
 
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if("buttonThemesPressed".equals(e.getActionCommand())) {
+			JOptionPane.showMessageDialog(null, "Button Themes Pressed");
+		}else if("buttonEditorPressed".equals(e.getActionCommand())) {
+			this.launchEditorConfigFrame();
+		}else if("buttonNewFilePressed".equals(e.getActionCommand())) {
+			JOptionPane.showMessageDialog(null, "Button New File Pressed");
+		}else if("FontSizeChanged".equals(e.getActionCommand())) {
+			this.editorConfigFrame.dispose();
+			this.fontSize = Integer.parseInt(this.fontSizeSpinner.getValue().toString());
+			this.editorPane.setFont(new Font(Font.MONOSPACED, Font.PLAIN, this.fontSize));
+		}
+	}
+	
 	private void initialize() {
 		//Definições dos elementos principais da tela
 		this.defineMainFrame();
@@ -227,37 +256,5 @@ public class Gui implements ActionListener{
 		this.frame.setBackground(Color.LIGHT_GRAY);
 		this.frame.setBounds(100, 100, 450, 300);
 		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	}
-	
-	private void launchEditorConfigFrame() {		
-		JDialog editorConfigFrame;
-		editorConfigFrame = new JDialog();
-		editorConfigFrame.setBackground(this.sideAreasColor);
-		editorConfigFrame.setLayout(new BorderLayout(0, 0));
-		editorConfigFrame.setSize(300, 300);
-		editorConfigFrame.setLocationRelativeTo(null);
-		editorConfigFrame.setTitle("Editor Settings");
-		editorConfigFrame.setLayout(new FlowLayout());
-		
-		JButton buttonOk = new JButton("OK");
-		buttonOk.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				editorConfigFrame.dispose();
-			}
-		});
-		editorConfigFrame.add(buttonOk);
-		editorConfigFrame.setVisible(true);
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		if("buttonThemesPressed".equals(e.getActionCommand())) {
-			JOptionPane.showMessageDialog(null, "Button Themes Pressed");
-		}else if("buttonEditorPressed".equals(e.getActionCommand())) {
-			this.launchEditorConfigFrame();
-		}else if("buttonNewFilePressed".equals(e.getActionCommand())) {
-			JOptionPane.showMessageDialog(null, "Button New File Pressed");
-		}
 	}
 }
