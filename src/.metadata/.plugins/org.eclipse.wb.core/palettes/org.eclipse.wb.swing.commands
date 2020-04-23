@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<commands>
+	<addCategory
+		id="category_1587508114416"
+		name="Custom"
+		description="Container for custom components"
+		visible="true"
+		open="true"/>
+	<addComponent
+		id="custom_1587508114416"
+		name="JFileChooser"
+		description="Creates javax.swing.JFileChooser component."
+		visible="true"
+		class="javax.swing.JFileChooser"
+		category="category_1587508114416"/>
+	<addComponent
+		id="custom_1587508275059"
+		name="JFileChooser"
+		description="Creates javax.swing.JFileChooser component."
+		visible="true"
+		class="javax.swing.JFileChooser"
+		category="category_1587508114416"/>
+	<addComponent
+		id="custom_1587508852524"
+		name="JFileChooser"
+		description="Creates javax.swing.JFileChooser component."
+		visible="true"
+		class="javax.swing.JFileChooser"
+		category="category_1587508114416"/>
+</commands>

@@ -1,0 +1,61 @@
+package gui;
+
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import java.awt.GridBagLayout;
+import javax.swing.JLabel;
+import java.awt.GridBagConstraints;
+import javax.swing.JPanel;
+import java.awt.Insets;
+
+public class GUI {
+
+	public JFrame frame;
+
+	public GUI() {
+		initialize();
+	}
+
+	private void initialize() {
+		frame = new JFrame();
+		frame.setBounds(100, 100, 450, 300);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		GridBagLayout gridBagLayout = new GridBagLayout();
+		gridBagLayout.columnWidths = new int[]{0, 0};
+		gridBagLayout.rowHeights = new int[]{57, -12, -15, 0};
+		gridBagLayout.columnWeights = new double[]{1.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{1.0, 1.0, 1.0, Double.MIN_VALUE};
+		frame.getContentPane().setLayout(gridBagLayout);
+		
+		JPanel panelTop = new JPanel();
+		GridBagConstraints gbc_panelTop = new GridBagConstraints();
+		gbc_panelTop.insets = new Insets(0, 0, 5, 0);
+		gbc_panelTop.fill = GridBagConstraints.BOTH;
+		gbc_panelTop.gridx = 0;
+		gbc_panelTop.gridy = 0;
+		frame.getContentPane().add(panelTop, gbc_panelTop);
+		GridBagLayout gbl_panelTop = new GridBagLayout();
+		gbl_panelTop.columnWidths = new int[]{0};
+		gbl_panelTop.rowHeights = new int[]{0};
+		gbl_panelTop.columnWeights = new double[]{Double.MIN_VALUE};
+		gbl_panelTop.rowWeights = new double[]{Double.MIN_VALUE};
+		panelTop.setLayout(gbl_panelTop);
+		
+		JPanel panelMiddle = new JPanel();
+		GridBagConstraints gbc_panelMiddle = new GridBagConstraints();
+		gbc_panelMiddle.insets = new Insets(0, 0, 5, 0);
+		gbc_panelMiddle.fill = GridBagConstraints.BOTH;
+		gbc_panelMiddle.gridx = 0;
+		gbc_panelMiddle.gridy = 1;
+		frame.getContentPane().add(panelMiddle, gbc_panelMiddle);
+		
+		JPanel panelDown = new JPanel();
+		GridBagConstraints gbc_panelDown = new GridBagConstraints();
+		gbc_panelDown.fill = GridBagConstraints.BOTH;
+		gbc_panelDown.gridx = 0;
+		gbc_panelDown.gridy = 2;
+		frame.getContentPane().add(panelDown, gbc_panelDown);
+	}
+
+}
