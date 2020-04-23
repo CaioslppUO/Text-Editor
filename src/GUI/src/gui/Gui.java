@@ -43,7 +43,7 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.text.PlainDocument;
 
-public class Gui implements ActionListener{
+public class Gui implements ActionListener, KeyListener{
 
 	private JFrame frame;
 	private JPanel panelCentral;
@@ -151,6 +151,8 @@ public class Gui implements ActionListener{
 		TextLineNumber tln = new TextLineNumber(this.editorPane);
 		scrollPane.setRowHeaderView( tln );
 		this.panelCentral.add(scrollPane, gbc_editorPane_1);
+		
+		this.editorPane.addKeyListener(this);
 	}
 	
 	private void defineMenuBar() {
@@ -310,7 +312,6 @@ public class Gui implements ActionListener{
 			} catch (IOException e) {
 				JOptionPane.showMessageDialog(null, "Error while trying to save the file");
 			}
-		}else { //Não salvar o arquivo	
 		}
 		this.saveFileFrame.add(chooseSaveDirectory);
 		
@@ -353,5 +354,24 @@ public class Gui implements ActionListener{
 		this.frame.setBackground(Color.LIGHT_GRAY);
 		this.frame.setBounds(100, 100, 450, 300);
 		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		if (e.isControlDown() && e.getKeyChar() != 's' && e.getKeyCode() == 83) {
+			this.saveFile();
+		}	
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }
