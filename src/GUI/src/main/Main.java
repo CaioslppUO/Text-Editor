@@ -4,7 +4,6 @@ import java.awt.EventQueue;
 import gui.Gui;
 
 public class Main {
-	
 	//Inicia a janela
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
