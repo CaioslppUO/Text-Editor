@@ -56,4 +56,8 @@ public class EditorPane {
         return this.gbc_editorPane;
     }
     
+    public void setEditorPane(JEditorPane editorPane){
+        this.editorPane = editorPane;
+    }
+    
 }

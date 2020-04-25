@@ -11,11 +11,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -38,6 +34,7 @@ import gui.extragui.RoundedPanel;
 import gui.maingui.Constants;
 import gui.maingui.secondarypanels.editorpanel.EditorPane;
 import gui.maingui.secondarypanels.editorpanel.EditorPaneConfig;
+import gui.maingui.secondarypanels.openfile.OpenFile;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.InputStreamReader;
@@ -45,7 +42,7 @@ import gui.maingui.secondarypanels.openfiles.OpenFiles;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import gui.maingui.secondarypanels.openfiles.CreateNewFileOpenPanel;
-import gui.maingui.secondarypanels.savefiles.SaveFile;
+import gui.maingui.secondarypanels.savefile.SaveFile;
 
 public class Gui implements ActionListener, KeyListener, MouseListener {
 
@@ -56,62 +53,57 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
     private JPanel panelTop;
     private JPanel panelDown;
     private JPanel panelRight;
-    
+
     //Constants
     private Constants constants;
-        
+
     //Variáveis "globais"
     private File currentFile;
     private String currentFolder;
     private Map<String, RoundedPanel> addedFilesPanel;
     private String lastClickedFilePath;
-    
+
     //Fonte
     private Integer fontSize;
     private String fontType;
 
-    //Painéis secundários    
-    private JDialog saveFileFrame;
-    private JFileChooser chooseSaveDirectory;
-    
-    private JDialog openFileFrame;
-    private JFileChooser chooseOpenFile;
-    
+    //Painéis secundários        
     private JDialog createNewFileFrame;
     private JFileChooser chooseNewFileDirectory;
-    
+
     private JDialog openFolderFrame;
     private JFileChooser chooseOpenDirectory;
-    
+
     //
-    
     private EditorPane editorPane;
     private EditorPaneConfig editorPaneConfig;
-    
+
     private OpenFiles openFiles;
-    
+
     private CreateNewFileOpenPanel createNewFileOpenPanel;
-    
+
     private SaveFile saveFile;
-    
+
+    private OpenFile openFile;
+
     //Construtor da classe
     public Gui() {
-        //Constantes
-        this.constants = new Constants();
-        
-        //Utilitários
-        this.saveFile = new SaveFile();
-        
         //Variáveis globais
         this.currentFile = null;
         this.currentFolder = ".";
         this.addedFilesPanel = new LinkedHashMap<>();
         lastClickedFilePath = null;
-        
+
         //Fonte padrão
         this.fontSize = 12;
         this.fontType = "Monospaced";
-        
+
+        //Constantes
+        this.constants = new Constants();
+
+        //Utilitários
+        this.saveFile = new SaveFile();
+
         //Iniciando os componentes visuais
         initialize();
     }
@@ -187,37 +179,39 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
         if (this.currentFile != null) {
             this.editorPane.getEditorPane().setEnabled(true);
             if (!isFileAlreadyOpen) {
-                createNewFileOpenPanel(this.currentFile .getName(), this.currentFile .getAbsolutePath());
+                createNewFileOpenPanel(this.currentFile.getName(), this.currentFile.getAbsolutePath());
             }
         } else {
             this.editorPane.getEditorPane().setEnabled(false);
             this.editorPane.getEditorPane().setText("");
         }
     }
-    
-    private void createNewFileOpenPanel(String fileName, String filePath){
+
+    private void createNewFileOpenPanel(String fileName, String filePath) {
         this.createNewFileOpenPanel = new CreateNewFileOpenPanel(this.lastClickedFilePath, this.addedFilesPanel);
         this.createNewFileOpenPanel.createNewFileOpenPanel(fileName, filePath);
         this.createNewFileOpenPanel.getNewFilePanel().addMouseListener(this);
         this.createNewFileOpenPanel.getCloseButton().addActionListener(this);
         this.createNewFileOpenPanel.getCloseButton().addMouseListener(this);
-        
+
         this.openFiles.getOpenFilesPanel().add(this.createNewFileOpenPanel.getNewFilePanel());
         this.openFiles.getOpenFilesPanel().add(this.createNewFileOpenPanel.getSeparator());
-        
+
         this.addedFilesPanel = this.createNewFileOpenPanel.getAddedFilesPanel();
         this.lastClickedFilePath = this.createNewFileOpenPanel.getLastClickedFilePath();
-        
+
+        this.createNewFileOpenPanel = null;
+
         SwingUtilities.updateComponentTreeUI(frame);
     }
-    
-    private void includeOpenFilesPanel(){
+
+    private void includeOpenFilesPanel() {
         this.openFiles = new OpenFiles();
         this.panelCentral.add(this.openFiles.getOpenFilesPanel(), this.openFiles.getGbc());
     }
-    
-    private void includeEditorPane(){
-        this.editorPane = new EditorPane(this.fontType,this.fontSize);
+
+    private void includeEditorPane() {
+        this.editorPane = new EditorPane(this.fontType, this.fontSize);
         this.editorPane.getEditorPane().addKeyListener(this);
         this.decideEditorEnabled(false);
         this.panelCentral.add(this.editorPane.getScrollPane(), this.editorPane.getGbc());
@@ -302,96 +296,40 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
         this.frame.setJMenuBar(menuBar);
     }
 
-    private void includeEditorPaneConfig(){
-        this.editorPaneConfig = new EditorPaneConfig(this.fontType,this.fontSize);
+    private void runOpenFile() {
+        this.openFile = new OpenFile(this.currentFile, this.editorPane.getEditorPane(), this.addedFilesPanel, this.currentFolder);
+        this.openFile.openFile();
+        this.currentFile = this.openFile.getCurrentFile();
+        this.currentFolder = this.openFile.getCurrentFolder();
+        this.addedFilesPanel = this.openFile.getAddedFilesPanel();
+        this.editorPane.setEditorPane(this.openFile.getEditorPane());
+        this.openFile = null;
+        if (this.addedFilesPanel.get(this.currentFile.getAbsolutePath()) != null) {
+            this.decideEditorEnabled(true);
+        } else {
+            this.decideEditorEnabled(false);
+        }
+    }
+
+    private void runOpenFile(String filePath) {
+        this.openFile = new OpenFile(this.currentFile, this.editorPane.getEditorPane(), this.addedFilesPanel, this.currentFolder);
+        this.openFile.openFile(filePath);
+        this.currentFile = this.openFile.getCurrentFile();
+        this.currentFolder = this.openFile.getCurrentFolder();
+        this.addedFilesPanel = this.openFile.getAddedFilesPanel();
+        this.editorPane.setEditorPane(this.openFile.getEditorPane());
+        this.openFile = null;
+        if (this.addedFilesPanel.get(this.currentFile.getAbsolutePath()) != null) {
+            this.decideEditorEnabled(true);
+        } else {
+            this.decideEditorEnabled(false);
+        }
+    }
+
+    private void includeEditorPaneConfig() {
+        this.editorPaneConfig = new EditorPaneConfig(this.fontType, this.fontSize);
         this.editorPaneConfig.getOkButton().addActionListener(this);
         this.editorPaneConfig.getEditorConfigFrame().addKeyListener(this);
-    }
-
-    //Função que define o frame de salvar um arquivo
-    //Entrada: Nenhuma
-    //Retorno: FileChooser.APPROVE_OPTION se o diretório for escolhido ou o contrário caso não seja
-    //Pré-condição: Nenhuma
-    //Pós-condição: Nenhuma
-    private int defineCreateOpenFileFrame() {
-        this.openFileFrame = new JDialog();
-        this.openFileFrame.getContentPane().setBackground(this.constants.getSideAreasColor());
-        this.openFileFrame.setSize(600, 600);
-        this.openFileFrame.setLocationRelativeTo(null);
-        this.openFileFrame.setTitle("Save File");
-
-        chooseOpenFile = new JFileChooser();
-        chooseOpenFile.setCurrentDirectory(new File(this.currentFolder));
-        chooseOpenFile.setDialogTitle("Save to");
-        chooseOpenFile.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-        return chooseOpenFile.showOpenDialog(null);
-    }
-
-    //Função que abre um menu para escolher um arquivo para abrir
-    //Entrada: Nenhuma
-    //Retorno: Nenhum
-    //Pŕe-condição: Nenhuma
-    //Pós-condição: O arquivo é aberto no editor
-    private void openFile() {
-        if (defineCreateOpenFileFrame() == JFileChooser.APPROVE_OPTION) { //Abre o arquivo
-            File file = new File(chooseOpenFile.getSelectedFile().toString());
-            try {
-                BufferedReader br = new BufferedReader(new FileReader(file));
-                String contentToLoad = "", aux;
-                try {
-                    while ((aux = br.readLine()) != null) {
-                        contentToLoad += aux;
-                        contentToLoad += "\n";
-                    }
-                    this.editorPane.getEditorPane().setText(contentToLoad);
-                    this.currentFile = file;
-                    if (this.addedFilesPanel.get(this.currentFile.getAbsolutePath()) != null) {
-                        this.decideEditorEnabled(true);
-                    } else {
-                        this.decideEditorEnabled(false);
-                    }
-                } catch (IOException e) {
-                    //do Nothing
-                }
-            } catch (FileNotFoundException e) {
-                JOptionPane.showMessageDialog(null, "Error while trying to load file");
-            }
-        }
-        this.openFileFrame.getContentPane().add(chooseOpenFile);
-        this.openFileFrame.setVisible(true);
-        this.openFileFrame.dispose();
-    }
-
-    //Função que abre um arquivo dado um caminho
-    //Entrada: Caminho do arquivo a ser aberto
-    //Retorno: Nenhum
-    //Pŕe-condição: Nenhuma
-    //Pós-condição: O arquivo é aberto no editor
-    private void openFile(String filePath) {
-        File file = new File(filePath);
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            String contentToLoad = "", aux;
-            try {
-                while ((aux = br.readLine()) != null) {
-                    contentToLoad += aux;
-                    contentToLoad += "\n";
-                }
-                this.saveFile.saveFile(false,this.currentFile,this.editorPane.getEditorPane().getText());
-                this.editorPane.getEditorPane().setText(contentToLoad);
-                this.currentFile = file;
-                if (this.addedFilesPanel.get(this.currentFile.getAbsolutePath()) != null) {
-                    this.decideEditorEnabled(true);
-                } else {
-                    this.decideEditorEnabled(false);
-                }
-            } catch (IOException e) {
-                //do Nothing
-
-            }
-        } catch (FileNotFoundException e) {
-            JOptionPane.showMessageDialog(null, "Error while trying to load file");
-        }
     }
 
     //Função que atualiza a fonte utilizada no editor
@@ -531,10 +469,10 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
             SwingUtilities.updateComponentTreeUI(frame);
 
             try {
-                this.openFile(((RoundedPanel) this.addedFilesPanel.values().toArray()[0]).getName());
+                this.runOpenFile(((RoundedPanel) this.addedFilesPanel.values().toArray()[0]).getName());
             } catch (Exception e) {
                 if (result == 0) {
-                    this.saveFile.saveFile(false,this.currentFile,this.editorPane.getEditorPane().getText());
+                    this.saveFile.saveFile(false, this.currentFile, this.editorPane.getEditorPane().getText());
                 }
                 this.currentFile = null;
                 this.lastClickedFilePath = null;
@@ -594,13 +532,13 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
                     this.updateFont();
                     break;
                 case "buttonSaveAsPressed":
-                    this.saveFile.saveFileAs(this.currentFile,this.currentFolder,this.editorPane.getEditorPane().getText());
+                    this.saveFile.saveFileAs(this.currentFile, this.currentFolder, this.editorPane.getEditorPane().getText());
                     break;
                 case "buttonOpenFilePressed":
-                    this.openFile();
+                    this.runOpenFile();
                     break;
                 case "buttonSavePressed":
-                    this.saveFile.saveFile(true,this.currentFile,this.editorPane.getEditorPane().getText());
+                    this.saveFile.saveFile(true, this.currentFile, this.editorPane.getEditorPane().getText());
                     break;
                 case "buttonCloseFilePressed":
                     this.closeFile();
@@ -653,12 +591,12 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
     public void keyReleased(KeyEvent e) {
         //Salva o arquivo aberto ao apertar ctrl+s
         if (this.editorPane.getEditorPane() != null && e.isShiftDown() == false && e.isControlDown() && e.getKeyChar() != 's' && e.getKeyCode() == 83) {
-            this.saveFile.saveFile(true,this.currentFile,this.editorPane.getEditorPane().getText());
+            this.saveFile.saveFile(true, this.currentFile, this.editorPane.getEditorPane().getText());
         }
 
         //Salva como o arquivo ao apertar ctrl+shift+s
         if (this.editorPane.getEditorPane() != null && e.isShiftDown() && e.isControlDown() && e.getKeyChar() != 's' && e.getKeyCode() == 83) {
-            this.saveFile.saveFileAs(this.currentFile,this.currentFolder,this.editorPane.getEditorPane().getText());
+            this.saveFile.saveFileAs(this.currentFile, this.currentFolder, this.editorPane.getEditorPane().getText());
         }
 
         //Resposta do botão OK da tela de configuração do editor
@@ -668,7 +606,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
 
         //Abre um arquivo ao apertar ctrl+o
         if (e.isControlDown() && e.getKeyChar() != 'o' && e.getKeyCode() == 79) {
-            this.openFile();
+            this.runOpenFile();
         }
 
         //Cria um novo arquivo ao apertar ctr+n
@@ -690,7 +628,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
     @Override
     public void mouseClicked(MouseEvent me) {
         if (!"closeButton".equals(me.getComponent().getName())) {
-            this.openFile(me.getComponent().getName());
+            this.runOpenFile(me.getComponent().getName());
             if (this.lastClickedFilePath == null) {
                 for (Component c : ((RoundedPanel) me.getComponent()).getComponents()) {
                     if (c instanceof JLabel) {

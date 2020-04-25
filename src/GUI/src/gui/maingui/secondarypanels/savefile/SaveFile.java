@@ -1,4 +1,4 @@
-package gui.maingui.secondarypanels.savefiles;
+package gui.maingui.secondarypanels.savefile;
 
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
