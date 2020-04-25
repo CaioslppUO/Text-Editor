@@ -672,8 +672,14 @@ public class Gui implements ActionListener, KeyListener{
 			this.updateFont();
 		}
                 
+                //Abre um arquivo ao apertar ctrl+o
                 if (e.isControlDown() && e.getKeyChar() != 'o' && e.getKeyCode() == 79) {
                     this.openFile();
+		}
+
+                //ACria um novo arquivo ao apertar ctr+n
+                if (e.isControlDown() && e.getKeyChar() != 'n' && e.getKeyCode() == 78) {
+                    this.createNewFile();
 		}	
 	}
 
