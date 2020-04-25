@@ -48,6 +48,7 @@ import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 
@@ -105,7 +106,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
 		
 		//Arquivo inicialmente aberto
 		this.currentFile = null;
-                this.addedFilesPanel = new HashMap<>();
+                this.addedFilesPanel = new LinkedHashMap<>();
 		
 		//Iniciando os componentes visuais
 		initialize();
@@ -648,15 +649,19 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
         //Pós-condição: O arquivo aberto atualmente é fechado
         private void closeFile(){
             if(this.currentFile != null){
-                int result = JOptionPane.showConfirmDialog(null, null,"Save File?",JOptionPane.YES_NO_OPTION);
-                if(result == 0) this.saveFile(true);
+                int result = JOptionPane.showConfirmDialog(null, "Save File?","Save",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
                 
                 RoundedPanel aux = this.addedFilesPanel.remove(this.currentFile.getName());
                 this.openFilesPanel.remove(aux);
                 SwingUtilities.updateComponentTreeUI(frame);
-                
-                this.currentFile = null;
-                this.decideEditorEnabled(true);
+                                
+                try {
+                    this.openFile(((RoundedPanel) this.addedFilesPanel.values().toArray()[0]).getName());
+                } catch (Exception e) {
+                    if(result == 0) this.saveFile(false);
+                    this.currentFile = null;
+                    this.decideEditorEnabled(false);
+                }
             }
         }
 
