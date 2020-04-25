@@ -1,4 +1,4 @@
-package gui;
+package gui.extragui;
 
 import java.awt.*;
 import java.awt.Insets;
@@ -9,7 +9,7 @@ public class RoundedBorder implements Border {
     private int radius;
 
 
-    RoundedBorder(int radius) {
+    public RoundedBorder(int radius) {
         this.radius = radius;
     }
 
