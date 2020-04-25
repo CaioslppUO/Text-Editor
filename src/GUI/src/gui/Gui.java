@@ -317,8 +317,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
 	
 	//Definições da barra de menu
 	private void defineMenuBar() {
-		JMenuBar menuBar;
-		
+		JMenuBar menuBar;	
 		//Inicializando a barra do menu
 		menuBar = new JMenuBar();
 		menuBar.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
