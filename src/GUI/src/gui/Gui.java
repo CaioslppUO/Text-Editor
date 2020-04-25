@@ -697,13 +697,16 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
                         inputText += aux;
                     }
                     if(!inputText.equals("")) JOptionPane.showMessageDialog(null, inputText,"Output",JOptionPane.INFORMATION_MESSAGE);
-                    process = Runtime.getRuntime().exec(this.currentFile.getParent() + "/./" + this.currentFile.getName().split("[.]")[0]);
-                    reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                    inputText = "";
-                    while((aux = reader.readLine()) != null){
-                        inputText += aux;
+                    if(inputText.equals("")){
+                        process = Runtime.getRuntime().exec(this.currentFile.getParent() + "/./" + this.currentFile.getName().split("[.]")[0]);
+                        reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                        inputText = "";
+                        while((aux = reader.readLine()) != null){
+                            inputText += aux;
+                        }
+                        JOptionPane.showMessageDialog(null, inputText,"Output",JOptionPane.INFORMATION_MESSAGE);
                     }
-                    JOptionPane.showMessageDialog(null, inputText,"Output",JOptionPane.INFORMATION_MESSAGE);
+
                 } catch (Exception e) {}
             }
         }
