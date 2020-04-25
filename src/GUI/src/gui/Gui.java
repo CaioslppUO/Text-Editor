@@ -44,6 +44,7 @@ import javax.swing.border.SoftBevelBorder;
 import javax.swing.text.PlainDocument;
 
 import gui.RoundedPanel;
+import java.awt.Dimension;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 
@@ -214,7 +215,11 @@ public class Gui implements ActionListener, KeyListener{
             this.openFilesPanel = new JPanel();
             this.openFilesPanel.setBackground(this.sideAreasColor);
             this.openFilesPanel.setLayout(new BoxLayout(this.openFilesPanel, BoxLayout.LINE_AXIS));
-            JScrollPane scrollPane = new JScrollPane(this.openFilesPanel);
+            JScrollPane scrollPane = new JScrollPane(this.openFilesPanel,JScrollPane.VERTICAL_SCROLLBAR_NEVER , JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+            scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
+            scrollPane.getHorizontalScrollBar().setPreferredSize(new Dimension(0, 0));
+            scrollPane.setPreferredSize(new Dimension(scrollPane.getPreferredSize().width, 35));
+            scrollPane.getHorizontalScrollBar().setUnitIncrement(16);
             
             //Configura o layout manager do openFilesPanel para inserção no painel central
             GridBagConstraints gbc_openFilesPanel = new GridBagConstraints();
