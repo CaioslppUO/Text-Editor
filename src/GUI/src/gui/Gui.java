@@ -68,6 +68,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
 	private Color sideAreasColor;
 	private Color MenuForeGroundColor;
 	private Color editorPaneFontColor;
+        private Color buttonCloseEnteredColor;
 	
 	//Fonte
 	private Integer fontSize;
@@ -99,6 +100,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
 		this.MenuBarColor = new Color(28, 28, 28);
 		this.MenuForeGroundColor = new Color(137, 163, 201);
 		this.editorPaneFontColor = new Color(191, 191, 191);
+                this.buttonCloseEnteredColor = new Color(173, 36, 36);
 		
 		//Fonte padrão
 		this.fontSize = 12;
@@ -210,11 +212,13 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
             newFilePanel.add(fName);
 
             JButton closeButton = new JButton("x");
+            closeButton.setName("closeButton");
             closeButton.setBorder(new RoundedBorder(5));
             closeButton.setFont(new Font(Font.MONOSPACED, Font.BOLD, 10));
             closeButton.setActionCommand("buttonCloseFilePressed");
             closeButton.addActionListener(this);
             closeButton.setBackground(null);
+            closeButton.addMouseListener(this);
             
             newFilePanel.add(fName);
             newFilePanel.add(closeButton);
@@ -766,7 +770,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
 
     @Override
     public void mouseClicked(MouseEvent me) {
-        this.openFile(me.getComponent().getName());
+        if(!"closeButton".equals(me.getComponent().getName())) this.openFile(me.getComponent().getName());
     }
 
     @Override
@@ -781,11 +785,19 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
 
     @Override
     public void mouseEntered(MouseEvent me) {
-
+        if("closeButton".equals(me.getComponent().getName())){
+            ((JButton) me.getComponent()).setBackground(this.buttonCloseEnteredColor);
+            ((JButton) me.getComponent()).setForeground(this.editorPaneFontColor);
+            SwingUtilities.updateComponentTreeUI(this.openFilesPanel);
+        }
     }
 
     @Override
     public void mouseExited(MouseEvent me) {
-
+        if("closeButton".equals(me.getComponent().getName())){
+            ((JButton) me.getComponent()).setBackground(null);
+            ((JButton) me.getComponent()).setForeground(null);
+            SwingUtilities.updateComponentTreeUI(this.openFilesPanel);
+        }
     }
 }
