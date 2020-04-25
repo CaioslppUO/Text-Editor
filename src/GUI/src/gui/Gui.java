@@ -1,6 +1,5 @@
 package gui;
 
-import gui.extragui.TextLineNumber;
 import gui.extragui.RoundedBorder;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -28,7 +27,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
-import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -43,10 +41,11 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.SoftBevelBorder;
-import javax.swing.text.PlainDocument;
 
 import gui.extragui.RoundedPanel;
 import gui.maingui.Constants;
+import gui.maingui.secondarypanels.editorpanel.EditorPane;
+import gui.maingui.secondarypanels.editorpanel.EditorPaneConfig;
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -65,24 +64,27 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
     //Constants
     private Constants constants;
 
-    //Fonte
-    private JSpinner fontSizeSpinner;
-    private JComboBox<String> fontTypeList;
-
     //Painéis secundários
-    private JEditorPane editorPane;
-    private JDialog editorConfigFrame;
-    private JDialog saveFileFrame;
-    private JDialog openFileFrame;
-    private JDialog createNewFileFrame;
-    private JDialog openFolderFrame;
-    private JFileChooser chooseSaveDirectory;
-    private JFileChooser chooseNewFileDirectory;
-    private JFileChooser chooseOpenFile;
-    private JFileChooser chooseOpenDirectory;
     private JPanel openFilesPanel;
     private RoundedPanel newFilePanel;
-
+    
+    private JDialog saveFileFrame;
+    private JFileChooser chooseSaveDirectory;
+    
+    private JDialog openFileFrame;
+    private JFileChooser chooseOpenFile;
+    
+    private JDialog createNewFileFrame;
+    private JFileChooser chooseNewFileDirectory;
+    
+    private JDialog openFolderFrame;
+    private JFileChooser chooseOpenDirectory;
+    
+    //
+    
+    private EditorPane editorPane;
+    private EditorPaneConfig editorPaneConfig;
+    
     //Construtor da classe
     public Gui() {
         //Constants
@@ -161,13 +163,13 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
     //Função que decide se o editor de texto vai estar habilitado ou não baseado se existe ou não um arquivo aberto
     public void decideEditorEnabled(Boolean isFileAlreadyOpen) {
         if (this.constants.getCurrentFile() != null) {
-            this.editorPane.setEnabled(true);
+            this.editorPane.getEditorPane().setEnabled(true);
             if (!isFileAlreadyOpen) {
                 createNewFileOpenPanel(this.constants.getCurrentFile().getName(), this.constants.getCurrentFile().getAbsolutePath());
             }
         } else {
-            this.editorPane.setEnabled(false);
-            this.editorPane.setText("");
+            this.editorPane.getEditorPane().setEnabled(false);
+            this.editorPane.getEditorPane().setText("");
         }
     }
 
@@ -244,33 +246,12 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
 
         this.panelCentral.add(scrollPane, gbc_openFilesPanel);
     }
-
-    //Definições do painel do editor
-    public void defineEditorPane() {
-        this.editorPane = new JEditorPane();
-        this.editorPane.setForeground(this.constants.getEditorPaneFontColor());
-        this.editorPane.setBackground(this.constants.getPaneEditorColor());
-
-        GridBagConstraints gbc_editorPane = new GridBagConstraints();
-        gbc_editorPane.gridx = 0;
-        gbc_editorPane.gridy = 1;
-        gbc_editorPane.fill = GridBagConstraints.BOTH;
-
-        this.editorPane.setCaretColor(Color.WHITE);
-        this.editorPane.setFont(new Font(this.constants.getFontType(), Font.PLAIN, this.constants.getFontSize()));
-
-        //Mudando a quantidade de espaçõs da tecla TAB
-        javax.swing.text.Document doc = this.editorPane.getDocument();
-        doc.putProperty(PlainDocument.tabSizeAttribute, 2);
-
-        //Incluindo o contador de linhas
-        //Comentar as pŕoximas 4 linhas para utilizar o Design do eclipse
-        JScrollPane scrollPane = new JScrollPane(this.editorPane);
-        TextLineNumber tln = new TextLineNumber(this.editorPane);
-        scrollPane.setRowHeaderView(tln);
-        this.panelCentral.add(scrollPane, gbc_editorPane);
-        this.editorPane.addKeyListener(this);
+    
+    private void includeEditorPane(){
+        this.editorPane = new EditorPane();
+        this.editorPane.getEditorPane().addKeyListener(this);
         this.decideEditorEnabled(false);
+        this.panelCentral.add(this.editorPane.getScrollPane(), this.editorPane.getGbc());
     }
 
     //Cria e retorna um sub item de menu
@@ -352,59 +333,10 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
         this.frame.setJMenuBar(menuBar);
     }
 
-    //Launcher da tela de configuração do editor
-    private void launchEditorConfigFrame() {
-        this.editorConfigFrame = new JDialog();
-        this.editorConfigFrame.getContentPane().setBackground(this.constants.getSideAreasColor());
-        this.editorConfigFrame.setSize(300, 300);
-        this.editorConfigFrame.setLocationRelativeTo(null);
-        this.editorConfigFrame.setTitle("Editor Settings");
-        this.editorConfigFrame.getContentPane().setLayout(null);
-        this.editorConfigFrame.addKeyListener(this);
-
-        //Botão para salvar as configurações escolhidas
-        JButton buttonOk = new JButton("OK");
-        buttonOk.setActionCommand("FontSizeChanged");
-        buttonOk.addActionListener(this);
-        buttonOk.setSize(55, 30);
-        buttonOk.setLocation(125, 230);
-        this.editorConfigFrame.getContentPane().add(buttonOk);
-
-        JLabel labelFontSize;
-        labelFontSize = new JLabel();
-        labelFontSize.setText("Font Size");
-        labelFontSize.setSize(75, 20);
-        labelFontSize.setLocation(10, 5);
-        labelFontSize.setForeground(this.constants.getMenuForeGroundColor());
-        this.editorConfigFrame.getContentPane().add(labelFontSize);
-
-        //Spinner para escolher o tamanho da fonte
-        this.fontSizeSpinner = new JSpinner();
-        this.fontSizeSpinner.setValue(this.constants.getFontSize());
-        this.fontSizeSpinner.setSize(35, 20);
-        this.fontSizeSpinner.setLocation(100, 7);
-        this.editorConfigFrame.getContentPane().add(this.fontSizeSpinner);
-
-        JLabel labelFontType;
-        labelFontType = new JLabel();
-        labelFontType.setText("Font Type");
-        labelFontType.setSize(75, 20);
-        labelFontType.setLocation(10, 40);
-        labelFontType.setForeground(this.constants.getMenuForeGroundColor());
-        this.editorConfigFrame.getContentPane().add(labelFontType);
-
-        //ComboBox para escolher o tipo da fonte
-        @SuppressWarnings("deprecation")
-        String fontTypes[] = Toolkit.getDefaultToolkit().getFontList();
-
-        this.fontTypeList = new JComboBox(fontTypes);
-        this.fontTypeList.setSelectedItem(this.constants.getFontType());
-        this.fontTypeList.setSize(120, 20);
-        this.fontTypeList.setLocation(100, 42);
-        this.editorConfigFrame.getContentPane().add(this.fontTypeList);
-
-        this.editorConfigFrame.setVisible(true);
-        this.editorConfigFrame.setFocusable(true);
+    private void includeEditorPaneConfig(){
+        this.editorPaneConfig = new EditorPaneConfig();
+        this.editorPaneConfig.getOkButton().addActionListener(this);
+        this.editorPaneConfig.getEditorConfigFrame().addKeyListener(this);
     }
 
     //Função que salva o arquivo que está aberto na variável this.currentFile
@@ -416,7 +348,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
         if (this.constants.getCurrentFile() != null) {
             try {
                 PrintWriter print_line = new PrintWriter(new FileWriter(this.constants.getCurrentFile().toString()));
-                print_line.printf("%s", this.editorPane.getText());
+                print_line.printf("%s", this.editorPane.getEditorPane().getText());
                 print_line.close();
                 if (showSaveMessage) {
                     JOptionPane.showMessageDialog(null, "File Saved");
@@ -524,7 +456,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
                         contentToLoad += aux;
                         contentToLoad += "\n";
                     }
-                    this.editorPane.setText(contentToLoad);
+                    this.editorPane.getEditorPane().setText(contentToLoad);
                     this.constants.setCurrentFile(file);
                     if (this.constants.getAddedFilesPanel().get(this.constants.getCurrentFile().getAbsolutePath()) != null) {
                         this.decideEditorEnabled(true);
@@ -559,7 +491,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
                     contentToLoad += "\n";
                 }
                 this.saveFile(false);
-                this.editorPane.setText(contentToLoad);
+                this.editorPane.getEditorPane().setText(contentToLoad);
                 this.constants.setCurrentFile(file);
                 if (this.constants.getAddedFilesPanel().get(this.constants.getCurrentFile().getAbsolutePath()) != null) {
                     this.decideEditorEnabled(true);
@@ -581,10 +513,10 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
     //Pŕe-condição: Nenhuma
     //Pós-condição: A fonte é atualizada para as opções definidas no menu
     private void updateFont() {
-        this.editorConfigFrame.dispose();
-        this.constants.setFontSize(Integer.parseInt(this.fontSizeSpinner.getValue().toString()));
-        this.constants.setFontType(this.fontTypeList.getSelectedItem().toString());
-        this.editorPane.setFont(new Font(this.constants.getFontType(), Font.PLAIN, this.constants.getFontSize()));
+        this.editorPaneConfig.getEditorConfigFrame().dispose();
+        this.constants.setFontSize(Integer.parseInt(this.editorPaneConfig.getFontSizeSpinner().getValue().toString()));
+        this.constants.setFontType(this.editorPaneConfig.getFontTypeList().getSelectedItem().toString());
+        this.editorPane.getEditorPane().setFont(new Font(this.constants.getFontType(), Font.PLAIN, this.constants.getFontSize()));
     }
 
     //Função que define o frame de criar um novo arquivo
@@ -624,7 +556,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
                         if (newFile.createNewFile()) {
                             JOptionPane.showMessageDialog(null, "File Created");
                             this.constants.setCurrentFile(newFile);
-                            this.editorPane.setText("");
+                            this.editorPane.getEditorPane().setText("");
                             this.decideEditorEnabled(false);
                         } else {
                             JOptionPane.showMessageDialog(null, "File Already Exists");
@@ -766,7 +698,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
                     JOptionPane.showMessageDialog(null, "Button Themes Pressed");
                     break;
                 case "buttonEditorPressed":
-                    this.launchEditorConfigFrame();
+                    this.includeEditorPaneConfig();
                     break;
                 case "buttonNewFilePressed":
                     this.createNewFile();
@@ -814,7 +746,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
 
         //Definições dos elementos secundários de cada espaço na tela
         this.defineOpenFilesPanel();
-        this.defineEditorPane();
+        this.includeEditorPane();
         this.defineMenuBar();
 
         //Definições finais do Main Frame
@@ -833,17 +765,17 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
     @Override
     public void keyReleased(KeyEvent e) {
         //Salva o arquivo aberto ao apertar ctrl+s
-        if (this.editorPane != null && e.isShiftDown() == false && e.isControlDown() && e.getKeyChar() != 's' && e.getKeyCode() == 83) {
+        if (this.editorPane.getEditorPane() != null && e.isShiftDown() == false && e.isControlDown() && e.getKeyChar() != 's' && e.getKeyCode() == 83) {
             this.saveFile(true);
         }
 
         //Salva como o arquivo ao apertar ctrl+shift+s
-        if (this.editorPane != null && e.isShiftDown() && e.isControlDown() && e.getKeyChar() != 's' && e.getKeyCode() == 83) {
+        if (this.editorPane.getEditorPane() != null && e.isShiftDown() && e.isControlDown() && e.getKeyChar() != 's' && e.getKeyCode() == 83) {
             this.saveFileAs();
         }
 
         //Resposta do botão OK da tela de configuração do editor
-        if (this.editorConfigFrame != null && this.editorConfigFrame.isActive() && e.getKeyCode() == 27) {
+        if (this.editorPaneConfig != null && this.editorPaneConfig.getEditorConfigFrame().isActive() && e.getKeyCode() == 27) {
             this.updateFont();
         }
 
@@ -858,7 +790,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
         }
 
         //Executa um programa em python ou em c
-        if (this.editorPane != null && e.isControlDown() && e.getKeyChar() != 'r' && e.getKeyCode() == 82) {
+        if (this.editorPane.getEditorPane() != null && e.isControlDown() && e.getKeyChar() != 'r' && e.getKeyCode() == 82) {
             this.runSelectedFile();
         }
     }
