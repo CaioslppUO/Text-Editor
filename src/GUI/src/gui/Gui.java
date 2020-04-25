@@ -3,10 +3,13 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.ComponentOrientation;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
 import java.awt.SystemColor;
 import java.awt.Toolkit;
@@ -26,6 +29,7 @@ import java.io.PrintWriter;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -41,7 +45,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
+import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
+import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER;
+import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.SoftBevelBorder;
@@ -63,6 +70,7 @@ public class Gui implements ActionListener, KeyListener{
 	private Color sideAreasColor;
 	private Color MenuForeGroundColor;
 	private Color editorPaneFontColor;
+        private Color newToolBarFileColor;
 	
 	//Fonte
 	private Integer fontSize;
@@ -77,6 +85,9 @@ public class Gui implements ActionListener, KeyListener{
 	private JDialog openFileFrame;
 	private JDialog createNewFileFrame;
 	private JFileChooser chooseSaveDirectory;
+        private JPanel fileToolBarWrapPanel;
+        private JToolBar fileToolBar;
+        private JPanel fileToolBarPanel;
 	
 	//Variáveis "globais"
 	private File currentFile;
@@ -89,6 +100,7 @@ public class Gui implements ActionListener, KeyListener{
 		this.MenuBarColor = new Color(28, 28, 28);
 		this.MenuForeGroundColor = new Color(137, 163, 201);
 		this.editorPaneFontColor = new Color(191, 191, 191);
+                this.newToolBarFileColor = new Color(125, 125, 125);
 		
 		//Fonte padrão
 		this.fontSize = 12;
@@ -111,20 +123,21 @@ public class Gui implements ActionListener, KeyListener{
 		this.frame = new JFrame("Text Editor");
 		this.frame.getContentPane().setBackground(this.sideAreasColor);
 		this.frame.getContentPane().setLayout(new BorderLayout(0, 0));
+                this.frame.setFocusable(true);
+                this.frame.addKeyListener(this);
 	}
 	
 	//Definições do painel central
 	public void definePanelCentral() {
 		this.panelCentral = new JPanel();
 		this.panelCentral.setBackground(this.PaneEditorColor);
-		this.frame.getContentPane().add(this.panelCentral, BorderLayout.CENTER);
-		
+                this.frame.getContentPane().add(this.panelCentral, BorderLayout.CENTER);
+                
 		GridBagLayout gbl_panelCentral = new GridBagLayout();
 		gbl_panelCentral.columnWidths = new int[]{0, 0};
-		gbl_panelCentral.rowHeights = new int[]{0, 0};
+		gbl_panelCentral.rowHeights = new int[]{18, 0, 0};
 		gbl_panelCentral.columnWeights = new double[]{1.0, Double.MIN_VALUE};
-		gbl_panelCentral.rowWeights = new double[]{1.0, Double.MIN_VALUE};
-		
+		gbl_panelCentral.rowWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
 		this.panelCentral.setLayout(gbl_panelCentral);
 	}
 	
@@ -166,25 +179,96 @@ public class Gui implements ActionListener, KeyListener{
 		this.frame.getContentPane().add(this.panelRight, BorderLayout.EAST);
 	}
 	
+        //Função que decide se o editor de texto vai estar habilitado ou não baseado se existe ou não um arquivo aberto
 	public void decideEditorEnabled() {
 		if(this.currentFile != null) {
 			this.editorPane.setEnabled(true);
+                        createNewFileOpenToolBar(this.currentFile.getName());
 		}else {
 			this.editorPane.setEnabled(false);
 		}
 	}
+        
+        private void createNewFileOpenToolBar(String fileName){
+            JPanel newFilePanel = new JPanel();
+            newFilePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
+            newFilePanel.setBackground(this.newToolBarFileColor);
+            newFilePanel.setLayout(new BoxLayout(newFilePanel, BoxLayout.LINE_AXIS));
+            
+            JLabel fn = new JLabel("( " + fileName + " | ");
+            fn.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
+            JButton close = new JButton("X");
+            close.setBorderPainted(false);
+            close.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+            close.setBackground(null);
+            close.setActionCommand("buttonCloseFilePressed");
+            JLabel fnEnd = new JLabel(" )");
+            fnEnd.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
+            
+            newFilePanel.add(fn);
+            newFilePanel.add(close);
+            newFilePanel.add(fnEnd);
+            
+            Component separator = Box.createHorizontalStrut(50);
+            
+            this.fileToolBarPanel.add(newFilePanel);
+            this.fileToolBarPanel.add(separator);
+            SwingUtilities.updateComponentTreeUI(frame);
+        }
+        
+        //Definições da tool bar de arquivos abertos
+        private void defineFilesToolBar(){
+            //Configurando o painel externo da toolbar
+            this.fileToolBarWrapPanel = new JPanel();
+            this.fileToolBarWrapPanel.setBackground(this.sideAreasColor);
+            
+            GridBagLayout gbl_fielToolBarWrapPanel = new GridBagLayout();
+            gbl_fielToolBarWrapPanel.rowWeights = new double[]{1.0};
+            gbl_fielToolBarWrapPanel.columnWeights = new double[]{1.0};
+            this.fileToolBarWrapPanel.setLayout(gbl_fielToolBarWrapPanel);
+            
+            //Configurando a toolBar
+            this.fileToolBar = new JToolBar("File Tool Bar");
+            this.fileToolBar.setFloatable(false);
+            this.fileToolBar.setBackground(this.sideAreasColor);
+            this.fileToolBar.setBorder(null);
+            
+            GridBagConstraints gbc_fileToolBar = new GridBagConstraints();
+            gbc_fileToolBar.fill = GridBagConstraints.VERTICAL;
+            gbc_fileToolBar.anchor = GridBagConstraints.WEST;
+            this.fileToolBarWrapPanel.add(this.fileToolBar, gbc_fileToolBar);
+            
+            //Configura o layout da toolbar
+            GridBagConstraints gbc_toolBar = new GridBagConstraints();
+            gbc_toolBar.fill = GridBagConstraints.BOTH;
+            gbc_toolBar.insets = new Insets(0, 0, 0, 0);
+            gbc_toolBar.gridx = 0;
+            gbc_toolBar.gridy = 0;
+            
+            panelCentral.add(this.fileToolBarWrapPanel, gbc_toolBar);
+            
+            //Configura o painel interno da toolbar
+            this.fileToolBarPanel = new JPanel();
+            this.fileToolBarPanel.setBackground(this.sideAreasColor);
+            this.fileToolBarPanel.setLayout(new BoxLayout(this.fileToolBarPanel, BoxLayout.LINE_AXIS));
+            
+            JScrollPane scrollPane = new JScrollPane(this.fileToolBarPanel);
+            scrollPane.setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_NEVER);
+            
+            this.fileToolBar.add(scrollPane);
+        }
 	
 	//Definições do painel do editor
 	public void defineEditorPane() {
 		this.editorPane = new JEditorPane();
 		this.editorPane.setForeground(this.editorPaneFontColor);
 		this.editorPane.setBackground(this.PaneEditorColor);
-		
-		GridBagConstraints gbc_editorPane_1 = new GridBagConstraints();
-		gbc_editorPane_1.fill = GridBagConstraints.BOTH;
-		gbc_editorPane_1.gridx = 0;
-		gbc_editorPane_1.gridy = 0;
-		
+                
+		GridBagConstraints gbc_editorPane = new GridBagConstraints();
+		gbc_editorPane.gridx = 0;
+		gbc_editorPane.gridy = 1;
+		gbc_editorPane.fill = GridBagConstraints.BOTH;
+                
 		this.editorPane.setCaretColor(Color.WHITE);
 		this.editorPane.setFont(new Font(this.fontType, Font.PLAIN, this.fontSize));
 		
@@ -193,11 +277,11 @@ public class Gui implements ActionListener, KeyListener{
 		doc.putProperty(PlainDocument.tabSizeAttribute, 2);
 		
 		//Incluindo o contador de linhas
-		//Comentar as pŕoximas 10 linhas para utilizar o Design do eclipse
+		//Comentar as pŕoximas 4 linhas para utilizar o Design do eclipse
 		JScrollPane scrollPane = new JScrollPane(this.editorPane);
 		TextLineNumber tln = new TextLineNumber(this.editorPane);
 		scrollPane.setRowHeaderView( tln );
-		this.panelCentral.add(scrollPane, gbc_editorPane_1);
+		this.panelCentral.add(scrollPane, gbc_editorPane);
 		this.editorPane.addKeyListener(this);
 		this.decideEditorEnabled();
 	}
@@ -286,7 +370,7 @@ public class Gui implements ActionListener, KeyListener{
 		this.editorConfigFrame.setSize(300, 300);
 		this.editorConfigFrame.setLocationRelativeTo(null);
 		this.editorConfigFrame.setTitle("Editor Settings");
-		this.editorConfigFrame.setLayout(null);
+		this.editorConfigFrame.getContentPane().setLayout(null);
 		this.editorConfigFrame.addKeyListener(this);
 		
 		//Botão para salvar as configurações escolhidas
@@ -295,7 +379,7 @@ public class Gui implements ActionListener, KeyListener{
 		buttonOk.addActionListener(this);
 		buttonOk.setSize(55, 30);
 		buttonOk.setLocation(125, 230);
-		this.editorConfigFrame.add(buttonOk);
+		this.editorConfigFrame.getContentPane().add(buttonOk);
 		
 		JLabel labelFontSize;
 		labelFontSize = new JLabel();
@@ -303,14 +387,14 @@ public class Gui implements ActionListener, KeyListener{
 		labelFontSize.setSize(75, 20);
 		labelFontSize.setLocation(10, 5);
 		labelFontSize.setForeground(this.MenuForeGroundColor);
-		this.editorConfigFrame.add(labelFontSize);
+		this.editorConfigFrame.getContentPane().add(labelFontSize);
 		
 		//Spinner para escolher o tamanho da fonte
 		this.fontSizeSpinner = new JSpinner();
 		this.fontSizeSpinner.setValue(this.fontSize);
 		this.fontSizeSpinner.setSize(35, 20);
 		this.fontSizeSpinner.setLocation(100, 7);
-		this.editorConfigFrame.add(this.fontSizeSpinner);
+		this.editorConfigFrame.getContentPane().add(this.fontSizeSpinner);
 		
 		JLabel labelFontType;
 		labelFontType = new JLabel();
@@ -318,7 +402,7 @@ public class Gui implements ActionListener, KeyListener{
 		labelFontType.setSize(75, 20);
 		labelFontType.setLocation(10, 40);
 		labelFontType.setForeground(this.MenuForeGroundColor);
-		this.editorConfigFrame.add(labelFontType);
+		this.editorConfigFrame.getContentPane().add(labelFontType);
 		
 		//ComboBox para escolher o tipo da fonte
 		@SuppressWarnings("deprecation")
@@ -328,7 +412,7 @@ public class Gui implements ActionListener, KeyListener{
 		this.fontTypeList.setSelectedItem(this.fontType);
 		this.fontTypeList.setSize(120, 20);
 		this.fontTypeList.setLocation(100, 42);
-		this.editorConfigFrame.add(this.fontTypeList);
+		this.editorConfigFrame.getContentPane().add(this.fontTypeList);
 		
 		this.editorConfigFrame.setVisible(true);
 		this.editorConfigFrame.setFocusable(true);
@@ -365,7 +449,7 @@ public class Gui implements ActionListener, KeyListener{
 		this.chooseSaveDirectory.setCurrentDirectory(new File("."));
 		this.chooseSaveDirectory.setDialogTitle("Save to");
 		this.chooseSaveDirectory.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		this.saveFileFrame.add(chooseSaveDirectory);
+		this.saveFileFrame.getContentPane().add(chooseSaveDirectory);
 		this.saveFileFrame.setVisible(true);
 		this.saveFileFrame.dispose();
 		return chooseSaveDirectory.showOpenDialog(null);
@@ -448,7 +532,7 @@ public class Gui implements ActionListener, KeyListener{
 				JOptionPane.showMessageDialog(null, "Error while trying to load file");
 			}
 		}
-		this.openFileFrame.add(chooseOpenFile);
+		this.openFileFrame.getContentPane().add(chooseOpenFile);
 		this.openFileFrame.setVisible(true);
 		this.openFileFrame.dispose();
 	}
@@ -496,7 +580,7 @@ public class Gui implements ActionListener, KeyListener{
 						if(newFile.createNewFile()) {
 							JOptionPane.showMessageDialog(null, "File Created");
 							this.currentFile = newFile;
-							this.editorPane.setEnabled(true);
+                                                        this.decideEditorEnabled();
 						}else {
 							JOptionPane.showMessageDialog(null, "File Already Exists");
 						}
@@ -507,7 +591,7 @@ public class Gui implements ActionListener, KeyListener{
 					JOptionPane.showMessageDialog(null, "Invalid File Name");
 				}
 			}
-			this.createNewFileFrame.add(chooseNewFileDirectory);
+			this.createNewFileFrame.getContentPane().add(chooseNewFileDirectory);
 			
 			this.createNewFileFrame.setVisible(true);
 			this.createNewFileFrame.dispose();
@@ -552,6 +636,7 @@ public class Gui implements ActionListener, KeyListener{
 		this.definePanelDown();
 		
 		//Definições dos elementos secundários de cada espaço na tela
+                this.defineFilesToolBar();
 		this.defineEditorPane();
 		this.defineMenuBar();
 		
@@ -570,17 +655,23 @@ public class Gui implements ActionListener, KeyListener{
 	@Override
 	public void keyReleased(KeyEvent e) {
 		//Salva o arquivo aberto ao apertar ctrl+s
-		if (e.isShiftDown() == false && e.isControlDown() && e.getKeyChar() != 's' && e.getKeyCode() == 83) {
+		if (this.editorPane != null && e.isShiftDown() == false && e.isControlDown() && e.getKeyChar() != 's' && e.getKeyCode() == 83) {
 			this.saveFile();
 		}	
 		
-		if (e.isShiftDown() && e.isControlDown() && e.getKeyChar() != 's' && e.getKeyCode() == 83) {
+                //Salva como o arquivo ao apertar ctrl+shift+s
+		if (this.editorPane != null && e.isShiftDown() && e.isControlDown() && e.getKeyChar() != 's' && e.getKeyCode() == 83) {
 			this.saveFileAs();
 		}
 		
+                //Resposta do botão OK da tela de configuração do editor
 		if(this.editorConfigFrame != null && this.editorConfigFrame.isActive() && e.getKeyCode() == 27) {
 			this.updateFont();
 		}
+                
+                if (e.isControlDown() && e.getKeyChar() != 'o' && e.getKeyCode() == 79) {
+                    this.openFile();
+		}	
 	}
 
 	@Override
