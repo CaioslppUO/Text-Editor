@@ -284,11 +284,12 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
 	//Retorno: Menu Item gerado
 	//Pŕe-condição: Nenhuma
 	//Pós-condição: O Menu Item é gerado e retornado
-	private JMenuItem createMenuItem(String name, String actionCommand) {
+	private JMenuItem createMenuItem(String name, String actionCommand, String toolTip) {
 		JMenuItem menuItem;
 		menuItem = new JMenuItem(name);
 		menuItem.setForeground(this.MenuForeGroundColor);
 		menuItem.setBackground(this.sideAreasColor);
+                menuItem.setToolTipText(toolTip);
 		menuItem.setActionCommand(actionCommand);
 		menuItem.addActionListener(this);
 		return menuItem;
@@ -324,8 +325,8 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
 			this.createMenu(
 			    "File", //Menu File
 				new JMenuItem[]{
-					this.createMenuItem("New File","buttonNewFilePressed"), //Sub botão new file
-					this.createMenuItem("Open File", "buttonOpenFilePressed") //Sub botão open file
+					this.createMenuItem("New File","buttonNewFilePressed","ctrl+n"), //Sub botão new file
+					this.createMenuItem("Open File", "buttonOpenFilePressed","ctrl+o") //Sub botão open file
 				}
 			)
 		);
@@ -335,8 +336,8 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
 			this.createMenu(
 				"Save", //Menu Save
 				new JMenuItem[] {
-					this.createMenuItem("Save as", "buttonSaveAsPressed"), //Sub botão Save as
-					this.createMenuItem("Save", "buttonSavePressed") //Sub botão Save
+					this.createMenuItem("Save as", "buttonSaveAsPressed","ctrl+shift+s"), //Sub botão Save as
+					this.createMenuItem("Save", "buttonSavePressed","ctrl+s") //Sub botão Save
 				}
 			)
 		);
@@ -346,8 +347,8 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
 			this.createMenu(
 				"Settings", //Menu Settings
 				new JMenuItem[] {
-					this.createMenuItem("Editor", "buttonEditorPressed"), //Sub botão Editor
-					this.createMenuItem("Themes", "buttonThemesPressed") //Sub botão Themes
+					this.createMenuItem("Editor", "buttonEditorPressed",""), //Sub botão Editor
+					this.createMenuItem("Themes", "buttonThemesPressed","") //Sub botão Themes
 				}
 			)
 		);
