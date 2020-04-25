@@ -48,12 +48,9 @@ import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.InputStreamReader;
-import java.util.HashMap;
+import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 
 public class Gui implements ActionListener, KeyListener, MouseListener{
 	
@@ -85,14 +82,17 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
 	private JDialog saveFileFrame;
 	private JDialog openFileFrame;
 	private JDialog createNewFileFrame;
+        private JDialog openFolderFrame;
 	private JFileChooser chooseSaveDirectory;
         private JFileChooser chooseNewFileDirectory;
         private JFileChooser chooseOpenFile;
+        private JFileChooser chooseOpenDirectory;
         private JPanel openFilesPanel;
         private RoundedPanel newFilePanel;
 	
 	//Variáveis "globais"
 	private File currentFile;
+        private String currentFolder;
         private Map<String, RoundedPanel> addedFilesPanel;
         private String lastClickedFilePath;
 
@@ -112,6 +112,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
 		
 		//Arquivo inicialmente aberto
 		this.currentFile = null;
+                this.currentFolder = ".";
                 this.addedFilesPanel = new LinkedHashMap<>();
                 lastClickedFilePath = null;
 		
@@ -345,7 +346,8 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
 			    "File", //Menu File
 				new JMenuItem[]{
 					this.createMenuItem("New File","buttonNewFilePressed","ctrl+n"), //Sub botão new file
-					this.createMenuItem("Open File", "buttonOpenFilePressed","ctrl+o"), //Sub botão open file
+					this.createMenuItem("Open File","buttonOpenFilePressed","ctrl+o"), //Sub botão open file
+                                        this.createMenuItem("Open Folder","buttonOpenFolderPressed","Open a folder"),
                                         this.createMenuItem("Run Current File","buttonRunPressed","ctlr+r. C or Python only. Output Only")
 				}
 			)
@@ -465,7 +467,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
 		this.saveFileFrame.setTitle("Save File As");
 		
 		this.chooseSaveDirectory = new JFileChooser();
-		this.chooseSaveDirectory.setCurrentDirectory(new File("."));
+		this.chooseSaveDirectory.setCurrentDirectory(new File(this.currentFolder));
 		this.chooseSaveDirectory.setDialogTitle("Save to");
 		this.chooseSaveDirectory.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		this.saveFileFrame.getContentPane().add(chooseSaveDirectory);
@@ -525,7 +527,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
             this.openFileFrame.setTitle("Save File");
             
             chooseOpenFile = new JFileChooser();
-            chooseOpenFile.setCurrentDirectory(new File("."));
+            chooseOpenFile.setCurrentDirectory(new File(this.currentFolder));
             chooseOpenFile.setDialogTitle("Save to");
             chooseOpenFile.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
             return chooseOpenFile.showOpenDialog(null);
@@ -617,7 +619,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
             this.createNewFileFrame.setTitle("Save File As");
             
             this.chooseNewFileDirectory = new JFileChooser();
-            this.chooseNewFileDirectory.setCurrentDirectory(new File("."));
+            this.chooseNewFileDirectory.setCurrentDirectory(new File(this.currentFolder));
             this.chooseNewFileDirectory.setDialogTitle("Save to");
             this.chooseNewFileDirectory.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             return chooseNewFileDirectory.showOpenDialog(null);
@@ -734,6 +736,39 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
                 }
             }
         }
+        
+        //Função que define o frame da janela de abrir pastas
+        //Entrada: Nenhuma
+        //Retorno: Nenhum
+        //Pré-condição: Nenhuma
+        //Pós-condição: A janela de escolha de pasta é criada e exposta
+        private int defineOpenFolderFrame(){
+            this.openFolderFrame = new JDialog();
+            this.openFolderFrame.getContentPane().setBackground(this.sideAreasColor);
+            this.openFolderFrame.setSize(600, 600);
+            this.openFolderFrame.setLocationRelativeTo(null);
+            this.openFolderFrame.setTitle("Open Folder");
+            
+            this.chooseOpenDirectory = new JFileChooser();
+            this.chooseOpenDirectory.setCurrentDirectory(new File(this.currentFolder));
+            this.chooseOpenDirectory.setDialogTitle("Open Folder");
+            this.chooseOpenDirectory.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            this.openFolderFrame.getContentPane().add(chooseOpenDirectory);
+            this.openFolderFrame.setVisible(true);
+            this.openFolderFrame.dispose();
+            return chooseOpenDirectory.showOpenDialog(null);
+        }
+        
+        //Função que abre uma pasta, a qual será o diretório padrão
+        //Entrada: Nenhuma
+        //Retorno: Nenhum
+        //Pré-condição: Nenhuma
+        //Pós-condição: A pasta é aberta e vira o diretório padrão
+        private void openFolder(){
+            if(this.defineOpenFolderFrame() == JFileChooser.APPROVE_OPTION){
+                this.currentFolder = this.chooseOpenDirectory.getSelectedFile().getAbsolutePath();
+            }
+        }
 
         //Responde aos botões pressionados na interface
 	@Override
@@ -765,6 +800,10 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
                     break;
                 case "buttonRunPressed":
                     this.runSelectedFile();
+                    break;
+                case "buttonOpenFolderPressed":
+                    this.openFolder();
+                    break;
                 default:
                     break;
             }
