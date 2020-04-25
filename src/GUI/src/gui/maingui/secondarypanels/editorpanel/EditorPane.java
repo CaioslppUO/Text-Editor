@@ -16,12 +16,12 @@ public class EditorPane {
     private TextLineNumber tln ;
     private GridBagConstraints gbc_editorPane ;
     
-    public EditorPane(){
+    public EditorPane(String fontType, Integer fontSize){
         constants = new Constants();
-        this.defineEditorPane();
+        this.defineEditorPane(fontType,fontSize);
     }
     
-    private void defineEditorPane(){
+    private void defineEditorPane(String fontType, Integer fontSize){
         this.editorPane = new JEditorPane();
         this.editorPane.setForeground(this.constants.getEditorPaneFontColor());
         this.editorPane.setBackground(this.constants.getPaneEditorColor());
@@ -32,7 +32,7 @@ public class EditorPane {
         this.gbc_editorPane.fill = GridBagConstraints.BOTH;
 
         this.editorPane.setCaretColor(Color.WHITE);
-        this.editorPane.setFont(new Font(this.constants.getFontType(), Font.PLAIN, this.constants.getFontSize()));
+        this.editorPane.setFont(new Font(fontType, Font.PLAIN, fontSize));
 
         //Mudando a quantidade de espaçõs da tecla TAB
         javax.swing.text.Document doc = this.editorPane.getDocument();

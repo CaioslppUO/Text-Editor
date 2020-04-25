@@ -17,12 +17,12 @@ public class EditorPaneConfig {
     private JLabel labelFontSize;
     private JLabel labelFontType;
     
-    public EditorPaneConfig(){
+    public EditorPaneConfig(String fontType, Integer fontSize){
         this.constants = new Constants();
-        this.defineEditorPaneConfig();
+        this.defineEditorPaneConfig(fontType,fontSize);
     }
     
-    private void defineEditorPaneConfig(){
+    private void defineEditorPaneConfig(String fontType, Integer fontSize){
         this.editorConfigFrame = new JDialog();
         this.editorConfigFrame.getContentPane().setBackground(this.constants.getSideAreasColor());
         this.editorConfigFrame.setSize(300, 300);
@@ -48,7 +48,7 @@ public class EditorPaneConfig {
 
         //Spinner para escolher o tamanho da fonte
         this.fontSizeSpinner = new JSpinner();
-        this.fontSizeSpinner.setValue(this.constants.getFontSize());
+        this.fontSizeSpinner.setValue(fontSize);
         this.fontSizeSpinner.setSize(35, 20);
         this.fontSizeSpinner.setLocation(100, 7);
         this.editorConfigFrame.getContentPane().add(this.fontSizeSpinner);
@@ -65,7 +65,7 @@ public class EditorPaneConfig {
         String fontTypes[] = Toolkit.getDefaultToolkit().getFontList();
 
         this.fontTypeList = new JComboBox(fontTypes);
-        this.fontTypeList.setSelectedItem(this.constants.getFontType());
+        this.fontTypeList.setSelectedItem(fontType);
         this.fontTypeList.setSize(120, 20);
         this.fontTypeList.setLocation(100, 42);
         this.editorConfigFrame.getContentPane().add(this.fontTypeList);
