@@ -80,6 +80,7 @@ public class Gui implements ActionListener, KeyListener{
 	private JDialog createNewFileFrame;
 	private JFileChooser chooseSaveDirectory;
         private JFileChooser chooseNewFileDirectory;
+        private JFileChooser chooseOpenFile;
         private JPanel openFilesPanel;
         private RoundedPanel newFilePanel;
 	
@@ -411,7 +412,12 @@ public class Gui implements ActionListener, KeyListener{
 			JOptionPane.showMessageDialog(null, "No Files Open");
 		}
 	}
-	
+
+        //Função que define o frame de salvar um arquivo
+        //Entrada: Nenhuma
+        //Retorno: FileChooser.APPROVE_OPTION se o diretório for escolhido ou o contrário caso não seja
+        //Pré-condição: Nenhuma
+        //Pós-condição: Nenhuma
 	private int defineSaveFileFrame() {
 		this.saveFileFrame = new JDialog();
 		this.saveFileFrame.getContentPane().setBackground(this.sideAreasColor);
@@ -466,49 +472,55 @@ public class Gui implements ActionListener, KeyListener{
 			JOptionPane.showMessageDialog(null, "No Files Open");
 		}
 	}
+        
+        //Função que define o frame de salvar um arquivo
+        //Entrada: Nenhuma
+        //Retorno: FileChooser.APPROVE_OPTION se o diretório for escolhido ou o contrário caso não seja
+        //Pré-condição: Nenhuma
+        //Pós-condição: Nenhuma
+        private int defineCreateOpenFileFrame(){
+            this.openFileFrame = new JDialog();
+            this.openFileFrame.getContentPane().setBackground(this.sideAreasColor);
+            this.openFileFrame.setSize(600, 600);
+            this.openFileFrame.setLocationRelativeTo(null);
+            this.openFileFrame.setTitle("Save File");
+            
+            chooseOpenFile = new JFileChooser();
+            chooseOpenFile.setCurrentDirectory(new File("."));
+            chooseOpenFile.setDialogTitle("Save to");
+            chooseOpenFile.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+            return chooseOpenFile.showOpenDialog(null);
+        }
 	
 	//Função que abre um menu para escolher um arquivo para abrir
 	//Entrada: Nenhuma
 	//Retorno: Nenhum
 	//Pŕe-condição: Nenhuma
 	//Pós-condição: O arquivo é aberto no editor
-	private void openFile() {			
-		this.openFileFrame = new JDialog();
-		this.openFileFrame.getContentPane().setBackground(this.sideAreasColor);
-		this.openFileFrame.setSize(600, 600);
-		this.openFileFrame.setLocationRelativeTo(null);
-		this.openFileFrame.setTitle("Save File");
-			
-		JFileChooser chooseOpenFile;
-		chooseOpenFile = new JFileChooser();
-		chooseOpenFile.setCurrentDirectory(new File("."));
-		chooseOpenFile.setDialogTitle("Save to");
-		chooseOpenFile.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-		int result = chooseOpenFile.showOpenDialog(null);
-		if(result == JFileChooser.APPROVE_OPTION) { //Abre o arquivo
-			File file = new File(chooseOpenFile.getSelectedFile().toString());
-			try {
-				BufferedReader br = new BufferedReader(new FileReader(file));
-				String contentToLoad="",aux;
-				try {
-					while((aux = br.readLine()) != null) {
-						contentToLoad+=aux;
-						contentToLoad+="\n";
-					}
-					this.editorPane.setText(contentToLoad);
-					this.currentFile = file;
-					this.decideEditorEnabled();
-				} catch (IOException e) {
-					//do Nothing
-				}
-				
-			} catch (FileNotFoundException e) {
-				JOptionPane.showMessageDialog(null, "Error while trying to load file");
-			}
-		}
-		this.openFileFrame.getContentPane().add(chooseOpenFile);
-		this.openFileFrame.setVisible(true);
-		this.openFileFrame.dispose();
+	private void openFile() {
+            if(defineCreateOpenFileFrame() == JFileChooser.APPROVE_OPTION) { //Abre o arquivo
+                File file = new File(chooseOpenFile.getSelectedFile().toString());
+                try {
+                    BufferedReader br = new BufferedReader(new FileReader(file));
+                    String contentToLoad="",aux;
+                    try {
+                        while((aux = br.readLine()) != null) {
+                            contentToLoad+=aux;
+                            contentToLoad+="\n";
+                        }
+                        this.editorPane.setText(contentToLoad);
+                        this.currentFile = file;
+                        this.decideEditorEnabled();
+                    } catch (IOException e) {
+                        //do Nothing
+                    }
+                } catch (FileNotFoundException e) {
+                    JOptionPane.showMessageDialog(null, "Error while trying to load file");
+                }
+            }
+            this.openFileFrame.getContentPane().add(chooseOpenFile);
+            this.openFileFrame.setVisible(true);
+            this.openFileFrame.dispose();
 	}
 	
 	//Função que atualiza a fonte utilizada no editor
@@ -523,7 +535,12 @@ public class Gui implements ActionListener, KeyListener{
 		this.editorPane.setFont(new Font(this.fontType, Font.PLAIN, this.fontSize));
 	}
         
-        private int createNewFile(){
+        //Função que define o frame de criar um novo arquivo
+        //Entrada: Nenhuma
+        //Retorno: FileChooser.APPROVE_OPTION se o diretório for escolhido ou o contrário caso não seja
+        //Pré-condição: Nenhuma
+        //Pós-condição: Nenhuma
+        private int defineCreateFileFrame(){
             this.createNewFileFrame = new JDialog();
             this.createNewFileFrame.getContentPane().setBackground(this.sideAreasColor);
             this.createNewFileFrame.setSize(600, 600);
@@ -542,10 +559,10 @@ public class Gui implements ActionListener, KeyListener{
 	//Retorno: Nenhum
 	//Pŕe-condição: Nenhuma
 	//Pós-condição: O arquivo é criado e salvo no disco
-	private void defineCreateFileFrame() {
+	private void createNewFile() {
 		if(this.currentFile == null) {
 			String fileSeparator = System.getProperty("file.separator");
-			if(createNewFile() == JFileChooser.APPROVE_OPTION) { //Salvar o arquivo
+			if(defineCreateFileFrame() == JFileChooser.APPROVE_OPTION) { //Salvar o arquivo
 				File directory = this.chooseNewFileDirectory.getSelectedFile();
 				String fileName;
 				fileName = JOptionPane.showInputDialog("File Name");
@@ -572,27 +589,37 @@ public class Gui implements ActionListener, KeyListener{
 			this.createNewFileFrame.dispose();
 		}else {
 			this.currentFile = null;
-			this.defineCreateFileFrame();
+			this.createNewFile();
 		}
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if("buttonThemesPressed".equals(e.getActionCommand())) {
-			JOptionPane.showMessageDialog(null, "Button Themes Pressed");
-		}else if("buttonEditorPressed".equals(e.getActionCommand())) {
-			this.launchEditorConfigFrame();
-		}else if("buttonNewFilePressed".equals(e.getActionCommand())) {
-			this.defineCreateFileFrame();
-		}else if("FontSizeChanged".equals(e.getActionCommand())) {
-			this.updateFont();
-		}else if("buttonSaveAsPressed".equals(e.getActionCommand())) {
-			this.saveFileAs();
-		}else if("buttonOpenFilePressed".equals(e.getActionCommand())) {
-			this.openFile();
-		}else if("buttonSavePressed".equals(e.getActionCommand())) {
-			this.saveFile();
-		}
+		if(null != e.getActionCommand()) switch (e.getActionCommand()) {
+                case "buttonThemesPressed":
+                    JOptionPane.showMessageDialog(null, "Button Themes Pressed");
+                    break;
+                case "buttonEditorPressed":
+                    this.launchEditorConfigFrame();
+                    break;
+                case "buttonNewFilePressed":
+                    this.createNewFile();
+                    break;
+                case "FontSizeChanged":
+                    this.updateFont();
+                    break;
+                case "buttonSaveAsPressed":
+                    this.saveFileAs();
+                    break;
+                case "buttonOpenFilePressed":
+                    this.openFile();
+                    break;
+                case "buttonSavePressed":
+                    this.saveFile();
+                    break;
+                default:
+                    break;
+            }
 	}
 	
 	//Função que inicializa todos os componentes visuais da interface
