@@ -593,6 +593,7 @@ public class Gui implements ActionListener, KeyListener{
 		}
 	}
 
+        //Verifica teclas apertadas na interface
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(null != e.getActionCommand()) switch (e.getActionCommand()) {
