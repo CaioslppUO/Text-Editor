@@ -50,6 +50,8 @@ import java.awt.event.MouseListener;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class Gui implements ActionListener, KeyListener, MouseListener{
@@ -342,7 +344,8 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
 			    "File", //Menu File
 				new JMenuItem[]{
 					this.createMenuItem("New File","buttonNewFilePressed","ctrl+n"), //Sub botão new file
-					this.createMenuItem("Open File", "buttonOpenFilePressed","ctrl+o") //Sub botão open file
+					this.createMenuItem("Open File", "buttonOpenFilePressed","ctrl+o"), //Sub botão open file
+                                        this.createMenuItem("Run Current File","buttonRunPressed","ctlr+r")
 				}
 			)
 		);
@@ -659,6 +662,32 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
 		}
 	}
         
+        //Função que roda o arquivo atualmente aberto. Somente em Python3 ou em C
+        //Entrada: Nenhuma
+        //Retorno: Nenhum
+        /*Pré-condição: O arquivo deve ter a extensão .py ou .c. O arquivo deve ser um código fonte escrito em c ou em python3.
+         * O sistema Operacional deve ser Linux.
+        */
+        //Pós-condição: O programa é rodado no bash
+        private void runSelectedFile(){
+            Process process;
+            if(this.currentFile.getName().split("[.]")[1].equals("py")){
+                try {
+                    process = Runtime.getRuntime().exec("python3 " + this.currentFile.getAbsolutePath());
+                    process.getOutputStream();
+                    process.getOutputStream();
+                    process.getOutputStream();
+                } catch (IOException ex) {}
+            }else if(this.currentFile.getName().split("[.]")[1].equals("c")){
+                try {
+                    process = Runtime.getRuntime().exec("gcc " + this.currentFile.getAbsolutePath() + " -o " + this.currentFile.getName().split("[.]")[0] + " && ./" + this.currentFile.getName().split("[.]")[0]);
+                    process.getOutputStream();
+                    process.getOutputStream();
+                    process.getOutputStream();
+                } catch (Exception e) {}
+            }
+        }
+        
         //Função que fecha o arquivo que está aberto
         //Entrada: Nenhuma
         //Retorno: Nenhum
@@ -677,6 +706,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
                 } catch (Exception e) {
                     if(result == 0) this.saveFile(false);
                     this.currentFile = null;
+                    this.lastClickedFilePath = null;
                     this.decideEditorEnabled(false);
                 }
             }
@@ -710,6 +740,8 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
                 case  "buttonCloseFilePressed":
                     this.closeFile();
                     break;
+                case "buttonRunPressed":
+                    this.runSelectedFile();
                 default:
                     break;
             }
@@ -769,9 +801,14 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
                     this.openFile();
 		}
 
-                //ACria um novo arquivo ao apertar ctr+n
+                //Cria um novo arquivo ao apertar ctr+n
                 if (e.isControlDown() && e.getKeyChar() != 'n' && e.getKeyCode() == 78) {
                     this.createNewFile();
+		}
+                
+                //Executa um programa em python ou em c
+                if (this.editorPane != null && e.isControlDown() && e.getKeyChar() != 'r' && e.getKeyCode() == 82) {
+                    this.runSelectedFile();
 		}	
 	}
 
