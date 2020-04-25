@@ -3,21 +3,15 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.ComponentOrientation;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.KeyboardFocusManager;
-import java.awt.SystemColor;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -26,7 +20,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -37,7 +30,6 @@ import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -45,14 +37,16 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
-import javax.swing.JToolBar;
-import javax.swing.KeyStroke;
-import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.text.PlainDocument;
+
+import gui.RoundedPanel;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+
 
 public class Gui implements ActionListener, KeyListener{
 	
@@ -70,7 +64,6 @@ public class Gui implements ActionListener, KeyListener{
 	private Color sideAreasColor;
 	private Color MenuForeGroundColor;
 	private Color editorPaneFontColor;
-        private Color newToolBarFileColor;
 	
 	//Fonte
 	private Integer fontSize;
@@ -85,9 +78,8 @@ public class Gui implements ActionListener, KeyListener{
 	private JDialog openFileFrame;
 	private JDialog createNewFileFrame;
 	private JFileChooser chooseSaveDirectory;
-        private JPanel fileToolBarWrapPanel;
-        private JToolBar fileToolBar;
-        private JPanel fileToolBarPanel;
+        private JPanel openFilesPanel;
+        private RoundedPanel newFilePanel;
 	
 	//Variáveis "globais"
 	private File currentFile;
@@ -100,7 +92,6 @@ public class Gui implements ActionListener, KeyListener{
 		this.MenuBarColor = new Color(28, 28, 28);
 		this.MenuForeGroundColor = new Color(137, 163, 201);
 		this.editorPaneFontColor = new Color(191, 191, 191);
-                this.newToolBarFileColor = new Color(125, 125, 125);
 		
 		//Fonte padrão
 		this.fontSize = 12;
@@ -190,72 +181,49 @@ public class Gui implements ActionListener, KeyListener{
 	}
         
         private void createNewFileOpenToolBar(String fileName){
-            JPanel newFilePanel = new JPanel();
+            newFilePanel = new RoundedPanel();
+            newFilePanel.setBackground(this.sideAreasColor);
             newFilePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
-            newFilePanel.setBackground(this.newToolBarFileColor);
             newFilePanel.setLayout(new BoxLayout(newFilePanel, BoxLayout.LINE_AXIS));
             
-            JLabel fn = new JLabel("( " + fileName + " | ");
-            fn.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
-            JButton close = new JButton("X");
-            close.setBorderPainted(false);
-            close.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
-            close.setBackground(null);
-            close.setActionCommand("buttonCloseFilePressed");
-            JLabel fnEnd = new JLabel(" )");
-            fnEnd.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 10));
+            JLabel fName = new JLabel(fileName+"  ");
+            fName.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
+            fName.setForeground(this.MenuForeGroundColor);
+            newFilePanel.add(fName);
+
+            JButton closeButton = new JButton("x");
+            closeButton.setBorder(new RoundedBorder(5));
+            //closeButton.setBorderPainted(false);
+            closeButton.setFont(new Font(Font.MONOSPACED, Font.BOLD, 10));
+            closeButton.setActionCommand("buttonCloseFilePressed");
+            closeButton.setBackground(null);
             
-            newFilePanel.add(fn);
-            newFilePanel.add(close);
-            newFilePanel.add(fnEnd);
+            newFilePanel.add(fName);
+            newFilePanel.add(closeButton);
             
-            Component separator = Box.createHorizontalStrut(50);
+            Component separator = Box.createHorizontalStrut(2);
             
-            this.fileToolBarPanel.add(newFilePanel);
-            this.fileToolBarPanel.add(separator);
+            this.openFilesPanel.add(newFilePanel);
+            this.openFilesPanel.add(separator);
             SwingUtilities.updateComponentTreeUI(frame);
         }
         
         //Definições da tool bar de arquivos abertos
-        private void defineFilesToolBar(){
-            //Configurando o painel externo da toolbar
-            this.fileToolBarWrapPanel = new JPanel();
-            this.fileToolBarWrapPanel.setBackground(this.sideAreasColor);
+        private void defineOpenFilesPanel(){
+            //Configurando o painel que retém os arquivos que estão abertos no momento
+            this.openFilesPanel = new JPanel();
+            this.openFilesPanel.setBackground(this.sideAreasColor);
+            this.openFilesPanel.setLayout(new BoxLayout(this.openFilesPanel, BoxLayout.LINE_AXIS));
+            JScrollPane scrollPane = new JScrollPane(this.openFilesPanel);
             
-            GridBagLayout gbl_fielToolBarWrapPanel = new GridBagLayout();
-            gbl_fielToolBarWrapPanel.rowWeights = new double[]{1.0};
-            gbl_fielToolBarWrapPanel.columnWeights = new double[]{1.0};
-            this.fileToolBarWrapPanel.setLayout(gbl_fielToolBarWrapPanel);
+            //Configura o layout manager do openFilesPanel para inserção no painel central
+            GridBagConstraints gbc_openFilesPanel = new GridBagConstraints();
+            gbc_openFilesPanel.fill = GridBagConstraints.BOTH;
+            gbc_openFilesPanel.insets = new Insets(0, 0, 0, 0);
+            gbc_openFilesPanel.gridx = 0;
+            gbc_openFilesPanel.gridy = 0;
             
-            //Configurando a toolBar
-            this.fileToolBar = new JToolBar("File Tool Bar");
-            this.fileToolBar.setFloatable(false);
-            this.fileToolBar.setBackground(this.sideAreasColor);
-            this.fileToolBar.setBorder(null);
-            
-            GridBagConstraints gbc_fileToolBar = new GridBagConstraints();
-            gbc_fileToolBar.fill = GridBagConstraints.VERTICAL;
-            gbc_fileToolBar.anchor = GridBagConstraints.WEST;
-            this.fileToolBarWrapPanel.add(this.fileToolBar, gbc_fileToolBar);
-            
-            //Configura o layout da toolbar
-            GridBagConstraints gbc_toolBar = new GridBagConstraints();
-            gbc_toolBar.fill = GridBagConstraints.BOTH;
-            gbc_toolBar.insets = new Insets(0, 0, 0, 0);
-            gbc_toolBar.gridx = 0;
-            gbc_toolBar.gridy = 0;
-            
-            panelCentral.add(this.fileToolBarWrapPanel, gbc_toolBar);
-            
-            //Configura o painel interno da toolbar
-            this.fileToolBarPanel = new JPanel();
-            this.fileToolBarPanel.setBackground(this.sideAreasColor);
-            this.fileToolBarPanel.setLayout(new BoxLayout(this.fileToolBarPanel, BoxLayout.LINE_AXIS));
-            
-            JScrollPane scrollPane = new JScrollPane(this.fileToolBarPanel);
-            scrollPane.setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_NEVER);
-            
-            this.fileToolBar.add(scrollPane);
+            this.panelCentral.add(scrollPane, gbc_openFilesPanel);
         }
 	
 	//Definições do painel do editor
@@ -636,7 +604,7 @@ public class Gui implements ActionListener, KeyListener{
 		this.definePanelDown();
 		
 		//Definições dos elementos secundários de cada espaço na tela
-                this.defineFilesToolBar();
+                this.defineOpenFilesPanel();
 		this.defineEditorPane();
 		this.defineMenuBar();
 		
