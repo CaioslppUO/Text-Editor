@@ -45,11 +45,13 @@ import javax.swing.text.PlainDocument;
 
 import gui.RoundedPanel;
 import java.awt.Dimension;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.HashMap;
 import java.util.Map;
 
 
-public class Gui implements ActionListener, KeyListener{
+public class Gui implements ActionListener, KeyListener, MouseListener{
 	
 	//Frame e Painéis principais
 	private JFrame frame;
@@ -186,13 +188,22 @@ public class Gui implements ActionListener, KeyListener{
 		}
 	}
         
+        //Função que cria um novo painel de arquivo aberto
+        //Entrada: Nome do arquivo aberto
+        //Retorno: Nenhum
+        /* Pré-condição: O painel openFilesPanel, deve existir, pois é ele quem contém o novo painel que será criado. A variável
+         * addedFilesPanel deve existir, pois é ela quem guarda quais e quantos painéis de arquivo estão abertos
+        */
+        //Pós-condição: Um novo painel de arquivo aberto é inserido na interface
         private void createNewFileOpenPanel(String fileName){
             newFilePanel = new RoundedPanel();
             newFilePanel.setBackground(this.sideAreasColor);
             newFilePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
             newFilePanel.setLayout(new BoxLayout(newFilePanel, BoxLayout.LINE_AXIS));
+            newFilePanel.addMouseListener(this);
             
             JLabel fName = new JLabel(fileName+"  ");
+//            fName.addMouseListener(this);
             fName.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
             fName.setForeground(this.MenuForeGroundColor);
             newFilePanel.add(fName);
@@ -611,7 +622,7 @@ public class Gui implements ActionListener, KeyListener{
                 int result = JOptionPane.showConfirmDialog(null, null,"Save File?",JOptionPane.YES_NO_OPTION);
                 if(result == 0) this.saveFile();
                 
-                RoundedPanel aux = this.addedFilesPanel.get(this.currentFile.getName());
+                RoundedPanel aux = this.addedFilesPanel.remove(this.currentFile.getName());
                 this.openFilesPanel.remove(aux);
                 SwingUtilities.updateComponentTreeUI(frame);
                 
@@ -718,4 +729,29 @@ public class Gui implements ActionListener, KeyListener{
 		// TODO Auto-generated method stub
 		
 	}
+
+    @Override
+    public void mouseClicked(MouseEvent me) {
+        JOptionPane.showMessageDialog(null, "teste");
+    }
+
+    @Override
+    public void mousePressed(MouseEvent me) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent me) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent me) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent me) {
+
+    }
 }
