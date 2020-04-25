@@ -91,6 +91,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
 	//Variáveis "globais"
 	private File currentFile;
         private Map<String, RoundedPanel> addedFilesPanel;
+        private String lastClickedFilePath;
 
 	//Construtor da classe
 	public Gui() {
@@ -109,6 +110,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
 		//Arquivo inicialmente aberto
 		this.currentFile = null;
                 this.addedFilesPanel = new LinkedHashMap<>();
+                lastClickedFilePath = null;
 		
 		//Iniciando os componentes visuais
 		initialize();
@@ -208,7 +210,18 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
             
             JLabel fName = new JLabel(fileName+"  ");
             fName.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 12));
-            fName.setForeground(this.MenuForeGroundColor);
+            fName.setForeground(Color.WHITE);
+            if(this.lastClickedFilePath == null){
+                this.lastClickedFilePath = filePath;
+            }
+            else{
+                for(Component c:this.addedFilesPanel.get(this.lastClickedFilePath).getComponents()){
+                    if(c instanceof JLabel){
+                        ((JLabel)c).setForeground(this.MenuForeGroundColor);
+                    }
+                }
+                this.lastClickedFilePath = filePath;
+            }
             newFilePanel.add(fName);
 
             JButton closeButton = new JButton("x");
@@ -228,7 +241,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
             this.openFilesPanel.add(newFilePanel);
             this.openFilesPanel.add(separator);
             
-            this.addedFilesPanel.put(fileName, newFilePanel);
+            this.addedFilesPanel.put(filePath, newFilePanel);
             
             SwingUtilities.updateComponentTreeUI(frame);
         }
@@ -532,7 +545,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
                         }
                         this.editorPane.setText(contentToLoad);
                         this.currentFile = file;
-                        if(this.addedFilesPanel.get(this.currentFile.getName()) != null) this.decideEditorEnabled(true);
+                        if(this.addedFilesPanel.get(this.currentFile.getAbsolutePath()) != null) this.decideEditorEnabled(true);
                         else this.decideEditorEnabled(false);
                     } catch (IOException e) {
                         //do Nothing
@@ -564,7 +577,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
                     this.saveFile(false);
                     this.editorPane.setText(contentToLoad);
                     this.currentFile = file;
-                    if(this.addedFilesPanel.get(this.currentFile.getName()) != null) this.decideEditorEnabled(true);
+                    if(this.addedFilesPanel.get(this.currentFile.getAbsolutePath()) != null) this.decideEditorEnabled(true);
                     else this.decideEditorEnabled(false);
                 } catch (IOException e) {
                     //do Nothing
@@ -655,7 +668,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
             if(this.currentFile != null){
                 int result = JOptionPane.showConfirmDialog(null, "Save File?","Save",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
                 
-                RoundedPanel aux = this.addedFilesPanel.remove(this.currentFile.getName());
+                RoundedPanel aux = this.addedFilesPanel.remove(this.currentFile.getAbsolutePath());
                 this.openFilesPanel.remove(aux);
                 SwingUtilities.updateComponentTreeUI(frame);
                                 
@@ -769,7 +782,32 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
 
     @Override
     public void mouseClicked(MouseEvent me) {
-        if(!"closeButton".equals(me.getComponent().getName())) this.openFile(me.getComponent().getName());
+        if(!"closeButton".equals(me.getComponent().getName())){
+            this.openFile(me.getComponent().getName());
+            if(this.lastClickedFilePath == null){
+                for(Component c:((RoundedPanel) me.getComponent()).getComponents()){
+                    if(c instanceof JLabel){
+                        ((JLabel) c).setForeground(Color.WHITE);
+                    }
+                }
+                SwingUtilities.updateComponentTreeUI(this.openFilesPanel);
+                this.lastClickedFilePath = me.getComponent().getName();
+            }else{
+                for(Component c:((RoundedPanel) this.addedFilesPanel.get(this.lastClickedFilePath)).getComponents()){
+                    if(c instanceof JLabel){
+                        ((JLabel) c).setForeground(this.MenuForeGroundColor);
+                    }
+                }
+                SwingUtilities.updateComponentTreeUI(this.openFilesPanel);
+                for(Component c:((RoundedPanel) me.getComponent()).getComponents()){
+                    if(c instanceof JLabel){
+                        ((JLabel) c).setForeground(Color.WHITE);
+                    }
+                }
+                SwingUtilities.updateComponentTreeUI(this.openFilesPanel);
+                this.lastClickedFilePath = me.getComponent().getName();
+            }
+        }
     }
 
     @Override
@@ -789,6 +827,10 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
             ((JButton) me.getComponent()).setForeground(this.editorPaneFontColor);
             SwingUtilities.updateComponentTreeUI(this.openFilesPanel);
         }
+        if(!"closeButton".equals(me.getComponent().getName())){
+            ((RoundedPanel) me.getComponent()).setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+            SwingUtilities.updateComponentTreeUI(this.openFilesPanel);
+        }
     }
 
     @Override
@@ -796,6 +838,10 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
         if("closeButton".equals(me.getComponent().getName())){
             ((JButton) me.getComponent()).setBackground(null);
             ((JButton) me.getComponent()).setForeground(null);
+            SwingUtilities.updateComponentTreeUI(this.openFilesPanel);
+        }
+        if(!"closeButton".equals(me.getComponent().getName())){
+            ((RoundedPanel) me.getComponent()).setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
             SwingUtilities.updateComponentTreeUI(this.openFilesPanel);
         }
     }
