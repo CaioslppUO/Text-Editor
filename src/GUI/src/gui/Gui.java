@@ -45,8 +45,8 @@ import javax.swing.text.PlainDocument;
 
 import gui.RoundedPanel;
 import java.awt.Dimension;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class Gui implements ActionListener, KeyListener{
@@ -86,6 +86,7 @@ public class Gui implements ActionListener, KeyListener{
 	
 	//Variáveis "globais"
 	private File currentFile;
+        private Map<String, RoundedPanel> addedFilesPanel;
 
 	//Construtor da classe
 	public Gui() {
@@ -102,6 +103,7 @@ public class Gui implements ActionListener, KeyListener{
 		
 		//Arquivo inicialmente aberto
 		this.currentFile = null;
+                this.addedFilesPanel = new HashMap<>();
 		
 		//Iniciando os componentes visuais
 		initialize();
@@ -174,16 +176,17 @@ public class Gui implements ActionListener, KeyListener{
 	}
 	
         //Função que decide se o editor de texto vai estar habilitado ou não baseado se existe ou não um arquivo aberto
-	public void decideEditorEnabled() {
+	public void decideEditorEnabled(Boolean isFileAlreadyOpen) {
 		if(this.currentFile != null) {
 			this.editorPane.setEnabled(true);
-                        createNewFileOpenToolBar(this.currentFile.getName());
+                        if(!isFileAlreadyOpen) createNewFileOpenPanel(this.currentFile.getName());
 		}else {
 			this.editorPane.setEnabled(false);
+                        this.editorPane.setText("");
 		}
 	}
         
-        private void createNewFileOpenToolBar(String fileName){
+        private void createNewFileOpenPanel(String fileName){
             newFilePanel = new RoundedPanel();
             newFilePanel.setBackground(this.sideAreasColor);
             newFilePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
@@ -196,9 +199,9 @@ public class Gui implements ActionListener, KeyListener{
 
             JButton closeButton = new JButton("x");
             closeButton.setBorder(new RoundedBorder(5));
-            //closeButton.setBorderPainted(false);
             closeButton.setFont(new Font(Font.MONOSPACED, Font.BOLD, 10));
             closeButton.setActionCommand("buttonCloseFilePressed");
+            closeButton.addActionListener(this);
             closeButton.setBackground(null);
             
             newFilePanel.add(fName);
@@ -208,6 +211,9 @@ public class Gui implements ActionListener, KeyListener{
             
             this.openFilesPanel.add(newFilePanel);
             this.openFilesPanel.add(separator);
+            
+            this.addedFilesPanel.put(fileName, newFilePanel);
+            
             SwingUtilities.updateComponentTreeUI(frame);
         }
         
@@ -258,7 +264,7 @@ public class Gui implements ActionListener, KeyListener{
 		scrollPane.setRowHeaderView( tln );
 		this.panelCentral.add(scrollPane, gbc_editorPane);
 		this.editorPane.addKeyListener(this);
-		this.decideEditorEnabled();
+		this.decideEditorEnabled(false);
 	}
 	
 	//Cria e retorna um sub item de menu
@@ -510,7 +516,8 @@ public class Gui implements ActionListener, KeyListener{
                         }
                         this.editorPane.setText(contentToLoad);
                         this.currentFile = file;
-                        this.decideEditorEnabled();
+                        if(this.addedFilesPanel.get(this.currentFile.getName()) != null) this.decideEditorEnabled(true);
+                        else this.decideEditorEnabled(false);
                     } catch (IOException e) {
                         //do Nothing
                     }
@@ -572,7 +579,8 @@ public class Gui implements ActionListener, KeyListener{
 						if(newFile.createNewFile()) {
 							JOptionPane.showMessageDialog(null, "File Created");
 							this.currentFile = newFile;
-                                                        this.decideEditorEnabled();
+                                                        this.editorPane.setText("");
+                                                        this.decideEditorEnabled(false);
 						}else {
 							JOptionPane.showMessageDialog(null, "File Already Exists");
 						}
@@ -592,6 +600,25 @@ public class Gui implements ActionListener, KeyListener{
 			this.createNewFile();
 		}
 	}
+        
+        //Função que fecha o arquivo que está aberto
+        //Entrada: Nenhuma
+        //Retorno: Nenhum
+        //Pŕe-condição: Nenhuma
+        //Pós-condição: O arquivo aberto atualmente é fechado
+        private void closeFile(){
+            if(this.currentFile != null){
+                int result = JOptionPane.showConfirmDialog(null, null,"Save File?",JOptionPane.YES_NO_OPTION);
+                if(result == 0) this.saveFile();
+                
+                RoundedPanel aux = this.addedFilesPanel.get(this.currentFile.getName());
+                this.openFilesPanel.remove(aux);
+                SwingUtilities.updateComponentTreeUI(frame);
+                
+                this.currentFile = null;
+                this.decideEditorEnabled(true);
+            }
+        }
 
         //Responde aos botões pressionados na interface
 	@Override
@@ -617,6 +644,9 @@ public class Gui implements ActionListener, KeyListener{
                     break;
                 case "buttonSavePressed":
                     this.saveFile();
+                    break;
+                case  "buttonCloseFilePressed":
+                    this.closeFile();
                     break;
                 default:
                     break;
