@@ -45,6 +45,7 @@ import gui.maingui.secondarypanels.openfiles.OpenFiles;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import gui.maingui.secondarypanels.openfiles.CreateNewFileOpenPanel;
+import gui.maingui.secondarypanels.savefiles.SaveFile;
 
 public class Gui implements ActionListener, KeyListener, MouseListener {
 
@@ -91,10 +92,15 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
     
     private CreateNewFileOpenPanel createNewFileOpenPanel;
     
+    private SaveFile saveFile;
+    
     //Construtor da classe
     public Gui() {
-        //Constants
+        //Constantes
         this.constants = new Constants();
+        
+        //Utilitários
+        this.saveFile = new SaveFile();
         
         //Variáveis globais
         this.currentFile = null;
@@ -302,88 +308,6 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
         this.editorPaneConfig.getEditorConfigFrame().addKeyListener(this);
     }
 
-    //Função que salva o arquivo que está aberto na variável this.currentFile
-    //Entrada: Nenhuma
-    //Retorno: Nenhum
-    //Pŕe-condição: Nenhuma
-    //Pós-condição: O arquivo aberto na variável this.currentFile é salvo
-    private void saveFile(Boolean showSaveMessage) {
-        if (this.currentFile != null) {
-            try {
-                PrintWriter print_line = new PrintWriter(new FileWriter(this.currentFile.toString()));
-                print_line.printf("%s", this.editorPane.getEditorPane().getText());
-                print_line.close();
-                if (showSaveMessage) {
-                    JOptionPane.showMessageDialog(null, "File Saved");
-                }
-            } catch (IOException e) {
-                JOptionPane.showMessageDialog(null, "Error while trying to save the file");
-            }
-        } else {
-            JOptionPane.showMessageDialog(null, "No Files Open");
-        }
-    }
-
-    //Função que define o frame de salvar um arquivo
-    //Entrada: Nenhuma
-    //Retorno: FileChooser.APPROVE_OPTION se o diretório for escolhido ou o contrário caso não seja
-    //Pré-condição: Nenhuma
-    //Pós-condição: Nenhuma
-    private int defineSaveFileFrame() {
-        this.saveFileFrame = new JDialog();
-        this.saveFileFrame.getContentPane().setBackground(this.constants.getSideAreasColor());
-        this.saveFileFrame.setSize(600, 600);
-        this.saveFileFrame.setLocationRelativeTo(null);
-        this.saveFileFrame.setTitle("Save File As");
-
-        this.chooseSaveDirectory = new JFileChooser();
-        this.chooseSaveDirectory.setCurrentDirectory(new File(this.currentFolder));
-        this.chooseSaveDirectory.setDialogTitle("Save to");
-        this.chooseSaveDirectory.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        this.saveFileFrame.getContentPane().add(chooseSaveDirectory);
-        this.saveFileFrame.setVisible(true);
-        this.saveFileFrame.dispose();
-        return chooseSaveDirectory.showOpenDialog(null);
-    }
-
-    //Função que salva o arquivo que está aberto na variável this.currentFile
-    //Entrada: Nenhuma
-    //Retorno: Nenhum
-    //Pŕe-condição: Nenhum
-    //Pós-condição: É aberto um menu para escolher como e onde salvar o arquivo aberto na variável this.currentFile
-    private void saveFileAs() {
-        if (this.currentFile != null) {
-            String fileSeparator = System.getProperty("file.separator");
-
-            if (this.defineSaveFileFrame() == JFileChooser.APPROVE_OPTION) { //Salvar o arquivo
-                File directory = this.chooseSaveDirectory.getSelectedFile();
-                if (directory != null) {
-                    String fileName;
-                    fileName = JOptionPane.showInputDialog("File Name");
-                    if (fileName != null) {
-                        File newFile = new File(directory.toString() + fileSeparator + fileName);
-                        try {
-                            if (newFile.createNewFile()) {
-                                this.currentFile = newFile;
-                                this.saveFile(true);
-                            } else {
-                                JOptionPane.showMessageDialog(null, "File Already Exists");
-                            }
-                        } catch (IOException e) {
-                            JOptionPane.showMessageDialog(null, "Error while trying to save the file");
-                        }
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Invalid File Name");
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(null, "Invalid Directory");
-                }
-            }
-        } else {
-            JOptionPane.showMessageDialog(null, "No Files Open");
-        }
-    }
-
     //Função que define o frame de salvar um arquivo
     //Entrada: Nenhuma
     //Retorno: FileChooser.APPROVE_OPTION se o diretório for escolhido ou o contrário caso não seja
@@ -453,7 +377,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
                     contentToLoad += aux;
                     contentToLoad += "\n";
                 }
-                this.saveFile(false);
+                this.saveFile.saveFile(false,this.currentFile,this.editorPane.getEditorPane().getText());
                 this.editorPane.getEditorPane().setText(contentToLoad);
                 this.currentFile = file;
                 if (this.addedFilesPanel.get(this.currentFile.getAbsolutePath()) != null) {
@@ -610,7 +534,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
                 this.openFile(((RoundedPanel) this.addedFilesPanel.values().toArray()[0]).getName());
             } catch (Exception e) {
                 if (result == 0) {
-                    this.saveFile(false);
+                    this.saveFile.saveFile(false,this.currentFile,this.editorPane.getEditorPane().getText());
                 }
                 this.currentFile = null;
                 this.lastClickedFilePath = null;
@@ -670,13 +594,13 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
                     this.updateFont();
                     break;
                 case "buttonSaveAsPressed":
-                    this.saveFileAs();
+                    this.saveFile.saveFileAs(this.currentFile,this.currentFolder,this.editorPane.getEditorPane().getText());
                     break;
                 case "buttonOpenFilePressed":
                     this.openFile();
                     break;
                 case "buttonSavePressed":
-                    this.saveFile(true);
+                    this.saveFile.saveFile(true,this.currentFile,this.editorPane.getEditorPane().getText());
                     break;
                 case "buttonCloseFilePressed":
                     this.closeFile();
@@ -729,12 +653,12 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
     public void keyReleased(KeyEvent e) {
         //Salva o arquivo aberto ao apertar ctrl+s
         if (this.editorPane.getEditorPane() != null && e.isShiftDown() == false && e.isControlDown() && e.getKeyChar() != 's' && e.getKeyCode() == 83) {
-            this.saveFile(true);
+            this.saveFile.saveFile(true,this.currentFile,this.editorPane.getEditorPane().getText());
         }
 
         //Salva como o arquivo ao apertar ctrl+shift+s
         if (this.editorPane.getEditorPane() != null && e.isShiftDown() && e.isControlDown() && e.getKeyChar() != 's' && e.getKeyCode() == 83) {
-            this.saveFileAs();
+            this.saveFile.saveFileAs(this.currentFile,this.currentFolder,this.editorPane.getEditorPane().getText());
         }
 
         //Resposta do botão OK da tela de configuração do editor
