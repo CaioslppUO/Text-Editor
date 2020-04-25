@@ -593,7 +593,7 @@ public class Gui implements ActionListener, KeyListener{
 		}
 	}
 
-        //Verifica teclas apertadas na interface
+        //Responde aos botões pressionados na interface
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(null != e.getActionCommand()) switch (e.getActionCommand()) {
@@ -653,7 +653,8 @@ public class Gui implements ActionListener, KeyListener{
 		// TODO Auto-generated method stub
 		
 	}
-
+        
+        //Verifica as teclas apertadas na interface
 	@Override
 	public void keyReleased(KeyEvent e) {
 		//Salva o arquivo aberto ao apertar ctrl+s
