@@ -47,6 +47,7 @@ import gui.RoundedPanel;
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -345,7 +346,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
 				new JMenuItem[]{
 					this.createMenuItem("New File","buttonNewFilePressed","ctrl+n"), //Sub botão new file
 					this.createMenuItem("Open File", "buttonOpenFilePressed","ctrl+o"), //Sub botão open file
-                                        this.createMenuItem("Run Current File","buttonRunPressed","ctlr+r")
+                                        this.createMenuItem("Run Current File","buttonRunPressed","ctlr+r. C or Python only. Output Only")
 				}
 			)
 		);
@@ -674,16 +675,35 @@ public class Gui implements ActionListener, KeyListener, MouseListener{
             if(this.currentFile.getName().split("[.]")[1].equals("py")){
                 try {
                     process = Runtime.getRuntime().exec("python3 " + this.currentFile.getAbsolutePath());
-                    process.getOutputStream();
-                    process.getOutputStream();
-                    process.getOutputStream();
+                    BufferedReader  reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+                    String inputText = "",aux;
+                    while((aux = reader.readLine()) != null){
+                        inputText += aux;
+                    }
+                    JOptionPane.showMessageDialog(null, inputText,"Output",JOptionPane.INFORMATION_MESSAGE);
+                    reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                    inputText = "";
+                    while((aux = reader.readLine()) != null){
+                        inputText += aux;
+                    }
+                    JOptionPane.showMessageDialog(null, inputText,"Output",JOptionPane.INFORMATION_MESSAGE);
                 } catch (IOException ex) {}
             }else if(this.currentFile.getName().split("[.]")[1].equals("c")){
                 try {
-                    process = Runtime.getRuntime().exec("gcc " + this.currentFile.getAbsolutePath() + " -o " + this.currentFile.getName().split("[.]")[0] + " && ./" + this.currentFile.getName().split("[.]")[0]);
-                    process.getOutputStream();
-                    process.getOutputStream();
-                    process.getOutputStream();
+                    process = Runtime.getRuntime().exec("gcc " + this.currentFile.getAbsolutePath() + " -o " + this.currentFile.getParent() + "/" + this.currentFile.getName().split("[.]")[0]);
+                    BufferedReader  reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+                    String inputText = "",aux;
+                    while((aux = reader.readLine()) != null){
+                        inputText += aux;
+                    }
+                    if(!inputText.equals("")) JOptionPane.showMessageDialog(null, inputText,"Output",JOptionPane.INFORMATION_MESSAGE);
+                    process = Runtime.getRuntime().exec(this.currentFile.getParent() + "/./" + this.currentFile.getName().split("[.]")[0]);
+                    reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                    inputText = "";
+                    while((aux = reader.readLine()) != null){
+                        inputText += aux;
+                    }
+                    JOptionPane.showMessageDialog(null, inputText,"Output",JOptionPane.INFORMATION_MESSAGE);
                 } catch (Exception e) {}
             }
         }
