@@ -16,11 +16,23 @@ public class EditorPane {
     private TextLineNumber tln ;
     private GridBagConstraints gbc_editorPane ;
     
+    //Construtor
+    //Entrada: Tipo da fonte e tamanho da fonte utilizada dentro do painel de edição
+    //Retorno: Nenhum
+    //Pré-condição: Nenhuma
+    //Pós-condição: A Classe é instanciada e o painel de edição é definido
     public EditorPane(String fontType, Integer fontSize){
         constants = new Constants();
         this.defineEditorPane(fontType,fontSize);
     }
     
+    //Função que define o painel de edição
+    //Entrada: Tipo da fonte e tamanho da fonte
+    //Retorno: Nenhum
+    //Pré-condição: O tipo da fonte deve ser um tipo válido
+    /*Pós-condição: O painel é instanciado e configurado, sendo que sua configuração fica guardada em variáveis locais da classe
+     * para posteriormente serem recolhidas por quem desejar utilizar o painel que foi gerado
+    */
     private void defineEditorPane(String fontType, Integer fontSize){
         this.editorPane = new JEditorPane();
         this.editorPane.setForeground(this.constants.getEditorPaneFontColor());
@@ -44,18 +56,22 @@ public class EditorPane {
         this.scrollPane.setRowHeaderView(this.tln);
     }
     
+    //Getter do ScrollPane. Adicione esse componente ao JPanel para ter o editor de texto funcional
     public JScrollPane getScrollPane(){
         return this.scrollPane;
     }
     
+    //Getter do EditorPane. Adicione novos componentes à essa variável para obter os efeitos desejados
     public JEditorPane getEditorPane(){
         return this.editorPane;
     }
     
+    //Getter go gestor de layout para GridBagLayout
     public GridBagConstraints getGbc(){
         return this.gbc_editorPane;
     }
     
+    //Setter do editorPane. Utilize esse método para atualizar/trocar o editorPane ou o seu texto
     public void setEditorPane(JEditorPane editorPane){
         this.editorPane = editorPane;
     }

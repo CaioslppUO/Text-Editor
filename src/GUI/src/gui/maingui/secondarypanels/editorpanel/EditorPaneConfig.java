@@ -17,11 +17,23 @@ public class EditorPaneConfig {
     private JLabel labelFontSize;
     private JLabel labelFontType;
     
+    //Construtor
+    //Entrada: Tipo da fonte e tamanho da fonte
+    //Retorno: Nenhum
+    //Pré-condição: Nenhuma
+    //Pós-condição: A janela de configuração do editor é instanciada e configurada
     public EditorPaneConfig(String fontType, Integer fontSize){
         this.constants = new Constants();
         this.defineEditorPaneConfig(fontType,fontSize);
     }
     
+    //Função que instancia e configura a janela de configuração do editor
+    //Entrada: Tipo da fonte e tamanho da fonte
+    //Retorno: Nenhum
+    //Pré-condição: A variável fontType deve possuir um dos possíveis tipos corretos de fonte
+    /*Pós-condição: A janela de configuração do editor pane é instanciada e configurada, e suas informações são guardadas
+     * em variáveis locais na classe, para depois serem colhidas por quem desejar incluir a janela de configuração
+    */
     private void defineEditorPaneConfig(String fontType, Integer fontSize){
         this.editorConfigFrame = new JDialog();
         this.editorConfigFrame.getContentPane().setBackground(this.constants.getSideAreasColor());
@@ -74,18 +86,22 @@ public class EditorPaneConfig {
         this.editorConfigFrame.setFocusable(true);
     }
     
+    //Getter do EditorConfigFrame. Inclua esse JDialog onde quiser que o menu apareça
     public JDialog getEditorConfigFrame(){
         return this.editorConfigFrame;
     }
     
+    //Getter do botão OK. Utilizado para incluir listeners
     public JButton getOkButton(){
         return this.buttonOk;
     }
     
+    //Getter do FontSizeSpinner. Utilizado para ler o valor setado no snipper do tamanho da fonte
     public JSpinner getFontSizeSpinner(){
         return this.fontSizeSpinner;
     }
     
+    //Getter do FontTypeList. Utilizado para ler a fonte selecionada na lista de fontes
     public JComboBox<String> getFontTypeList(){
         return this.fontTypeList;
     }
