@@ -16,8 +16,6 @@ import java.io.IOException;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -44,6 +42,7 @@ import java.util.Map;
 import gui.maingui.secondarypanels.openfiles.CreateNewFileOpenPanel;
 import gui.maingui.secondarypanels.savefile.SaveFile;
 import gui.maingui.secondarypanels.newfile.NewFile;
+import gui.maingui.secondarypanels.openfolder.OpenFolder;
 
 public class Gui implements ActionListener, KeyListener, MouseListener {
 
@@ -69,10 +68,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
     private String fontType;
 
     //Painéis secundários        
-    private JDialog openFolderFrame;
-    private JFileChooser chooseOpenDirectory;
 
-    //
     private EditorPane editorPane;
     private EditorPaneConfig editorPaneConfig;
 
@@ -85,6 +81,8 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
     private OpenFile openFile;
     
     private NewFile newFile;
+    
+    private OpenFolder openFolder;
 
     //Construtor da classe
     public Gui() {
@@ -353,6 +351,12 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
         this.newFile = null;
         this.decideEditorEnabled(false);
     }
+    
+    public void runOpenFolder(){
+        this.openFolder = new OpenFolder();
+        this.currentFolder = this.openFolder.openFolder(this.currentFolder);
+        this.openFolder = null;
+    }
 
     //Função que roda o arquivo atualmente aberto. Somente em Python3 ou em C
     //Entrada: Nenhuma
@@ -432,39 +436,6 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
         }
     }
 
-    //Função que define o frame da janela de abrir pastas
-    //Entrada: Nenhuma
-    //Retorno: Nenhum
-    //Pré-condição: Nenhuma
-    //Pós-condição: A janela de escolha de pasta é criada e exposta
-    private int defineOpenFolderFrame() {
-        this.openFolderFrame = new JDialog();
-        this.openFolderFrame.getContentPane().setBackground(this.constants.getSideAreasColor());
-        this.openFolderFrame.setSize(600, 600);
-        this.openFolderFrame.setLocationRelativeTo(null);
-        this.openFolderFrame.setTitle("Open Folder");
-
-        this.chooseOpenDirectory = new JFileChooser();
-        this.chooseOpenDirectory.setCurrentDirectory(new File(this.currentFolder));
-        this.chooseOpenDirectory.setDialogTitle("Open Folder");
-        this.chooseOpenDirectory.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        this.openFolderFrame.getContentPane().add(chooseOpenDirectory);
-        this.openFolderFrame.setVisible(true);
-        this.openFolderFrame.dispose();
-        return chooseOpenDirectory.showOpenDialog(null);
-    }
-
-    //Função que abre uma pasta, a qual será o diretório padrão
-    //Entrada: Nenhuma
-    //Retorno: Nenhum
-    //Pré-condição: Nenhuma
-    //Pós-condição: A pasta é aberta e vira o diretório padrão
-    private void openFolder() {
-        if (this.defineOpenFolderFrame() == JFileChooser.APPROVE_OPTION) {
-            this.currentFolder = this.chooseOpenDirectory.getSelectedFile().getAbsolutePath();
-        }
-    }
-
     //Responde aos botões pressionados na interface
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -498,7 +469,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
                     this.runSelectedFile();
                     break;
                 case "buttonOpenFolderPressed":
-                    this.openFolder();
+                    this.runOpenFolder();
                     break;
                 default:
                     break;
