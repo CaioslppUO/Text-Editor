@@ -88,9 +88,6 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
     //Gerenciador do abridor de pastas
     private OpenFolder openFolder;
 
-    //Gerenciador da barra de menu
-    private MenuBar menuBar;
-
     //Construtor da classe
     public Gui() {
         //Variáveis globais
@@ -152,7 +149,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
     //Pré-condição: O Frame principal deve estar instanciado e configurado corretamente
     //Pós-condição: A barra de menu é adicionada à interface
     private void includeMenuBar() {
-        this.menuBar = new MenuBar(this,this.frame);
+        new MenuBar(this, this.frame);
     }
 
     //Função que inclui o painel de arquivos abertos à interface
@@ -284,21 +281,24 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
     //Pós-condição: O arquivo aberto atualmente é fechado
     private void closeFile() {
         if (this.currentFile != null) {
-            int result = JOptionPane.showConfirmDialog(null, "Save File?", "Save", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-
-            RoundedPanel aux = this.addedFilesPanel.remove(this.currentFile.getAbsolutePath());
-            this.openFiles.getOpenFilesPanel().remove(aux);
-            SwingUtilities.updateComponentTreeUI(frame);
-
-            try {
-                this.runOpenFile(((RoundedPanel) this.addedFilesPanel.values().toArray()[0]).getName());
-            } catch (Exception e) {
-                if (result == 0) {
-                    this.saveFile.saveFile(false, this.currentFile, this.editorPane.getEditorPane().getText());
+            int result = JOptionPane.showConfirmDialog(null, "Save File?", "Save", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (result != 2) {
+                RoundedPanel aux = this.addedFilesPanel.remove(this.currentFile.getAbsolutePath());
+                this.openFiles.getOpenFilesPanel().remove(aux);
+                SwingUtilities.updateComponentTreeUI(this.panelCentral);
+                
+                //Tenta abrir o próximo arquivo, aberto anteriormente, se existir
+                try { //Existe arquivo para abrir
+                    this.runOpenFile(((RoundedPanel) this.addedFilesPanel.values().toArray()[0]).getName());
+                    this.lastClickedFilePath = ((RoundedPanel) this.addedFilesPanel.values().toArray()[0]).getName();
+                } catch (Exception e) { //Não existe arquivo para abrir
+                    if (result == 0) { //Salva o arquivo atual antes de fechar
+                        this.saveFile.saveFile(false, this.currentFile, this.editorPane.getEditorPane().getText());
+                    }
+                    this.currentFile = null;
+                    this.lastClickedFilePath = null;
+                    this.decideEditorEnabled(false);
                 }
-                this.currentFile = null;
-                this.lastClickedFilePath = null;
-                this.decideEditorEnabled(false);
             }
         }
     }
@@ -311,7 +311,6 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
      */
     //Pós-condição: A fonte é atualizada para as opções definidas no menu
     private void updateFont() {
-        this.editorPaneConfig.getEditorConfigFrame().dispose();
         this.fontSize = Integer.parseInt(this.editorPaneConfig.getFontSizeSpinner().getValue().toString());
         this.fontType = this.editorPaneConfig.getFontTypeList().getSelectedItem().toString();
         this.editorPane.getEditorPane().setFont(new Font(this.fontType, Font.PLAIN, this.fontSize));
@@ -325,7 +324,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
         if (this.currentFile != null) {
             this.editorPane.getEditorPane().setEnabled(true);
             if (!isFileAlreadyOpen) {
-                createNewFileOpenPanel(this.currentFile.getName(), this.currentFile.getAbsolutePath());
+                this.createNewFileOpenPanel();
             }
         } else {
             this.editorPane.getEditorPane().setEnabled(false);
@@ -341,17 +340,16 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
      * um painel de arquivos abertos com o mesmo fileName e o mesmo filePath.
      */
     //Pós-condição: Um novo painel com o nome fileName é criado e adicionado à interface
-    private void createNewFileOpenPanel(String fileName, String filePath) {
-        this.createNewFileOpenPanel = new CreateNewFileOpenPanel(this.lastClickedFilePath, this.addedFilesPanel);
-        this.createNewFileOpenPanel.createNewFileOpenPanel(fileName, filePath);
-        this.createNewFileOpenPanel.getNewFilePanel().addMouseListener(this);
-        this.createNewFileOpenPanel.getCloseButton().addActionListener(this);
-        this.createNewFileOpenPanel.getCloseButton().addMouseListener(this);
-
-        this.openFiles.getOpenFilesPanel().add(this.createNewFileOpenPanel.getNewFilePanel());
-        this.openFiles.getOpenFilesPanel().add(this.createNewFileOpenPanel.getSeparator());
-
-        this.addedFilesPanel = this.createNewFileOpenPanel.getAddedFilesPanel();
+    private void createNewFileOpenPanel() {
+        this.createNewFileOpenPanel = new CreateNewFileOpenPanel(
+                this.lastClickedFilePath, 
+                this.addedFilesPanel,
+                this.currentFile.getName(),
+                this.currentFile.getAbsolutePath(),
+                this,
+                this,
+                this.openFiles
+        );
         this.lastClickedFilePath = this.createNewFileOpenPanel.getLastClickedFilePath();
 
         this.createNewFileOpenPanel = null;
@@ -498,6 +496,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
                     this.runCreateNewFile();
                     break;
                 case "FontSizeChanged":
+                    this.editorPaneConfig.getEditorConfigFrame().dispose();
                     this.updateFont();
                     break;
                 case "buttonSaveAsPressed":
@@ -543,6 +542,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
 
         //Resposta do botão OK da tela de configuração do editor
         if (this.editorPaneConfig != null && this.editorPaneConfig.getEditorConfigFrame().isActive() && e.getKeyCode() == 27) {
+            this.editorPaneConfig.getEditorConfigFrame().dispose();
             this.updateFont();
         }
 
