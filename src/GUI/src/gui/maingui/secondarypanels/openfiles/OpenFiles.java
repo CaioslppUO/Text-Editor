@@ -14,11 +14,16 @@ public class OpenFiles {
     private JScrollPane scrollPane;
     private GridBagConstraints gbc_openFilesPanel;
     
+    //Construtor
     public OpenFiles(){
         this.constants = new Constants();
         this.defineOpenFilesPanel();
     }
     
+    //Função que define o visualisador de arquivos abertos
+    //Entrada: Nenhuma
+    //Pré-condição: Nenhuma
+    //Pós-condição: O painel é configurado e guardado em variáveis locais
     private void defineOpenFilesPanel(){
         //Configurando o painel que retém os arquivos que estão abertos no momento
         this.openFilesPanel = new JPanel();
@@ -39,10 +44,12 @@ public class OpenFiles {
         this.gbc_openFilesPanel.gridy = 0;
     }
     
+    //Getter do visualisador
     public JPanel getOpenFilesPanel(){
         return this.openFilesPanel;
     }
     
+    //Getter do gestor de layout para GridBagLayout
     public GridBagConstraints getGbc(){
         return this.gbc_openFilesPanel;
     }

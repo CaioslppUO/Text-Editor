@@ -11,6 +11,7 @@ public class OpenFolder {
     private JFileChooser chooseOpenDirectory;
     private Constants constants;
 
+    //Construtor
     public OpenFolder() {
         this.constants = new Constants();
     }

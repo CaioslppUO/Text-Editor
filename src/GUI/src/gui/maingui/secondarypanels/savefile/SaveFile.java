@@ -10,14 +10,16 @@ import java.io.PrintWriter;
 import javax.swing.JOptionPane;
 
 public class SaveFile {
+
     private JDialog saveFileFrame;
     private JFileChooser chooseSaveDirectory;
     private Constants constants;
-    
-    public SaveFile(){
+
+    //Construtor
+    public SaveFile() {
         this.constants = new Constants();
     }
-    
+
     //Função que salva o arquivo que está aberto na variável this.currentFile
     //Entrada: Mostrar ou não a mensagem de arquivo salvo, arquivo aberto e texto para salvar
     //Retorno: Nenhum
@@ -39,8 +41,8 @@ public class SaveFile {
             JOptionPane.showMessageDialog(null, "No Files Open");
         }
     }
-    
-        //Função que define o frame de salvar um arquivo
+
+    //Função que define o frame de salvar um arquivo
     //Entrada: Nenhuma
     //Retorno: FileChooser.APPROVE_OPTION se o diretório for escolhido ou o contrário caso não seja
     //Pré-condição: Nenhuma
@@ -61,7 +63,7 @@ public class SaveFile {
         this.saveFileFrame.dispose();
         return chooseSaveDirectory.showOpenDialog(null);
     }
-    
+
     //Função que salva o arquivo que está aberto na variável this.currentFile
     //Entrada: Arquivo atual, pasta atual e texto para salvar
     //Retorno: Nenhum
@@ -81,7 +83,7 @@ public class SaveFile {
                         try {
                             if (newFile.createNewFile()) {
                                 currentFile = newFile;
-                                this.saveFile(true,currentFile,textToSave);
+                                this.saveFile(true, currentFile, textToSave);
                             } else {
                                 JOptionPane.showMessageDialog(null, "File Already Exists");
                             }

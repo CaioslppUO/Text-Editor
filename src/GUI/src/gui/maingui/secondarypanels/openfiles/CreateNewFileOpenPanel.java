@@ -23,6 +23,11 @@ public class CreateNewFileOpenPanel {
     private String lastClickedFilePath;
     private Map<String, RoundedPanel> addedFilesPanel;
     
+    //Construtor
+    //Entrada: Caminho para o último arquivo clicado, Map com os arquivos abertos no visualisador
+    //Retorno: Nenhum
+    //Pré-condição: As variáveis recebidas devem estar devidamente instanciadas e configuradas
+    //Pós-condição: A classe é instanciada
     public CreateNewFileOpenPanel(String lastClickedFilePath,Map<String, RoundedPanel> addedFilesPanel){
         this.constants = new Constants();
         this.lastClickedFilePath = lastClickedFilePath;
@@ -73,22 +78,27 @@ public class CreateNewFileOpenPanel {
         this.addedFilesPanel.put(filePath, newFilePanel);
     }
     
+    //Getter do addedFilesPanel. O novo arquivo ficará nesse Map
     public Map<String, RoundedPanel> getAddedFilesPanel(){
         return this.addedFilesPanel;
     }
     
+    //Getter do LastClickedFilePath. O caminho do arquivo ficará nessa variável
     public String getLastClickedFilePath(){
         return this.lastClickedFilePath;
     }
     
+    //Getter do closeButton. Utilizado para adicionar listeners ao close button do arquivo no visualisador
     public JButton getCloseButton(){
         return this.closeButton;
     }
     
+    //Getter do newFilePanel. O novo arquivo ficará nesse painel
     public RoundedPanel getNewFilePanel(){
         return this.newFilePanel;
     }
     
+    //Getter do Separador. Utilizado para separar um arquivo do outro no visualisador
     public Component getSeparator(){
         return this.separator;
     }
