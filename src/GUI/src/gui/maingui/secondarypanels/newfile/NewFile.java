@@ -9,7 +9,6 @@ import javax.swing.JEditorPane;
 import javax.swing.JOptionPane;
 
 public class NewFile {
-
     private JDialog createNewFileFrame;
     private JFileChooser chooseNewFileDirectory;
     private Constants constants;
@@ -17,6 +16,11 @@ public class NewFile {
     private File currentFile;
     private String currentFolder;
 
+    //Construtor
+    //Entrada: Arquivo atual, o painel de edição e a pasta atual
+    //Retorno: Nenhum
+    //Pré-condição: As variáveis currentFile, editorPane e currentFolder devem estar devidamente instanciadas e configuradas
+    //Pós-condição: A classe é instanciada
     public NewFile(File currentFile, JEditorPane editorPane, String currentFolder) {
         this.constants = new Constants();
         this.currentFile = currentFile;
@@ -82,17 +86,14 @@ public class NewFile {
         }
     }
 
+    //Getter do editorPane. O arquivo aberto será aberto nesse editorPane
     public JEditorPane getEditorPane() {
         return editorPane;
     }
 
+    //Getter do currentFile. O arquivo aberto ficará guardado nessa variável
     public File getCurrentFile() {
         return currentFile;
     }
-
-    public String getCurrentFolder() {
-        return currentFolder;
-    }
-    
     
 }
