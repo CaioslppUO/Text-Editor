@@ -43,6 +43,7 @@ import gui.maingui.secondarypanels.openfiles.CreateNewFileOpenPanel;
 import gui.maingui.secondarypanels.savefile.SaveFile;
 import gui.maingui.secondarypanels.newfile.NewFile;
 import gui.maingui.secondarypanels.openfolder.OpenFolder;
+import gui.maingui.secondarypanels.menu.MenuBar;
 
 public class Gui implements ActionListener, KeyListener, MouseListener {
 
@@ -67,22 +68,32 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
     private Integer fontSize;
     private String fontType;
 
-    //Painéis secundários        
-
+    //Gerenciador do editorPane
     private EditorPane editorPane;
+
+    //Gerenciador da tela de configuração do editorPane
     private EditorPaneConfig editorPaneConfig;
 
+    //Gerenciador do painel do visualisador de arquivos abertos
     private OpenFiles openFiles;
 
+    //Gerenciador do visualisador de arquivos abertos
     private CreateNewFileOpenPanel createNewFileOpenPanel;
 
+    //Gerenciador do salvamento de arquivos
     private SaveFile saveFile;
 
+    //Gerenciador do abridor de arquivos
     private OpenFile openFile;
-    
+
+    //Gerenciador do criador de arquivos
     private NewFile newFile;
-    
+
+    //Gerenciador do abridor de pastas
     private OpenFolder openFolder;
+    
+    //Gerenciador da barra de menu
+    private MenuBar menuBar;
 
     //Construtor da classe
     public Gui() {
@@ -104,6 +115,36 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
 
         //Iniciando os componentes visuais
         initialize();
+    }
+
+    //Função que inicializa todos os componentes visuais da interface
+    //Entrada: Nenhuma
+    //Retorno: Nenhum
+    //Pŕe-condição: Nenhuma
+    //Pós-condição: Todas as interfaces são inicializadas
+    private void initialize() {
+        //Definições dos elementos principais da tela
+        this.defineMainFrame();
+        this.definePanelTop();
+        this.definePanelCentral();
+        this.definePanelLeft();
+        this.definePanelRight();
+        this.definePanelDown();
+
+        //Definições dos elementos secundários de cada espaço na tela
+        this.includeOpenFilesPanel();
+        this.includeEditorPane();
+        this.includeMenuBar();
+        
+        //Definições finais do Main Frame
+        this.frame.setBackground(Color.LIGHT_GRAY);
+        this.frame.setBounds(100, 100, 450, 300);
+        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+    
+    private void includeMenuBar(){
+        this.menuBar = new MenuBar(this);
+        this.frame.setJMenuBar(this.menuBar.defineMenuBar());
     }
 
     //Getter do frame principal
@@ -215,85 +256,6 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
         this.panelCentral.add(this.editorPane.getScrollPane(), this.editorPane.getGbc());
     }
 
-    //Cria e retorna um sub item de menu
-    //Entrada: Nome do sub menu e comando ativado ao clicar no sub menu gerado
-    //Retorno: Menu Item gerado
-    //Pŕe-condição: Nenhuma
-    //Pós-condição: O Menu Item é gerado e retornado
-    private JMenuItem createMenuItem(String name, String actionCommand, String toolTip) {
-        JMenuItem menuItem;
-        menuItem = new JMenuItem(name);
-        menuItem.setForeground(this.constants.getMenuForeGroundColor());
-        menuItem.setBackground(this.constants.getSideAreasColor());
-        menuItem.setToolTipText(toolTip);
-        menuItem.setActionCommand(actionCommand);
-        menuItem.addActionListener(this);
-        return menuItem;
-    }
-
-    //Cria e retorna um menu
-    //Entrada: Nome do menu e array contendo todos os JMenuItems do menu
-    //Retorno: Menu gerado
-    //Pŕe-condição: Nenhuma
-    //Pós-condição: O Menu é gerado e retornado
-    private JMenu createMenu(String name, JMenuItem[] itens) {
-        JMenu menu;
-        menu = new JMenu(name);
-        menu.setBackground(this.constants.getSideAreasColor());
-        menu.setForeground(this.constants.getMenuForeGroundColor());
-        for (JMenuItem j : itens) {
-            menu.add(j);
-        }
-        return menu;
-    }
-
-    //Definições da barra de menu
-    private void defineMenuBar() {
-        JMenuBar menuBar;
-        //Inicializando a barra do menu
-        menuBar = new JMenuBar();
-        menuBar.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-        menuBar.setBackground(this.constants.getMenuBarColor());
-
-        //Botão File
-        menuBar.add(
-                this.createMenu(
-                        "File", //Menu File
-                        new JMenuItem[]{
-                            this.createMenuItem("New File", "buttonNewFilePressed", "ctrl+n"), //Sub botão new file
-                            this.createMenuItem("Open File", "buttonOpenFilePressed", "ctrl+o"), //Sub botão open file
-                            this.createMenuItem("Open Folder", "buttonOpenFolderPressed", "Open a folder"),
-                            this.createMenuItem("Run Current File", "buttonRunPressed", "ctlr+r. C or Python only. Output Only")
-                        }
-                )
-        );
-
-        //Botão save
-        menuBar.add(
-                this.createMenu(
-                        "Save", //Menu Save
-                        new JMenuItem[]{
-                            this.createMenuItem("Save as", "buttonSaveAsPressed", "ctrl+shift+s"), //Sub botão Save as
-                            this.createMenuItem("Save", "buttonSavePressed", "ctrl+s") //Sub botão Save
-                        }
-                )
-        );
-
-        //Botão settings
-        menuBar.add(
-                this.createMenu(
-                        "Settings", //Menu Settings
-                        new JMenuItem[]{
-                            this.createMenuItem("Editor", "buttonEditorPressed", ""), //Sub botão Editor
-                            this.createMenuItem("Themes", "buttonThemesPressed", "") //Sub botão Themes
-                        }
-                )
-        );
-
-        //Adicionando a menuBar à interface
-        this.frame.setJMenuBar(menuBar);
-    }
-
     private void runOpenFile() {
         this.openFile = new OpenFile(this.currentFile, this.editorPane.getEditorPane(), this.addedFilesPanel, this.currentFolder);
         this.openFile.openFile();
@@ -341,9 +303,9 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
         this.fontType = this.editorPaneConfig.getFontTypeList().getSelectedItem().toString();
         this.editorPane.getEditorPane().setFont(new Font(this.fontType, Font.PLAIN, this.fontSize));
     }
-    
-    public void runCreateNewFile(){
-        this.newFile = new NewFile(this.currentFile,this.editorPane.getEditorPane(),this.currentFolder);
+
+    public void runCreateNewFile() {
+        this.newFile = new NewFile(this.currentFile, this.editorPane.getEditorPane(), this.currentFolder);
         this.newFile.createNewFile();
         this.currentFile = this.newFile.getCurrentFile();
         this.currentFolder = this.newFile.getCurrentFolder();
@@ -351,8 +313,8 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
         this.newFile = null;
         this.decideEditorEnabled(false);
     }
-    
-    public void runOpenFolder(){
+
+    public void runOpenFolder() {
         this.openFolder = new OpenFolder();
         this.currentFolder = this.openFolder.openFolder(this.currentFolder);
         this.openFolder = null;
@@ -475,31 +437,6 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
                     break;
             }
         }
-    }
-
-    //Função que inicializa todos os componentes visuais da interface
-    //Entrada: Nenhuma
-    //Retorno: Nenhum
-    //Pŕe-condição: Nenhuma
-    //Pós-condição: Todas as interfaces são inicializadas
-    private void initialize() {
-        //Definições dos elementos principais da tela
-        this.defineMainFrame();
-        this.definePanelTop();
-        this.definePanelCentral();
-        this.definePanelLeft();
-        this.definePanelRight();
-        this.definePanelDown();
-
-        //Definições dos elementos secundários de cada espaço na tela
-        this.includeOpenFilesPanel();
-        this.includeEditorPane();
-        this.defineMenuBar();
-
-        //Definições finais do Main Frame
-        this.frame.setBackground(Color.LIGHT_GRAY);
-        this.frame.setBounds(100, 100, 450, 300);
-        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     @Override
