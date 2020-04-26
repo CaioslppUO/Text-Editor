@@ -12,6 +12,11 @@ public class MenuBar {
     private Constants constants;
     private ActionListener listener;
     
+    //Construtor da barra de menu
+    //Entrada: Listener que irá tratar as ações executadas no menu
+    //Retorno: Nenhum
+    //Pré-condição: Nenhuma
+    //Pós-condição: A classe é instanciada
     public MenuBar(ActionListener listener){
         this.constants = new Constants();
         this.listener = listener;
@@ -49,7 +54,11 @@ public class MenuBar {
         return menu;
     }
 
-    //Definições da barra de menu
+    //Função que define a barra do menu
+    //Entrada: Nenhuma
+    //Retorno: A barra de menu gerada
+    //Pré-condição: Nenhuma
+    //Pós-condição: A barra de menu é gerada, configurada e retornada
     public JMenuBar defineMenuBar() {
         JMenuBar menuBar;
         //Inicializando a barra do menu
