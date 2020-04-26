@@ -24,6 +24,11 @@ public class OpenFile {
     private SaveFile saveFile;
     private String currentFolder;
     
+    //Construtor
+    //Entrada: Pasta atual, painel de edição, map de arquivos já adicionados ao visualisador e pasta atual
+    //Retorno: Nenhum
+    //Pré-condição: As variáveis recebidas devem estar devidamente instanciadas e configuradas
+    //Pós-condição: A classe é instanciada
     public OpenFile(File currentFile, JEditorPane editorPane, Map<String, RoundedPanel> addedFilesPanel, String currentFolder){
         this.constants = new Constants();
         this.currentFile = currentFile;
@@ -108,22 +113,18 @@ public class OpenFile {
         }
     }
 
+    //Getter do addedFilesPanel. o novo arquivo adicionado ficará nese painel
     public Map<String, RoundedPanel> getAddedFilesPanel() {
         return addedFilesPanel;
     }
 
+    //Getter do currentFile. O novo arquivo aberto ficará nessa variável
     public File getCurrentFile() {
         return currentFile;
     }
 
+    //Getter do editorPane. O novo arquivo aberto será aberto nesse painel
     public JEditorPane getEditorPane() {
         return editorPane;
     }
-
-    public String getCurrentFolder() {
-        return currentFolder;
-    }
-    
-    
-    
 }

@@ -374,7 +374,6 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
         this.openFile = new OpenFile(this.currentFile, this.editorPane.getEditorPane(), this.addedFilesPanel, this.currentFolder);
         this.openFile.openFile();
         this.currentFile = this.openFile.getCurrentFile();
-        this.currentFolder = this.openFile.getCurrentFolder();
         this.addedFilesPanel = this.openFile.getAddedFilesPanel();
         this.editorPane.setEditorPane(this.openFile.getEditorPane());
         this.openFile = null;
@@ -396,7 +395,6 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
         this.openFile = new OpenFile(this.currentFile, this.editorPane.getEditorPane(), this.addedFilesPanel, this.currentFolder);
         this.openFile.openFile(filePath);
         this.currentFile = this.openFile.getCurrentFile();
-        this.currentFolder = this.openFile.getCurrentFolder();
         this.addedFilesPanel = this.openFile.getAddedFilesPanel();
         this.editorPane.setEditorPane(this.openFile.getEditorPane());
         this.openFile = null;
@@ -418,7 +416,6 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
         this.newFile = new NewFile(this.currentFile, this.editorPane.getEditorPane(), this.currentFolder);
         this.newFile.createNewFile();
         this.currentFile = this.newFile.getCurrentFile();
-        this.currentFolder = this.newFile.getCurrentFolder();
         this.editorPane.setEditorPane(this.newFile.getEditorPane());
         this.newFile = null;
         this.decideEditorEnabled(false);
