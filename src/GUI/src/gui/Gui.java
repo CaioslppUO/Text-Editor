@@ -152,8 +152,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
     //Pré-condição: O Frame principal deve estar instanciado e configurado corretamente
     //Pós-condição: A barra de menu é adicionada à interface
     private void includeMenuBar() {
-        this.menuBar = new MenuBar(this);
-        this.frame.setJMenuBar(this.menuBar.defineMenuBar());
+        this.menuBar = new MenuBar(this,this.frame);
     }
 
     //Função que inclui o painel de arquivos abertos à interface
@@ -162,8 +161,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
     //Pré-condição: O painel central deve estar instanciado e configurado.
     //Pós-condição: O painel que gerencia os arquivos abertos é adicionado à interface
     private void includeOpenFilesPanel() {
-        this.openFiles = new OpenFiles();
-        this.panelCentral.add(this.openFiles.getOpenFilesPanel(), this.openFiles.getGbc());
+        this.openFiles = new OpenFiles(this.panelCentral);
     }
 
     //Função que inclui o editroPane na interface
@@ -174,10 +172,8 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
      */
     //Pós-condição: O editor é adicionado à interface
     private void includeEditorPane() {
-        this.editorPane = new EditorPane(this.fontType, this.fontSize);
-        this.editorPane.getEditorPane().addKeyListener(this);
+        this.editorPane = new EditorPane(this.fontType, this.fontSize, this.panelCentral, this);
         this.decideEditorEnabled(false);
-        this.panelCentral.add(this.editorPane.getScrollPane(), this.editorPane.getGbc());
     }
 
     //Função que inclui a tela de configuração do editorPane na interface
@@ -249,7 +245,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
         this.panelTop = new JPanel();
         this.panelTop.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
         this.panelTop.setBackground(this.constants.getSideAreasColor());
-        frame.getContentPane().add(this.panelTop, BorderLayout.NORTH);
+        this.frame.getContentPane().add(this.panelTop, BorderLayout.NORTH);
 
         Component verticalStrut = Box.createVerticalStrut(50);
 

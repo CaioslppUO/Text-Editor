@@ -6,6 +6,8 @@ import gui.maingui.Constants;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
+import java.awt.event.KeyListener;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.text.PlainDocument;
 
@@ -21,9 +23,9 @@ public class EditorPane {
     //Retorno: Nenhum
     //Pré-condição: Nenhuma
     //Pós-condição: A Classe é instanciada e o painel de edição é definido
-    public EditorPane(String fontType, Integer fontSize){
+    public EditorPane(String fontType, Integer fontSize, JPanel wrapPanel, KeyListener keyListener){
         constants = new Constants();
-        this.defineEditorPane(fontType,fontSize);
+        this.defineEditorPane(fontType,fontSize,wrapPanel,keyListener);
     }
     
     //Função que define o painel de edição
@@ -33,10 +35,11 @@ public class EditorPane {
     /*Pós-condição: O painel é instanciado e configurado, sendo que sua configuração fica guardada em variáveis locais da classe
      * para posteriormente serem recolhidas por quem desejar utilizar o painel que foi gerado
     */
-    private void defineEditorPane(String fontType, Integer fontSize){
+    private void defineEditorPane(String fontType, Integer fontSize, JPanel wrapPanel, KeyListener keyListener){
         this.editorPane = new JEditorPane();
         this.editorPane.setForeground(this.constants.getEditorPaneFontColor());
         this.editorPane.setBackground(this.constants.getPaneEditorColor());
+        this.editorPane.addKeyListener(keyListener);
 
         this.gbc_editorPane = new GridBagConstraints();
         this.gbc_editorPane.gridx = 0;
@@ -54,6 +57,8 @@ public class EditorPane {
         this.scrollPane = new JScrollPane(this.editorPane);
         this.tln = new TextLineNumber(this.editorPane);
         this.scrollPane.setRowHeaderView(this.tln);
+        
+        wrapPanel.add(this.scrollPane, this.gbc_editorPane);
     }
     
     //Getter do ScrollPane. Adicione esse componente ao JPanel para ter o editor de texto funcional

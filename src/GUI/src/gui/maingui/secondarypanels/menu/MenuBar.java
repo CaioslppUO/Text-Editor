@@ -7,19 +7,19 @@ import javax.swing.JMenuItem;
 import javax.swing.border.EtchedBorder;
 import gui.maingui.Constants;
 import java.awt.event.ActionListener;
+import javax.swing.JFrame;
 
 public class MenuBar {
     private Constants constants;
-    private ActionListener listener;
     
     //Construtor da barra de menu
     //Entrada: Listener que irá tratar as ações executadas no menu
     //Retorno: Nenhum
     //Pré-condição: Nenhuma
     //Pós-condição: A classe é instanciada
-    public MenuBar(ActionListener listener){
+    public MenuBar(ActionListener listener, JFrame menuWrap){
         this.constants = new Constants();
-        this.listener = listener;
+        this.defineMenuBar(listener,menuWrap);
     }
     
     //Cria e retorna um sub item de menu
@@ -27,14 +27,14 @@ public class MenuBar {
     //Retorno: Menu Item gerado
     //Pŕe-condição: Nenhuma
     //Pós-condição: O Menu Item é gerado e retornado
-    private JMenuItem createMenuItem(String name, String actionCommand, String toolTip) {
+    private JMenuItem createMenuItem(String name, String actionCommand, String toolTip, ActionListener listener) {
         JMenuItem menuItem;
         menuItem = new JMenuItem(name);
         menuItem.setForeground(this.constants.getMenuForeGroundColor());
         menuItem.setBackground(this.constants.getSideAreasColor());
         menuItem.setToolTipText(toolTip);
         menuItem.setActionCommand(actionCommand);
-        menuItem.addActionListener(this.listener);
+        menuItem.addActionListener(listener);
         return menuItem;
     }
 
@@ -56,10 +56,10 @@ public class MenuBar {
 
     //Função que define a barra do menu
     //Entrada: Nenhuma
-    //Retorno: A barra de menu gerada
+    //Retorno: Nenhum
     //Pré-condição: Nenhuma
-    //Pós-condição: A barra de menu é gerada, configurada e retornada
-    public JMenuBar defineMenuBar() {
+    //Pós-condição: A barra de menu é gerada, configurada e adcionada ao menuWrap
+    public void defineMenuBar(ActionListener listener, JFrame menuWrap) {
         JMenuBar menuBar;
         //Inicializando a barra do menu
         menuBar = new JMenuBar();
@@ -71,10 +71,10 @@ public class MenuBar {
                 this.createMenu(
                         "File", //Menu File
                         new JMenuItem[]{
-                            this.createMenuItem("New File", "buttonNewFilePressed", "ctrl+n"), //Sub botão new file
-                            this.createMenuItem("Open File", "buttonOpenFilePressed", "ctrl+o"), //Sub botão open file
-                            this.createMenuItem("Open Folder", "buttonOpenFolderPressed", "Open a folder"),
-                            this.createMenuItem("Run Current File", "buttonRunPressed", "ctlr+r. C or Python only. Output Only")
+                            this.createMenuItem("New File", "buttonNewFilePressed", "ctrl+n",listener), //Sub botão new file
+                            this.createMenuItem("Open File", "buttonOpenFilePressed", "ctrl+o",listener), //Sub botão open file
+                            this.createMenuItem("Open Folder", "buttonOpenFolderPressed", "Open a folder",listener),
+                            this.createMenuItem("Run Current File", "buttonRunPressed", "ctlr+r. C or Python only. Output Only",listener)
                         }
                 )
         );
@@ -84,8 +84,8 @@ public class MenuBar {
                 this.createMenu(
                         "Save", //Menu Save
                         new JMenuItem[]{
-                            this.createMenuItem("Save as", "buttonSaveAsPressed", "ctrl+shift+s"), //Sub botão Save as
-                            this.createMenuItem("Save", "buttonSavePressed", "ctrl+s") //Sub botão Save
+                            this.createMenuItem("Save as", "buttonSaveAsPressed", "ctrl+shift+s",listener), //Sub botão Save as
+                            this.createMenuItem("Save", "buttonSavePressed", "ctrl+s",listener) //Sub botão Save
                         }
                 )
         );
@@ -95,14 +95,14 @@ public class MenuBar {
                 this.createMenu(
                         "Settings", //Menu Settings
                         new JMenuItem[]{
-                            this.createMenuItem("Editor", "buttonEditorPressed", ""), //Sub botão Editor
-                            this.createMenuItem("Themes", "buttonThemesPressed", "") //Sub botão Themes
+                            this.createMenuItem("Editor", "buttonEditorPressed", "",listener), //Sub botão Editor
+                            this.createMenuItem("Themes", "buttonThemesPressed", "",listener) //Sub botão Themes
                         }
                 )
         );
 
         //Adicionando a menuBar à interface
         
-        return menuBar;
+        menuWrap.setJMenuBar(menuBar);
     }
 }
