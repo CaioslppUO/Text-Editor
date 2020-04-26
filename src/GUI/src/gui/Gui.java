@@ -138,6 +138,14 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
+    //Getter do frame principal
+    public JFrame getMainFrame() {
+        return this.frame;
+    }
+
+    //***********************
+    //* Funções de inclusão *
+    //***********************
     //Função que inclui a barra de menu na interface
     //Entrada: Nenhuma
     //Retorno: Nenhum
@@ -148,11 +156,46 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
         this.frame.setJMenuBar(this.menuBar.defineMenuBar());
     }
 
-    //Getter do frame principal
-    public JFrame getMainFrame() {
-        return this.frame;
+    //Função que inclui o painel de arquivos abertos à interface
+    //Entrada: Nenhuma
+    //Retorno: Nenhum
+    //Pré-condição: O painel central deve estar instanciado e configurado.
+    //Pós-condição: O painel que gerencia os arquivos abertos é adicionado à interface
+    private void includeOpenFilesPanel() {
+        this.openFiles = new OpenFiles();
+        this.panelCentral.add(this.openFiles.getOpenFilesPanel(), this.openFiles.getGbc());
     }
 
+    //Função que inclui o editroPane na interface
+    //Entrada: Nenhuma
+    //Retorno: Nenhum
+    /*Pré-condição: O painel central deve estar instanciado e configurado. A classe Gui deve implementar a classe
+     * KeyListener para tratar atalhos pressionados no editor
+     */
+    //Pós-condição: O editor é adicionado à interface
+    private void includeEditorPane() {
+        this.editorPane = new EditorPane(this.fontType, this.fontSize);
+        this.editorPane.getEditorPane().addKeyListener(this);
+        this.decideEditorEnabled(false);
+        this.panelCentral.add(this.editorPane.getScrollPane(), this.editorPane.getGbc());
+    }
+
+    //Função que inclui a tela de configuração do editorPane na interface
+    //Entrada: Nenhuma
+    //Retorno: Nenhum
+    /*Pré-condição: As variáveis this.fontTypee this.fontSize devem estar instanciadas e configuradas.
+     * A classe Gui deve implementar as classes ActionListener e KeyListener para tratar interações
+     */
+    //Pós-condição: A tela de configuração do editorPane é incluida à interface
+    private void includeEditorPaneConfig() {
+        this.editorPaneConfig = new EditorPaneConfig(this.fontType, this.fontSize);
+        this.editorPaneConfig.getOkButton().addActionListener(this);
+        this.editorPaneConfig.getEditorConfigFrame().addKeyListener(this);
+    }
+
+    //************************
+    //* Funções de definição *
+    //************************
     //Função que configura e inicializa o frame principal
     //Entrada: Nenhuma
     //Retorno: Nenhum
@@ -233,6 +276,51 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
         this.frame.getContentPane().add(this.panelRight, BorderLayout.EAST);
     }
 
+    //*************************
+    //* Funções de auxiliares *
+    //*************************
+    //Função que fecha o arquivo que está aberto
+    //Entrada: Nenhuma
+    //Retorno: Nenhum
+    /*Pŕe-condição: As variáveis this.addedFilesPanel, this.saveFile, this.lastClickedFilePath, this.currentFile,
+     * this.editorPane e this.currentFile devem estar instanciadas e configuradas corretamente.
+     */
+    //Pós-condição: O arquivo aberto atualmente é fechado
+    private void closeFile() {
+        if (this.currentFile != null) {
+            int result = JOptionPane.showConfirmDialog(null, "Save File?", "Save", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+            RoundedPanel aux = this.addedFilesPanel.remove(this.currentFile.getAbsolutePath());
+            this.openFiles.getOpenFilesPanel().remove(aux);
+            SwingUtilities.updateComponentTreeUI(frame);
+
+            try {
+                this.runOpenFile(((RoundedPanel) this.addedFilesPanel.values().toArray()[0]).getName());
+            } catch (Exception e) {
+                if (result == 0) {
+                    this.saveFile.saveFile(false, this.currentFile, this.editorPane.getEditorPane().getText());
+                }
+                this.currentFile = null;
+                this.lastClickedFilePath = null;
+                this.decideEditorEnabled(false);
+            }
+        }
+    }
+
+    //Função que atualiza a fonte utilizada no editor
+    //Entrada: Nenhuma
+    //Retorno: Nenhum
+    /*Pŕe-condição: O editorPane deve estar instanciado e configurado. as variáveis this.fontSize e this.fontType
+     * devem estar instanciadas e configuradas
+     */
+    //Pós-condição: A fonte é atualizada para as opções definidas no menu
+    private void updateFont() {
+        this.editorPaneConfig.getEditorConfigFrame().dispose();
+        this.fontSize = Integer.parseInt(this.editorPaneConfig.getFontSizeSpinner().getValue().toString());
+        this.fontType = this.editorPaneConfig.getFontTypeList().getSelectedItem().toString();
+        this.editorPane.getEditorPane().setFont(new Font(this.fontType, Font.PLAIN, this.fontSize));
+    }
+
     //Função que decide se o editor de texto vai estar habilitado ou não baseado se existe ou não um arquivo aberto
     //Entrada: Verdadeiro ou falso que o arquivo em this.currentFile já está aberto
     //Retorno: Nenhum
@@ -255,7 +343,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
     /*Pré-condição: As variáveis this.lastClickedPath e this.addedFilesPanel devem estar instanciadas e configuradas
      * corretamentes. O frame principal deve estar instanciado e configurado corretamente. Não deve existir previamente
      * um painel de arquivos abertos com o mesmo fileName e o mesmo filePath.
-    */
+     */
     //Pós-condição: Um novo painel com o nome fileName é criado e adicionado à interface
     private void createNewFileOpenPanel(String fileName, String filePath) {
         this.createNewFileOpenPanel = new CreateNewFileOpenPanel(this.lastClickedFilePath, this.addedFilesPanel);
@@ -275,36 +363,12 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
         SwingUtilities.updateComponentTreeUI(frame);
     }
 
-    //Função que inclui o painel de arquivos abertos à interface
-    //Entrada: Nenhuma
-    //Retorno: Nenhum
-    //Pré-condição: O painel central deve estar instanciado e configurado.
-    //Pós-condição: O painel que gerencia os arquivos abertos é adicionado à interface
-    private void includeOpenFilesPanel() {
-        this.openFiles = new OpenFiles();
-        this.panelCentral.add(this.openFiles.getOpenFilesPanel(), this.openFiles.getGbc());
-    }
-
-    //Função que inclui o editroPane na interface
-    //Entrada: Nenhuma
-    //Retorno: Nenhum
-    /*Pré-condição: O painel central deve estar instanciado e configurado. A classe Gui deve implementar a classe
-     * KeyListener para tratar atalhos pressionados no editor
-    */
-    //Pós-condição: O editor é adicionado à interface
-    private void includeEditorPane() {
-        this.editorPane = new EditorPane(this.fontType, this.fontSize);
-        this.editorPane.getEditorPane().addKeyListener(this);
-        this.decideEditorEnabled(false);
-        this.panelCentral.add(this.editorPane.getScrollPane(), this.editorPane.getGbc());
-    }
-
     //Função que aplica as rotinas para abrir um arquivo
     //Entrada: Nenhuma
     //Retorno: Nenhum
     /*Pré-condição: As variáveis this.currentFile, this.editorPane, this.addedFilesPanel e this.currentFolder devem
      * estar instanciadas e configuradas.
-    */
+     */
     //Pós-condição: Abre um arquivo e o coloca na interface para edição
     private void runOpenFile() {
         this.openFile = new OpenFile(this.currentFile, this.editorPane.getEditorPane(), this.addedFilesPanel, this.currentFolder);
@@ -326,7 +390,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
     //Retorno: Nenhum
     /*Pré-condição: As variáveis this.currentFile, this.editorPane, this.addedFilesPanel e this.currentFolder devem
      * estar instanciadas e configuradas.
-    */
+     */
     //Pós-condição: Abre um arquivo e o coloca na interface para edição
     private void runOpenFile(String filePath) {
         this.openFile = new OpenFile(this.currentFile, this.editorPane.getEditorPane(), this.addedFilesPanel, this.currentFolder);
@@ -343,39 +407,12 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
         }
     }
 
-    //Função que inclui a tela de configuração do editorPane na interface
-    //Entrada: Nenhuma
-    //Retorno: Nenhum
-    /*Pré-condição: As variáveis this.fontTypee this.fontSize devem estar instanciadas e configuradas.
-     * A classe Gui deve implementar as classes ActionListener e KeyListener para tratar interações
-    */
-    //Pós-condição: A tela de configuração do editorPane é incluida à interface
-    private void includeEditorPaneConfig() {
-        this.editorPaneConfig = new EditorPaneConfig(this.fontType, this.fontSize);
-        this.editorPaneConfig.getOkButton().addActionListener(this);
-        this.editorPaneConfig.getEditorConfigFrame().addKeyListener(this);
-    }
-
-    //Função que atualiza a fonte utilizada no editor
-    //Entrada: Nenhuma
-    //Retorno: Nenhum
-    /*Pŕe-condição: O editorPane deve estar instanciado e configurado. as variáveis this.fontSize e this.fontType
-     * devem estar instanciadas e configuradas
-    */
-    //Pós-condição: A fonte é atualizada para as opções definidas no menu
-    private void updateFont() {
-        this.editorPaneConfig.getEditorConfigFrame().dispose();
-        this.fontSize = Integer.parseInt(this.editorPaneConfig.getFontSizeSpinner().getValue().toString());
-        this.fontType = this.editorPaneConfig.getFontTypeList().getSelectedItem().toString();
-        this.editorPane.getEditorPane().setFont(new Font(this.fontType, Font.PLAIN, this.fontSize));
-    }
-
     //Função que executa as rotinas para criar um novo arquivo
     //Entrada: Nenhuma
     //Retorno: Nenhum
     /*Pré-condição: O editorPane deve estar instanciado e configurado. As variáveis this.currentFile e this.currentFolder
      * devem estar instanciadas e configuradas
-    */
+     */
     //Pós-condição: Um novo arquivo é criado
     public void runCreateNewFile() {
         this.newFile = new NewFile(this.currentFile, this.editorPane.getEditorPane(), this.currentFolder);
@@ -450,34 +487,9 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
         }
     }
 
-    //Função que fecha o arquivo que está aberto
-    //Entrada: Nenhuma
-    //Retorno: Nenhum
-    /*Pŕe-condição: As variáveis this.addedFilesPanel, this.saveFile, this.lastClickedFilePath, this.currentFile,
-     * this.editorPane e this.currentFile devem estar instanciadas e configuradas corretamente.
-    */
-    //Pós-condição: O arquivo aberto atualmente é fechado
-    private void closeFile() {
-        if (this.currentFile != null) {
-            int result = JOptionPane.showConfirmDialog(null, "Save File?", "Save", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-
-            RoundedPanel aux = this.addedFilesPanel.remove(this.currentFile.getAbsolutePath());
-            this.openFiles.getOpenFilesPanel().remove(aux);
-            SwingUtilities.updateComponentTreeUI(frame);
-
-            try {
-                this.runOpenFile(((RoundedPanel) this.addedFilesPanel.values().toArray()[0]).getName());
-            } catch (Exception e) {
-                if (result == 0) {
-                    this.saveFile.saveFile(false, this.currentFile, this.editorPane.getEditorPane().getText());
-                }
-                this.currentFile = null;
-                this.lastClickedFilePath = null;
-                this.decideEditorEnabled(false);
-            }
-        }
-    }
-
+    //***********************
+    //* Funções de listener *
+    //***********************
     //Responde aos botões pressionados na interface
     @Override
     public void actionPerformed(ActionEvent e) {
