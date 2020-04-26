@@ -43,6 +43,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import gui.maingui.secondarypanels.openfiles.CreateNewFileOpenPanel;
 import gui.maingui.secondarypanels.savefile.SaveFile;
+import gui.maingui.secondarypanels.newfile.NewFile;
 
 public class Gui implements ActionListener, KeyListener, MouseListener {
 
@@ -68,9 +69,6 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
     private String fontType;
 
     //Painéis secundários        
-    private JDialog createNewFileFrame;
-    private JFileChooser chooseNewFileDirectory;
-
     private JDialog openFolderFrame;
     private JFileChooser chooseOpenDirectory;
 
@@ -85,6 +83,8 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
     private SaveFile saveFile;
 
     private OpenFile openFile;
+    
+    private NewFile newFile;
 
     //Construtor da classe
     public Gui() {
@@ -343,64 +343,15 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
         this.fontType = this.editorPaneConfig.getFontTypeList().getSelectedItem().toString();
         this.editorPane.getEditorPane().setFont(new Font(this.fontType, Font.PLAIN, this.fontSize));
     }
-
-    //Função que define o frame de criar um novo arquivo
-    //Entrada: Nenhuma
-    //Retorno: FileChooser.APPROVE_OPTION se o diretório for escolhido ou o contrário caso não seja
-    //Pré-condição: Nenhuma
-    //Pós-condição: Nenhuma
-    private int defineCreateFileFrame() {
-        this.createNewFileFrame = new JDialog();
-        this.createNewFileFrame.getContentPane().setBackground(this.constants.getSideAreasColor());
-        this.createNewFileFrame.setSize(600, 600);
-        this.createNewFileFrame.setLocationRelativeTo(null);
-        this.createNewFileFrame.setTitle("Save File As");
-
-        this.chooseNewFileDirectory = new JFileChooser();
-        this.chooseNewFileDirectory.setCurrentDirectory(new File(this.currentFolder));
-        this.chooseNewFileDirectory.setDialogTitle("Save to");
-        this.chooseNewFileDirectory.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        return chooseNewFileDirectory.showOpenDialog(null);
-    }
-
-    //Função que cria um novo arquivo caso ele já não exista
-    //Entrada: Nenhuma
-    //Retorno: Nenhum
-    //Pŕe-condição: Nenhuma
-    //Pós-condição: O arquivo é criado e salvo no disco
-    private void createNewFile() {
-        if (this.currentFile == null) {
-            String fileSeparator = System.getProperty("file.separator");
-            if (defineCreateFileFrame() == JFileChooser.APPROVE_OPTION) { //Salvar o arquivo
-                File directory = this.chooseNewFileDirectory.getSelectedFile();
-                String fileName;
-                fileName = JOptionPane.showInputDialog("File Name");
-                if (fileName != null) {
-                    File newFile = new File(directory.toString() + fileSeparator + fileName);
-                    try {
-                        if (newFile.createNewFile()) {
-                            JOptionPane.showMessageDialog(null, "File Created");
-                            this.currentFile = newFile;
-                            this.editorPane.getEditorPane().setText("");
-                            this.decideEditorEnabled(false);
-                        } else {
-                            JOptionPane.showMessageDialog(null, "File Already Exists");
-                        }
-                    } catch (IOException e) {
-                        JOptionPane.showMessageDialog(null, "Error while trying to create the file");
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(null, "Invalid File Name");
-                }
-            }
-            this.createNewFileFrame.getContentPane().add(chooseNewFileDirectory);
-
-            this.createNewFileFrame.setVisible(true);
-            this.createNewFileFrame.dispose();
-        } else {
-            this.currentFile = null;
-            this.createNewFile();
-        }
+    
+    public void runCreateNewFile(){
+        this.newFile = new NewFile(this.currentFile,this.editorPane.getEditorPane(),this.currentFolder);
+        this.newFile.createNewFile();
+        this.currentFile = this.newFile.getCurrentFile();
+        this.currentFolder = this.newFile.getCurrentFolder();
+        this.editorPane.setEditorPane(this.newFile.getEditorPane());
+        this.newFile = null;
+        this.decideEditorEnabled(false);
     }
 
     //Função que roda o arquivo atualmente aberto. Somente em Python3 ou em C
@@ -526,7 +477,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
                     this.includeEditorPaneConfig();
                     break;
                 case "buttonNewFilePressed":
-                    this.createNewFile();
+                    this.runCreateNewFile();
                     break;
                 case "FontSizeChanged":
                     this.updateFont();
@@ -611,7 +562,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
 
         //Cria um novo arquivo ao apertar ctr+n
         if (e.isControlDown() && e.getKeyChar() != 'n' && e.getKeyCode() == 78) {
-            this.createNewFile();
+            this.runCreateNewFile();
         }
 
         //Executa um programa em python ou em c
