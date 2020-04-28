@@ -40,6 +40,7 @@ import gui.maingui.secondarypanels.savefile.SaveFile;
 import gui.maingui.secondarypanels.newfile.NewFile;
 import gui.maingui.secondarypanels.openfolder.OpenFolder;
 import gui.maingui.secondarypanels.menu.MenuBar;
+import gui.maingui.secondarypanels.menu.ListenerMenu;
 
 public class Gui implements ActionListener, KeyListener, MouseListener {
 
@@ -91,6 +92,9 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
     //Listener da interface principal
     private ListenerGui listenerGui;
     
+    //Listener do menu
+    private ListenerMenu listenerMenu;
+    
     //Variável utilizada para guardar a única instância da classe
     private static Gui instance;
 
@@ -114,6 +118,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
         
         //Listeners
         this.listenerGui = new ListenerGui();
+        this.listenerMenu = new ListenerMenu();
 
         //Iniciando os componentes visuais
         initialize();
@@ -158,7 +163,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
     //Pré-condição: O Frame principal deve estar instanciado e configurado corretamente
     //Pós-condição: A barra de menu é adicionada à interface
     private void includeMenuBar() {
-        new MenuBar(this, this.frame);
+        new MenuBar(this.listenerMenu, this.frame);
     }
 
     //Função que inclui o painel de arquivos abertos à interface
@@ -189,7 +194,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
      * A classe Gui deve implementar as classes ActionListener e KeyListener para tratar interações
      */
     //Pós-condição: A tela de configuração do editorPane é incluida à interface
-    private void includeEditorPaneConfig() {
+    public void includeEditorPaneConfig() {
         this.editorPaneConfig = new EditorPaneConfig(this.fontType, this.fontSize);
         this.editorPaneConfig.getOkButton().addActionListener(this);
         this.editorPaneConfig.getEditorConfigFrame().addKeyListener(this);
@@ -494,33 +499,12 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
                 case "buttonThemesPressed":
                     JOptionPane.showMessageDialog(null, "Button Themes Pressed");
                     break;
-                case "buttonEditorPressed":
-                    this.includeEditorPaneConfig();
-                    break;
-                case "buttonNewFilePressed":
-                    this.runCreateNewFile();
-                    break;
                 case "FontSizeChanged":
                     this.editorPaneConfig.getEditorConfigFrame().dispose();
                     this.updateFont();
                     break;
-                case "buttonSaveAsPressed":
-                    this.saveFile.saveFileAs(this.currentFile, this.currentFolder, this.editorPane.getEditorPane().getText());
-                    break;
-                case "buttonOpenFilePressed":
-                    this.runOpenFile();
-                    break;
-                case "buttonSavePressed":
-                    this.saveFile.saveFile(true, this.currentFile, this.editorPane.getEditorPane().getText());
-                    break;
                 case "buttonCloseFilePressed":
                     this.closeFile();
-                    break;
-                case "buttonRunPressed":
-                    this.runSelectedFile();
-                    break;
-                case "buttonOpenFolderPressed":
-                    this.runOpenFolder();
                     break;
                 default:
                     break;
@@ -633,5 +617,25 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
             instance = new Gui();
         }
         return instance;
+    }
+    
+    //Getter do arquivo aberto atualmente
+    public File getCurrentFile(){
+        return this.currentFile;
+    }
+    
+    //Getter da pasta aberta atualmente
+    public String getCurrentFolder(){
+        return this.currentFolder;
+    }
+    
+    //Getter do EditorPane
+    public EditorPane getEditorPane(){
+        return this.editorPane;
+    }
+    
+    //Getter saveFile
+    public SaveFile getSaveFile(){
+        return this.saveFile;
     }
 }

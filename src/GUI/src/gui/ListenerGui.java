@@ -2,7 +2,6 @@ package gui;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import gui.Gui;
 
 public class ListenerGui implements KeyListener {
     
