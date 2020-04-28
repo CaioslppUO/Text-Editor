@@ -7,8 +7,6 @@ import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -35,6 +33,7 @@ import java.io.InputStreamReader;
 import gui.maingui.secondarypanels.openfilespanel.OpenFilesPanel;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
 import gui.maingui.secondarypanels.openfilespanel.CreateNewFileOpenPanel;
 import gui.maingui.secondarypanels.savefile.SaveFile;
 import gui.maingui.secondarypanels.newfile.NewFile;
@@ -42,8 +41,9 @@ import gui.maingui.secondarypanels.openfolder.OpenFolder;
 import gui.maingui.secondarypanels.menu.MenuBar;
 import gui.maingui.secondarypanels.menu.ListenerMenu;
 import gui.maingui.secondarypanels.editorpanel.ListenerEditorPanel;
+import gui.maingui.secondarypanels.editorpanel.ListenerEditorPanelConfig;
 
-public class Gui implements ActionListener, KeyListener, MouseListener {
+public class Gui implements ActionListener, MouseListener {
 
     //Frame e Painéis principais
     private JFrame frame;
@@ -99,6 +99,9 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
     //Listener do editorPanel
     private ListenerEditorPanel listenerEditorPanel;
     
+    //Listener do editorPanelConfig
+    private ListenerEditorPanelConfig listenerEditorPanelConfig;
+    
     //Variável utilizada para guardar a única instância da classe
     private static Gui instance;
 
@@ -124,6 +127,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
         this.listenerGui = new ListenerGui();
         this.listenerMenu = new ListenerMenu();
         this.listenerEditorPanel = new ListenerEditorPanel();
+        this.listenerEditorPanelConfig = new ListenerEditorPanelConfig();
 
         //Iniciando os componentes visuais
         initialize();
@@ -202,7 +206,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
     public void includeEditorPaneConfig() {
         this.editorPaneConfig = new EditorPaneConfig(this.fontType, this.fontSize);
         this.editorPaneConfig.getOkButton().addActionListener(this);
-        this.editorPaneConfig.getEditorConfigFrame().addKeyListener(this);
+        this.editorPaneConfig.getEditorConfigFrame().addKeyListener(this.listenerEditorPanelConfig);
     }
 
     //************************
@@ -329,7 +333,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
      * devem estar instanciadas e configuradas
      */
     //Pós-condição: A fonte é atualizada para as opções definidas no menu
-    private void updateFont() {
+    public void updateFont() {
         this.fontSize = Integer.parseInt(this.editorPaneConfig.getFontSizeSpinner().getValue().toString());
         this.fontType = this.editorPaneConfig.getFontTypeList().getSelectedItem().toString();
         this.editorPane.getEditorPane().setFont(new Font(this.fontType, Font.PLAIN, this.fontSize));
@@ -517,24 +521,6 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
         }
     }
 
-    @Override
-    public void keyPressed(KeyEvent e) {
-    }
-
-    //Verifica as teclas apertadas na interface
-    @Override
-    public void keyReleased(KeyEvent e) {
-        //Resposta do botão OK da tela de configuração do editor
-        if (this.editorPaneConfig != null && this.editorPaneConfig.getEditorConfigFrame().isActive() && e.getKeyCode() == 27) {
-            this.editorPaneConfig.getEditorConfigFrame().dispose();
-            this.updateFont();
-        }
-    }
-
-    @Override
-    public void keyTyped(KeyEvent e) {
-    }
-
     //Responde aos clicks de mouse na interface
     @Override
     public void mouseClicked(MouseEvent me) {
@@ -627,5 +613,10 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
     //Getter saveFile
     public SaveFile getSaveFile(){
         return this.saveFile;
+    }
+    
+    //Getter do panelEditorConfig
+    public EditorPaneConfig getEditorPaneConfig(){
+        return this.editorPaneConfig;
     }
 }
