@@ -3,29 +3,26 @@ package gui.maingui.secondarypanels.newfile;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import gui.maingui.Constants;
+import gui.maingui.secondarypanels.editorpanel.EditorPane;
 import java.io.File;
 import java.io.IOException;
-import javax.swing.JEditorPane;
 import javax.swing.JOptionPane;
 
 public class NewFile {
     private JDialog createNewFileFrame;
     private JFileChooser chooseNewFileDirectory;
     private Constants constants;
-    private JEditorPane editorPane;
     private File currentFile;
-    private String currentFolder;
 
     //Construtor
     //Entrada: Arquivo atual, o painel de edição e a pasta atual
     //Retorno: Nenhum
     //Pré-condição: As variáveis currentFile, editorPane e currentFolder devem estar devidamente instanciadas e configuradas
     //Pós-condição: A classe é instanciada
-    public NewFile(File currentFile, JEditorPane editorPane, String currentFolder) {
+    public NewFile(File currentFile, EditorPane editorPane, String currentFolder) {
         this.constants = new Constants();
         this.currentFile = currentFile;
-        this.editorPane = editorPane;
-        this.currentFolder = currentFolder;
+        this.createNewFile(editorPane,currentFolder);
     }
 
     //Função que define o frame de criar um novo arquivo
@@ -33,7 +30,7 @@ public class NewFile {
     //Retorno: FileChooser.APPROVE_OPTION se o diretório for escolhido ou o contrário caso não seja
     //Pré-condição: Nenhuma
     //Pós-condição: Nenhuma
-    private int defineCreateFileFrame() {
+    private int defineCreateFileFrame(String currentFolder) {
         this.createNewFileFrame = new JDialog();
         this.createNewFileFrame.getContentPane().setBackground(this.constants.getSideAreasColor());
         this.createNewFileFrame.setSize(600, 600);
@@ -41,7 +38,7 @@ public class NewFile {
         this.createNewFileFrame.setTitle("Save File As");
 
         this.chooseNewFileDirectory = new JFileChooser();
-        this.chooseNewFileDirectory.setCurrentDirectory(new File(this.currentFolder));
+        this.chooseNewFileDirectory.setCurrentDirectory(new File(currentFolder));
         this.chooseNewFileDirectory.setDialogTitle("Save to");
         this.chooseNewFileDirectory.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         return chooseNewFileDirectory.showOpenDialog(null);
@@ -52,10 +49,10 @@ public class NewFile {
     //Retorno: Nenhum
     //Pŕe-condição: Nenhuma
     //Pós-condição: O arquivo é criado e salvo no disco
-    public void createNewFile() {
+    public void createNewFile(EditorPane editorPane, String currentFolder) {
         if (this.currentFile == null) {
             String fileSeparator = System.getProperty("file.separator");
-            if (defineCreateFileFrame() == JFileChooser.APPROVE_OPTION) { //Salvar o arquivo
+            if (defineCreateFileFrame(currentFolder) == JFileChooser.APPROVE_OPTION) { //Salvar o arquivo
                 File directory = this.chooseNewFileDirectory.getSelectedFile();
                 String fileName;
                 fileName = JOptionPane.showInputDialog("File Name");
@@ -65,7 +62,7 @@ public class NewFile {
                         if (newFile.createNewFile()) {
                             JOptionPane.showMessageDialog(null, "File Created");
                             this.currentFile = newFile;
-                            this.editorPane.setText("");
+                            editorPane.getEditorPane().setText("");
                         } else {
                             JOptionPane.showMessageDialog(null, "File Already Exists");
                         }
@@ -82,13 +79,8 @@ public class NewFile {
             this.createNewFileFrame.dispose();
         } else {
             this.currentFile = null;
-            this.createNewFile();
+            this.createNewFile(editorPane,currentFolder);
         }
-    }
-
-    //Getter do editorPane. O arquivo aberto será aberto nesse editorPane
-    public JEditorPane getEditorPane() {
-        return editorPane;
     }
 
     //Getter do currentFile. O arquivo aberto ficará guardado nessa variável

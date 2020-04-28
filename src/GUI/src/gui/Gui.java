@@ -369,6 +369,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
         this.currentFile = this.openFile.openFile(this.currentFolder, this.editorPane);
         this.openFile = null;
         
+        //Confere se o arquivo já está aberto no visualisador
         if (this.addedFilesPanel.get(this.currentFile.getAbsolutePath()) != null) {
             this.decideEditorEnabled(true);
         } else {
@@ -388,6 +389,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
         this.currentFile = this.openFile.openFileUsingPath(filePath, this.editorPane);
         this.openFile = null;
         
+        //Confere se o arquivo já está aberto no visualisador
         if (this.addedFilesPanel.get(this.currentFile.getAbsolutePath()) != null) {
             this.decideEditorEnabled(true);
         } else {
@@ -403,10 +405,8 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
      */
     //Pós-condição: Um novo arquivo é criado
     public void runCreateNewFile() {
-        this.newFile = new NewFile(this.currentFile, this.editorPane.getEditorPane(), this.currentFolder);
-        this.newFile.createNewFile();
+        this.newFile = new NewFile(this.currentFile, this.editorPane, this.currentFolder);
         this.currentFile = this.newFile.getCurrentFile();
-        this.editorPane.setEditorPane(this.newFile.getEditorPane());
         this.newFile = null;
         this.decideEditorEnabled(false);
     }
