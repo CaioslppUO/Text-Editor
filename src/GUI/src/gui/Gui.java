@@ -41,6 +41,7 @@ import gui.maingui.secondarypanels.newfile.NewFile;
 import gui.maingui.secondarypanels.openfolder.OpenFolder;
 import gui.maingui.secondarypanels.menu.MenuBar;
 import gui.maingui.secondarypanels.menu.ListenerMenu;
+import gui.maingui.secondarypanels.editorpanel.ListenerEditorPanel;
 
 public class Gui implements ActionListener, KeyListener, MouseListener {
 
@@ -95,6 +96,9 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
     //Listener do menu
     private ListenerMenu listenerMenu;
     
+    //Listener do editorPanel
+    private ListenerEditorPanel listenerEditorPanel;
+    
     //Variável utilizada para guardar a única instância da classe
     private static Gui instance;
 
@@ -119,6 +123,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
         //Listeners
         this.listenerGui = new ListenerGui();
         this.listenerMenu = new ListenerMenu();
+        this.listenerEditorPanel = new ListenerEditorPanel();
 
         //Iniciando os componentes visuais
         initialize();
@@ -183,7 +188,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
      */
     //Pós-condição: O editor é adicionado à interface
     private void includeEditorPane() {
-        this.editorPane = new EditorPane(this.fontType, this.fontSize, this.panelCentral, this);
+        this.editorPane = new EditorPane(this.fontType, this.fontSize, this.panelCentral, this.listenerEditorPanel);
         this.decideEditorEnabled(false);
     }
 
@@ -519,25 +524,10 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
     //Verifica as teclas apertadas na interface
     @Override
     public void keyReleased(KeyEvent e) {
-        //Salva o arquivo aberto ao apertar ctrl+s
-        if (this.editorPane.getEditorPane() != null && e.isShiftDown() == false && e.isControlDown() && e.getKeyChar() != 's' && e.getKeyCode() == 83) {
-            this.saveFile.saveFile(true, this.currentFile, this.editorPane.getEditorPane().getText());
-        }
-
-        //Salva como o arquivo ao apertar ctrl+shift+s
-        if (this.editorPane.getEditorPane() != null && e.isShiftDown() && e.isControlDown() && e.getKeyChar() != 's' && e.getKeyCode() == 83) {
-            this.saveFile.saveFileAs(this.currentFile, this.currentFolder, this.editorPane.getEditorPane().getText());
-        }
-
         //Resposta do botão OK da tela de configuração do editor
         if (this.editorPaneConfig != null && this.editorPaneConfig.getEditorConfigFrame().isActive() && e.getKeyCode() == 27) {
             this.editorPaneConfig.getEditorConfigFrame().dispose();
             this.updateFont();
-        }
-
-        //Executa um programa em python ou em c
-        if (this.editorPane.getEditorPane() != null && e.isControlDown() && e.getKeyChar() != 'r' && e.getKeyCode() == 82) {
-            this.runSelectedFile();
         }
     }
 
