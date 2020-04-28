@@ -1,4 +1,4 @@
-package gui.maingui.secondarypanels.openfiles;
+package gui.maingui.secondarypanels.openfilespanel;
 
 import gui.extragui.RoundedBorder;
 import gui.extragui.RoundedPanel;
@@ -40,7 +40,7 @@ public class CreateNewFileOpenPanel {
             String filePath,
             MouseListener mouseListener,
             ActionListener actionListener,
-            OpenFiles openFiles
+            OpenFilesPanel openFiles
     ) {
         this.constants = new Constants();
 
@@ -69,7 +69,7 @@ public class CreateNewFileOpenPanel {
             String filePath,
             MouseListener mouseListener,
             ActionListener actionListener,
-            OpenFiles openFiles
+            OpenFilesPanel openFiles
     ) {
         this.newFilePanel = new RoundedPanel();
         this.newFilePanel.setBackground(this.constants.getSideAreasColor());

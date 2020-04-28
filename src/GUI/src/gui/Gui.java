@@ -32,10 +32,10 @@ import gui.maingui.secondarypanels.openfile.OpenFile;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.InputStreamReader;
-import gui.maingui.secondarypanels.openfiles.OpenFiles;
+import gui.maingui.secondarypanels.openfilespanel.OpenFilesPanel;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import gui.maingui.secondarypanels.openfiles.CreateNewFileOpenPanel;
+import gui.maingui.secondarypanels.openfilespanel.CreateNewFileOpenPanel;
 import gui.maingui.secondarypanels.savefile.SaveFile;
 import gui.maingui.secondarypanels.newfile.NewFile;
 import gui.maingui.secondarypanels.openfolder.OpenFolder;
@@ -71,7 +71,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
     private EditorPaneConfig editorPaneConfig;
 
     //Gerenciador do painel do visualisador de arquivos abertos
-    private OpenFiles openFiles;
+    private OpenFilesPanel openFiles;
 
     //Gerenciador do visualisador de arquivos abertos
     private CreateNewFileOpenPanel createNewFileOpenPanel;
@@ -158,7 +158,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
     //Pré-condição: O painel central deve estar instanciado e configurado.
     //Pós-condição: O painel que gerencia os arquivos abertos é adicionado à interface
     private void includeOpenFilesPanel() {
-        this.openFiles = new OpenFiles(this.panelCentral);
+        this.openFiles = new OpenFilesPanel(this.panelCentral);
     }
 
     //Função que inclui o editroPane na interface
@@ -365,12 +365,10 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
      */
     //Pós-condição: Abre um arquivo e o coloca na interface para edição
     private void runOpenFile() {
-        this.openFile = new OpenFile(this.currentFile, this.editorPane.getEditorPane(), this.addedFilesPanel, this.currentFolder);
-        this.openFile.openFile();
-        this.currentFile = this.openFile.getCurrentFile();
-        this.addedFilesPanel = this.openFile.getAddedFilesPanel();
-        this.editorPane.setEditorPane(this.openFile.getEditorPane());
+        this.openFile = new OpenFile(this.currentFile);
+        this.currentFile = this.openFile.openFile(this.currentFolder, this.editorPane);
         this.openFile = null;
+        
         if (this.addedFilesPanel.get(this.currentFile.getAbsolutePath()) != null) {
             this.decideEditorEnabled(true);
         } else {
@@ -386,12 +384,10 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
      */
     //Pós-condição: Abre um arquivo e o coloca na interface para edição
     private void runOpenFile(String filePath) {
-        this.openFile = new OpenFile(this.currentFile, this.editorPane.getEditorPane(), this.addedFilesPanel, this.currentFolder);
-        this.openFile.openFile(filePath);
-        this.currentFile = this.openFile.getCurrentFile();
-        this.addedFilesPanel = this.openFile.getAddedFilesPanel();
-        this.editorPane.setEditorPane(this.openFile.getEditorPane());
+        this.openFile = new OpenFile(this.currentFile);
+        this.currentFile = this.openFile.openFileUsingPath(filePath, this.editorPane);
         this.openFile = null;
+        
         if (this.addedFilesPanel.get(this.currentFile.getAbsolutePath()) != null) {
             this.decideEditorEnabled(true);
         } else {

@@ -1,43 +1,37 @@
 package gui.maingui.secondarypanels.openfile;
 
-import gui.extragui.RoundedPanel;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import gui.maingui.Constants;
+import gui.maingui.secondarypanels.editorpanel.EditorPane;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Map;
-import javax.swing.JEditorPane;
 import javax.swing.JOptionPane;
 import gui.maingui.secondarypanels.savefile.SaveFile;
 
 public class OpenFile {
+
     private JDialog openFileFrame;
     private JFileChooser chooseOpenFile;
     private Constants constants;
-    private Map<String, RoundedPanel> addedFilesPanel;
+
     private File currentFile;
-    private JEditorPane editorPane;
     private SaveFile saveFile;
-    private String currentFolder;
-    
+
     //Construtor
     //Entrada: Pasta atual, painel de edição, map de arquivos já adicionados ao visualisador e pasta atual
-    //Retorno: Nenhum
+    //Retorno: O arquivo atual
     //Pré-condição: As variáveis recebidas devem estar devidamente instanciadas e configuradas
     //Pós-condição: A classe é instanciada
-    public OpenFile(File currentFile, JEditorPane editorPane, Map<String, RoundedPanel> addedFilesPanel, String currentFolder){
+    public OpenFile(File currentFile) {
         this.constants = new Constants();
         this.currentFile = currentFile;
-        this.editorPane = editorPane;
-        this.addedFilesPanel = addedFilesPanel;
-        this.currentFolder = currentFolder;
         this.saveFile = new SaveFile();
     }
-    
+
     //Função que define o frame de salvar um arquivo
     //Entrada: Pasta atual
     //Retorno: FileChooser.APPROVE_OPTION se o diretório for escolhido ou o contrário caso não seja
@@ -56,14 +50,14 @@ public class OpenFile {
         chooseOpenFile.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         return chooseOpenFile.showOpenDialog(null);
     }
-    
+
     //Função que abre um menu para escolher um arquivo para abrir
-    //Entrada: Nenhuma
-    //Retorno: Nenhum
+    //Entrada: A pasta atual e o editorPane
+    //Retorno: O novo arquivo que foi aberto
     //Pŕe-condição: Nenhuma
     //Pós-condição: O arquivo é aberto no editor
-    public void openFile() {
-        if (defineCreateOpenFileFrame(this.currentFolder) == JFileChooser.APPROVE_OPTION) { //Abre o arquivo
+    public File openFile(String currentFolder, EditorPane editorPane) {
+        if (defineCreateOpenFileFrame(currentFolder) == JFileChooser.APPROVE_OPTION) { //Abre o arquivo
             File file = new File(chooseOpenFile.getSelectedFile().toString());
             try {
                 BufferedReader br = new BufferedReader(new FileReader(file));
@@ -73,7 +67,7 @@ public class OpenFile {
                         contentToLoad += aux;
                         contentToLoad += "\n";
                     }
-                    this.editorPane.setText(contentToLoad);
+                    editorPane.getEditorPane().setText(contentToLoad);
                     this.currentFile = file;
                 } catch (IOException e) {
                     //do Nothing
@@ -85,13 +79,15 @@ public class OpenFile {
         this.openFileFrame.getContentPane().add(chooseOpenFile);
         this.openFileFrame.setVisible(true);
         this.openFileFrame.dispose();
+
+        return this.currentFile;
     }
-    
+
     //Entrada: Caminho do arquivo a ser aberto
-    //Retorno: Nenhum
+    //Retorno: O novo arquivo que foi aberto
     //Pŕe-condição: Nenhuma
     //Pós-condição: O arquivo é aberto no editor
-    public void openFile(String filePath) {
+    public File openFileUsingPath(String filePath, EditorPane editorPane) {
         File file = new File(filePath);
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
@@ -101,8 +97,8 @@ public class OpenFile {
                     contentToLoad += aux;
                     contentToLoad += "\n";
                 }
-                this.saveFile.saveFile(false,this.currentFile,this.editorPane.getText());
-                this.editorPane.setText(contentToLoad);
+                this.saveFile.saveFile(false, this.currentFile, editorPane.getEditorPane().getText());
+                editorPane.getEditorPane().setText(contentToLoad);
                 this.currentFile = file;
             } catch (IOException e) {
                 //do Nothing
@@ -111,20 +107,6 @@ public class OpenFile {
         } catch (FileNotFoundException e) {
             JOptionPane.showMessageDialog(null, "Error while trying to load file");
         }
-    }
-
-    //Getter do addedFilesPanel. o novo arquivo adicionado ficará nese painel
-    public Map<String, RoundedPanel> getAddedFilesPanel() {
-        return addedFilesPanel;
-    }
-
-    //Getter do currentFile. O novo arquivo aberto ficará nessa variável
-    public File getCurrentFile() {
-        return currentFile;
-    }
-
-    //Getter do editorPane. O novo arquivo aberto será aberto nesse painel
-    public JEditorPane getEditorPane() {
-        return editorPane;
+        return this.currentFile;
     }
 }

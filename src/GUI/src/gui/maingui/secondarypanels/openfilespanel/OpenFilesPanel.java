@@ -1,4 +1,4 @@
-package gui.maingui.secondarypanels.openfiles;
+package gui.maingui.secondarypanels.openfilespanel;
 
 import gui.maingui.Constants;
 import java.awt.Dimension;
@@ -8,14 +8,14 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-public class OpenFiles {
+public class OpenFilesPanel {
     private JPanel openFilesPanel;
     private Constants constants;
     private JScrollPane scrollPane;
     private GridBagConstraints gbc_openFilesPanel;
     
     //Construtor
-    public OpenFiles(JPanel wrapPanel){
+    public OpenFilesPanel(JPanel wrapPanel){
         this.constants = new Constants();
         this.defineOpenFilesPanel(wrapPanel);
     }
