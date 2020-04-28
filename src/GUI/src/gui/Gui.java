@@ -87,9 +87,15 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
 
     //Gerenciador do abridor de pastas
     private OpenFolder openFolder;
+    
+    //Listener da interface principal
+    private ListenerGui listenerGui;
+    
+    //Variável utilizada para guardar a única instância da classe
+    private static Gui instance;
 
     //Construtor da classe
-    public Gui() {
+    private Gui() {
         //Variáveis globais
         this.currentFile = null;
         this.currentFolder = ".";
@@ -105,6 +111,9 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
 
         //Utilitários
         this.saveFile = new SaveFile();
+        
+        //Listeners
+        this.listenerGui = new ListenerGui();
 
         //Iniciando os componentes visuais
         initialize();
@@ -198,8 +207,8 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
         this.frame = new JFrame("Text Editor");
         this.frame.getContentPane().setBackground(this.constants.getSideAreasColor());
         this.frame.getContentPane().setLayout(new BorderLayout(0, 0));
+        this.frame.addKeyListener(this.listenerGui);
         this.frame.setFocusable(true);
-        this.frame.addKeyListener(this);
     }
 
     //Função que configura e inicializa o painel central
@@ -364,7 +373,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
      * estar instanciadas e configuradas.
      */
     //Pós-condição: Abre um arquivo e o coloca na interface para edição
-    private void runOpenFile() {
+    public void runOpenFile() {
         this.openFile = new OpenFile(this.currentFile);
         this.currentFile = this.openFile.openFile(this.currentFolder, this.editorPane);
         this.openFile = null;
@@ -384,7 +393,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
      * estar instanciadas e configuradas.
      */
     //Pós-condição: Abre um arquivo e o coloca na interface para edição
-    private void runOpenFile(String filePath) {
+    public void runOpenFile(String filePath) {
         this.openFile = new OpenFile(this.currentFile);
         this.currentFile = this.openFile.openFileUsingPath(filePath, this.editorPane);
         this.openFile = null;
@@ -429,7 +438,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
          * O sistema Operacional deve ser Linux.
      */
     //Pós-condição: O programa é rodado no bash
-    private void runSelectedFile() {
+    public void runSelectedFile() {
         Process process;
         if (this.currentFile.getName().split("[.]")[1].equals("py")) {
             try {
@@ -542,16 +551,6 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
             this.updateFont();
         }
 
-        //Abre um arquivo ao apertar ctrl+o
-        if (e.isControlDown() && e.getKeyChar() != 'o' && e.getKeyCode() == 79) {
-            this.runOpenFile();
-        }
-
-        //Cria um novo arquivo ao apertar ctr+n
-        if (e.isControlDown() && e.getKeyChar() != 'n' && e.getKeyCode() == 78) {
-            this.runCreateNewFile();
-        }
-
         //Executa um programa em python ou em c
         if (this.editorPane.getEditorPane() != null && e.isControlDown() && e.getKeyChar() != 'r' && e.getKeyCode() == 82) {
             this.runSelectedFile();
@@ -568,6 +567,7 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
         if (!"closeButton".equals(me.getComponent().getName())) {
             this.runOpenFile(me.getComponent().getName());
             if (this.lastClickedFilePath == null) {
+              
                 for (Component c : ((RoundedPanel) me.getComponent()).getComponents()) {
                     if (c instanceof JLabel) {
                         ((JLabel) c).setForeground(Color.WHITE);
@@ -625,5 +625,13 @@ public class Gui implements ActionListener, KeyListener, MouseListener {
             ((RoundedPanel) me.getComponent()).setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
             SwingUtilities.updateComponentTreeUI(this.openFiles.getOpenFilesPanel());
         }
+    }
+    
+    //Getter da instância do singleton
+    public static Gui getInstance(){
+        if(instance == null){
+            instance = new Gui();
+        }
+        return instance;
     }
 }
