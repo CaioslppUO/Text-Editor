@@ -73,7 +73,11 @@ public class OpenFile {
                     //do Nothing
                 }
             } catch (FileNotFoundException e) {
-                JOptionPane.showMessageDialog(null, "Error while trying to load file");
+                if (file.isDirectory()) {
+                    JOptionPane.showMessageDialog(null, "The selected file is not a file");
+                } else {
+                    JOptionPane.showMessageDialog(null, "Error while trying to load file");
+                }
             }
         }
         this.openFileFrame.getContentPane().add(chooseOpenFile);
@@ -105,7 +109,11 @@ public class OpenFile {
 
             }
         } catch (FileNotFoundException e) {
-            JOptionPane.showMessageDialog(null, "Error while trying to load file");
+            if (file.isDirectory()) {
+                JOptionPane.showMessageDialog(null, "The selected file is not a file");
+            } else {
+                JOptionPane.showMessageDialog(null, "Error while trying to load file");
+            }
         }
         return this.currentFile;
     }
