@@ -45,7 +45,7 @@ public class NewFile {
     }
 
     //Função que cria um novo arquivo caso ele já não exista
-    //Entrada: Nenhuma
+    //Entrada: Painel de edição e pasta atualmente aberta
     //Retorno: Nenhum
     //Pŕe-condição: Nenhuma
     //Pós-condição: O arquivo é criado e salvo no disco
@@ -56,7 +56,7 @@ public class NewFile {
                 File directory = this.chooseNewFileDirectory.getSelectedFile();
                 String fileName;
                 fileName = JOptionPane.showInputDialog("File Name");
-                if (fileName != null) {
+                if (!fileName.equals("")) {
                     File newFile = new File(directory.toString() + fileSeparator + fileName);
                     try {
                         if (newFile.createNewFile()) {
