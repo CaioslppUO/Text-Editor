@@ -9,6 +9,7 @@ import java.io.IOException;
 import javax.swing.JOptionPane;
 
 public class NewFile {
+
     private JDialog createNewFileFrame;
     private JFileChooser chooseNewFileDirectory;
     private Constants constants;
@@ -22,7 +23,7 @@ public class NewFile {
     public NewFile(File currentFile, EditorPane editorPane, String currentFolder) {
         this.constants = new Constants();
         this.currentFile = currentFile;
-        this.createNewFile(editorPane,currentFolder);
+        this.createNewFile(editorPane, currentFolder);
     }
 
     //Função que define o frame de criar um novo arquivo
@@ -56,30 +57,32 @@ public class NewFile {
                 File directory = this.chooseNewFileDirectory.getSelectedFile();
                 String fileName;
                 fileName = JOptionPane.showInputDialog("File Name");
-                if (!fileName.equals("")) {
-                    File newFile = new File(directory.toString() + fileSeparator + fileName);
-                    try {
-                        if (newFile.createNewFile()) {
-                            JOptionPane.showMessageDialog(null, "File Created");
-                            this.currentFile = newFile;
-                            editorPane.getEditorPane().setText("");
-                        } else {
-                            JOptionPane.showMessageDialog(null, "File Already Exists");
+                if (fileName != null) {
+                    if (!fileName.equals("")) {
+                        File newFile = new File(directory.toString() + fileSeparator + fileName);
+                        try {
+                            if (newFile.createNewFile()) {
+                                JOptionPane.showMessageDialog(null, "File Created");
+                                this.currentFile = newFile;
+                                editorPane.getEditorPane().setText("");
+                            } else {
+                                JOptionPane.showMessageDialog(null, "File Already Exists");
+                            }
+                        } catch (IOException e) {
+                            JOptionPane.showMessageDialog(null, "Error while trying to create the file");
                         }
-                    } catch (IOException e) {
-                        JOptionPane.showMessageDialog(null, "Error while trying to create the file");
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Invalid File Name");
                     }
-                } else {
-                    JOptionPane.showMessageDialog(null, "Invalid File Name");
-                }
-            }
-            this.createNewFileFrame.getContentPane().add(chooseNewFileDirectory);
+                this.createNewFileFrame.getContentPane().add(chooseNewFileDirectory);
 
-            this.createNewFileFrame.setVisible(true);
-            this.createNewFileFrame.dispose();
+                this.createNewFileFrame.setVisible(true);
+                }
+            this.createNewFileFrame.dispose();  
+            }
         } else {
             this.currentFile = null;
-            this.createNewFile(editorPane,currentFolder);
+            this.createNewFile(editorPane, currentFolder);
         }
     }
 
@@ -87,5 +90,5 @@ public class NewFile {
     public File getCurrentFile() {
         return currentFile;
     }
-    
+
 }
