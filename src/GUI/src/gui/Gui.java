@@ -391,7 +391,7 @@ public class Gui{
         this.openFile = null;
         
         //Confere se o arquivo já está aberto no visualisador
-        if (this.addedFilesPanel.get(this.currentFile.getAbsolutePath()) != null) {
+        if (this.currentFile != null && this.addedFilesPanel.get(this.currentFile.getAbsolutePath()) != null) {
             this.decideEditorEnabled(true);
         } else {
             this.decideEditorEnabled(false);
@@ -411,7 +411,7 @@ public class Gui{
         this.openFile = null;
         
         //Confere se o arquivo já está aberto no visualisador
-        if (this.addedFilesPanel.get(this.currentFile.getAbsolutePath()) != null) {
+        if (this.currentFile != null && this.addedFilesPanel.get(this.currentFile.getAbsolutePath()) != null) {
             this.decideEditorEnabled(true);
         } else {
             this.decideEditorEnabled(false);
