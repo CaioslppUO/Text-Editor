@@ -2,3 +2,5 @@
 build.xml
 manifest.mf
 /nbproject/
+./settings
+.classpath
