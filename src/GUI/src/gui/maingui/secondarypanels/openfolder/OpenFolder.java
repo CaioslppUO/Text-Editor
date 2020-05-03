@@ -17,7 +17,7 @@ public class OpenFolder {
     }
 
     //Função que define o frame da janela de abrir pastas
-    //Entrada: Nenhuma
+    //Entrada: Pasta atualmente aberta
     //Retorno: Nenhum
     //Pré-condição: Nenhuma
     //Pós-condição: A janela de escolha de pasta é criada e exposta
@@ -39,13 +39,16 @@ public class OpenFolder {
     }
 
     //Função que abre uma pasta, a qual será o diretório padrão
-    //Entrada: Nenhuma
+    //Entrada: Pasta atualmente aberta
     //Retorno: Nenhum
     //Pré-condição: Nenhuma
     //Pós-condição: A pasta é aberta e vira o diretório padrão
     public String openFolder(String currentFolder) {
         if (this.defineOpenFolderFrame(currentFolder) == JFileChooser.APPROVE_OPTION) {
-            currentFolder = this.chooseOpenDirectory.getSelectedFile().getAbsolutePath();
+            File aux = new File(this.chooseOpenDirectory.getSelectedFile().getAbsolutePath());
+            if(aux.isDirectory()){
+                currentFolder = aux.getAbsolutePath();
+            }
         }
         return currentFolder;
     }
