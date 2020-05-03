@@ -34,6 +34,9 @@ public class ListenerMenu implements ActionListener {
                 case "buttonOpenFolderPressed":
                     Gui.getInstance().runOpenFolder();
                     break;
+                case "buttonNewFolderPressed":
+                    Gui.getInstance().runCreateNewFolder();
+                    break;
                 default:
                     break;
             }

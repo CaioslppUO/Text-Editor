@@ -73,6 +73,7 @@ public class MenuBar {
                         new JMenuItem[]{
                             this.createMenuItem("New File", "buttonNewFilePressed", "ctrl+n",listener), //Sub botão new file
                             this.createMenuItem("Open File", "buttonOpenFilePressed", "ctrl+o",listener), //Sub botão open file
+                            this.createMenuItem("New Folder", "buttonNewFolderPressed", "Create a new folder",listener),
                             this.createMenuItem("Open Folder", "buttonOpenFolderPressed", "Open a folder",listener),
                             this.createMenuItem("Run Current File", "buttonRunPressed", "ctlr+r. C or Python only. Output Only",listener)
                         }

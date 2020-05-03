@@ -37,6 +37,7 @@ import gui.maingui.secondarypanels.menu.ListenerMenu;
 import gui.maingui.secondarypanels.editorpanel.ListenerEditorPanel;
 import gui.maingui.secondarypanels.editorpanel.ListenerEditorPanelConfig;
 import gui.maingui.secondarypanels.openfilespanel.OpenFilesListener;
+import gui.maingui.secondarypanels.newfolder.NewFolder;
 
 public class Gui{
 
@@ -102,6 +103,9 @@ public class Gui{
     
     //Variável utilizada para guardar a única instância da classe
     private static Gui instance;
+
+    //Gerenciado do criador de diretórios
+    private NewFolder newFolder;
 
     //Construtor da classe
     private Gui() {
@@ -503,6 +507,17 @@ public class Gui{
             } catch (Exception e) {
             }
         }
+    }
+
+    //Função que cria uma nova pasta como diretório padrão
+    //Entrada: Nenhuma
+    //Retorno: Nenhum
+    //Pré-condição: Nenhuma
+    //Pós-condição: Uma nova pasta é criada e definida como diretório padrão
+    public void runCreateNewFolder(){
+        this.newFolder = new NewFolder();
+        this.currentFolder = this.newFolder.createNewFolder(this.currentFolder);
+        this.newFolder = null;
     }
     
     //Getter da instância do singleton
