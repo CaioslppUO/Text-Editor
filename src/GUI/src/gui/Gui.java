@@ -11,6 +11,7 @@ import java.io.IOException;
 
 import javax.swing.Box;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -310,8 +311,8 @@ public class Gui{
                 
                 //Tenta abrir o próximo arquivo, aberto anteriormente, se existir
                 try { //Existe arquivo para abrir
-                    this.runOpenFile(((RoundedPanel) this.addedFilesPanel.values().toArray()[0]).getName());
                     this.lastClickedFilePath = ((RoundedPanel) this.addedFilesPanel.values().toArray()[0]).getName();
+                    this.runOpenFile(((RoundedPanel) this.addedFilesPanel.values().toArray()[0]).getName());
                 } catch (Exception e) { //Não existe arquivo para abrir
                     if (result == 0) { //Salva o arquivo atual antes de fechar
                         this.saveFile.saveFile(false, this.currentFile, this.editorPane.getEditorPane().getText());
@@ -346,6 +347,14 @@ public class Gui{
             this.editorPane.getEditorPane().setEnabled(true);
             if (!isFileAlreadyOpen) {
                 this.createNewFileOpenPanel();
+            }else{
+                if (lastClickedFilePath != null) {
+                    for (Component c : addedFilesPanel.get(this.lastClickedFilePath).getComponents()) {
+                        if (c instanceof JLabel) {
+                            ((JLabel) c).setForeground(Color.WHITE);
+                        }
+                    }
+                }
             }
         } else {
             this.editorPane.getEditorPane().setEnabled(false);
