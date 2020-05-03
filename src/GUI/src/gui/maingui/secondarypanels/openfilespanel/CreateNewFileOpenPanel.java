@@ -76,6 +76,7 @@ public class CreateNewFileOpenPanel {
         this.newFilePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
         this.newFilePanel.setLayout(new BoxLayout(newFilePanel, BoxLayout.LINE_AXIS));
         this.newFilePanel.setName(filePath);
+        this.newFilePanel.setToolTipText(filePath);
         this.newFilePanel.addMouseListener(mouseListener);
 
         this.fName = new JLabel(fileName + "  ");
