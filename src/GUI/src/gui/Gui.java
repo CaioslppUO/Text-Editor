@@ -3,517 +3,573 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.SystemColor;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 
-import javax.swing.Action;
-import javax.swing.BorderFactory;
 import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JEditorPane;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
-import javax.swing.border.EtchedBorder;
 import javax.swing.border.SoftBevelBorder;
-import javax.swing.text.PlainDocument;
 
-public class Gui implements ActionListener, KeyListener{
+import java.io.InputStreamReader;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-	private JFrame frame;
-	private JPanel panelCentral;
-	private JPanel panelLeft;
-	private JPanel panelTop;
-	private JPanel panelDown;
-	private JPanel panelRight;
-	
-	private Color PaneEditorColor;
-	private Color MenuBarColor;
-	private Color sideAreasColor;
-	private Color MenuForeGroundColor;
-	
-	private Integer fontSize;
-	private String fontType;
-	private JEditorPane editorPane;
-	private JDialog editorConfigFrame;
-	private JSpinner fontSizeSpinner;
-	private JComboBox fontTypeList;
-	
-	private JDialog saveFileFrame;
-	
-	private File currentFile;
-	private JDialog openFileFrame;
-	private JDialog createNewFileFrame;
+import gui.extragui.RoundedPanel;
+import gui.maingui.Constants;
+import gui.maingui.secondarypanels.editorpanel.EditorPane;
+import gui.maingui.secondarypanels.editorpanel.EditorPaneConfig;
+import gui.maingui.secondarypanels.openfile.OpenFile;
+import gui.maingui.secondarypanels.openfilespanel.OpenFilesPanel;
+import gui.maingui.secondarypanels.openfilespanel.CreateNewFileOpenPanel;
+import gui.maingui.secondarypanels.savefile.SaveFile;
+import gui.maingui.secondarypanels.newfile.NewFile;
+import gui.maingui.secondarypanels.openfolder.OpenFolder;
+import gui.maingui.secondarypanels.menu.MenuBar;
+import gui.maingui.secondarypanels.menu.ListenerMenu;
+import gui.maingui.secondarypanels.editorpanel.ListenerEditorPanel;
+import gui.maingui.secondarypanels.editorpanel.ListenerEditorPanelConfig;
+import gui.maingui.secondarypanels.openfilespanel.OpenFilesListener;
+import gui.maingui.secondarypanels.newfolder.NewFolder;
 
-	public Gui() {
-		this.PaneEditorColor = new Color(51, 51, 51);
-		this.sideAreasColor = new Color(82, 82, 82);
-		this.MenuBarColor = new Color(28, 28, 28);
-		this.MenuForeGroundColor = new Color(137, 163, 201);
-		this.fontSize = 12;
-		this.fontType = "Monospaced";
-		this.currentFile = null;
-		initialize();
-	}
-	
-	public JFrame getMainFrame() {
-		return this.frame;
-	}
-	
-	public void defineMainFrame() {
-		this.frame = new JFrame("Text Editor");
-		this.frame.getContentPane().setBackground(this.sideAreasColor);
-		this.frame.getContentPane().setLayout(new BorderLayout(0, 0));
-	}
-	
-	public void definePanelCentral() {
-		this.panelCentral = new JPanel();
-		this.panelCentral.setBackground(this.PaneEditorColor);
-		this.frame.getContentPane().add(this.panelCentral, BorderLayout.CENTER);
-		GridBagLayout gbl_panelCentral = new GridBagLayout();
-		gbl_panelCentral.columnWidths = new int[]{0, 0};
-		gbl_panelCentral.rowHeights = new int[]{0, 0};
-		gbl_panelCentral.columnWeights = new double[]{1.0, Double.MIN_VALUE};
-		gbl_panelCentral.rowWeights = new double[]{1.0, Double.MIN_VALUE};
-		this.panelCentral.setLayout(gbl_panelCentral);
-	}
-	
-	private void definePanelLeft() {
-		this.panelLeft = new JPanel();
-		this.panelLeft.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		this.panelLeft.setBackground(this.sideAreasColor);
-		this.frame.getContentPane().add(this.panelLeft, BorderLayout.WEST);
-		Component horizontalStrut = Box.createHorizontalStrut(110);
-		this.panelLeft.add(horizontalStrut);
-	}
-	
-	private void definePanelTop() {
-		this.panelTop = new JPanel();
-		this.panelTop.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		this.panelTop.setBackground(this.sideAreasColor);
-		frame.getContentPane().add(this.panelTop, BorderLayout.NORTH);
-		Component verticalStrut = Box.createVerticalStrut(50);
-		this.panelTop.add(verticalStrut);
-	}
-	
-	private void definePanelDown() {
-		this.panelDown = new JPanel();
-		this.panelDown.setBackground(this.sideAreasColor);
-		this.frame.getContentPane().add(this.panelDown, BorderLayout.SOUTH);
-	}
-	
-	private void definePanelRight() {
-		this.panelRight = new JPanel();
-		this.panelRight.setBackground(this.sideAreasColor);
-		this.frame.getContentPane().add(this.panelRight, BorderLayout.EAST);
-	}
-	
-	public void defineEditorPane() {
-		this.editorPane = new JEditorPane();
-		this.editorPane.setForeground(SystemColor.window);
-		this.editorPane.setBackground(this.PaneEditorColor);
-		GridBagConstraints gbc_editorPane_1 = new GridBagConstraints();
-		gbc_editorPane_1.fill = GridBagConstraints.BOTH;
-		gbc_editorPane_1.gridx = 0;
-		gbc_editorPane_1.gridy = 0;
-		
-		this.editorPane.setCaretColor(Color.WHITE);
-		this.editorPane.setFont(new Font(this.fontType, Font.PLAIN, this.fontSize));
-		
-		//Mudando a quantidade de espaçõs da tecla TAB
-		javax.swing.text.Document doc = this.editorPane.getDocument();
-		doc.putProperty(PlainDocument.tabSizeAttribute, 2);
-		
-		//Incluindo o contador de linhas
-		
-		//Comentar as pŕoximas 4 linhas para utilizar o Design do eclipse
-		JScrollPane scrollPane = new JScrollPane(this.editorPane);
-		TextLineNumber tln = new TextLineNumber(this.editorPane);
-		scrollPane.setRowHeaderView( tln );
-		this.panelCentral.add(scrollPane, gbc_editorPane_1);
-		this.editorPane.addKeyListener(this);
-		if(this.currentFile != null) {
-			this.editorPane.setEnabled(true);
-		}else {
-			this.editorPane.setEnabled(false);
-		}
-	}
-	
-	private void defineMenuBar() {
-		JMenuBar menuBar;
-		JMenu menu;
-		JMenuItem menuItem;
-		//Inicializando a barra do menu
-		menuBar = new JMenuBar();
-		menuBar.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-		menuBar.setBackground(this.MenuBarColor);
-		
-		//Inicializando os menus e os itens dos menus
-		
-		//Botão new
-		menu = new JMenu("File");
-		menu.setBackground(this.sideAreasColor);
-		menu.setForeground(this.MenuForeGroundColor);
-		
-		//Sub botão new file
-		menuItem = new JMenuItem("New File");
-		menuItem.setForeground(this.MenuForeGroundColor);
-		menuItem.setBackground(this.sideAreasColor);
-		menuItem.setActionCommand("buttonNewFilePressed");
-		menuItem.addActionListener(this);
-		menu.add(menuItem);
-		
-		//Sub botão open file
-		menuItem = new JMenuItem("Open File");
-		menuItem.setForeground(this.MenuForeGroundColor);
-		menuItem.setBackground(this.sideAreasColor);
-		menuItem.setActionCommand("buttonOpenFilePressed");
-		menuItem.addActionListener(this);
-		menu.add(menuItem);
-		
-		//Adicionando o botão new ao menu bar
-		menuBar.add(menu);
-		
-		//Botão save
-		menu = new JMenu("Save");
-		menu.setBackground(this.sideAreasColor);
-		menu.setForeground(this.MenuForeGroundColor);
-		
-		//Sub botão save as
-		menuItem = new JMenuItem("Save as");
-		menuItem.setForeground(this.MenuForeGroundColor);
-		menuItem.setBackground(this.sideAreasColor);
-		menuItem.setActionCommand("buttonSaveAsPressed");
-		menuItem.addActionListener(this);
-		menu.add(menuItem);
-		
-		//Sub botão save
-		menuItem = new JMenuItem("Save");
-		menuItem.setForeground(this.MenuForeGroundColor);
-		menuItem.setBackground(this.sideAreasColor);
-		menuItem.setActionCommand("buttonSavePressed");
-		menuItem.addActionListener(this);
-		menu.add(menuItem);
-		
-		//Adicionando o botão save ao menu bar
-		menuBar.add(menu);
-		
-		//Botão settings
-		menu = new JMenu("Settings");
-		menu.setBackground(this.sideAreasColor);
-		menu.setForeground(this.MenuForeGroundColor);
-		
-		//Sub botão editor
-		menuItem = new JMenuItem("Editor");
-		menuItem.setForeground(this.MenuForeGroundColor);
-		menuItem.setBackground(this.sideAreasColor);
-		menuItem.setActionCommand("buttonEditorPressed");
-		menuItem.addActionListener(this);
-		menu.add(menuItem);
-		
-		//Sub botão themes
-		menuItem = new JMenuItem("Themes");
-		menuItem.setForeground(this.MenuForeGroundColor);
-		menuItem.setBackground(this.sideAreasColor);
-		menuItem.setActionCommand("buttonThemesPressed");
-		menuItem.addActionListener(this);
-		menu.add(menuItem);
-		
-		//Adicionando o botão settings ao menu bar
-		menuBar.add(menu);
-		
-		//Adding Itens
-		this.frame.setJMenuBar(menuBar);
-	}
-	
-	private void launchEditorConfigFrame() {		
-		this.editorConfigFrame = new JDialog();
-		this.editorConfigFrame.getContentPane().setBackground(this.sideAreasColor);
-		this.editorConfigFrame.setSize(300, 300);
-		this.editorConfigFrame.setLocationRelativeTo(null);
-		this.editorConfigFrame.setTitle("Editor Settings");
-		this.editorConfigFrame.setLayout(null);
-		
-		JButton buttonOk = new JButton("OK");
-		buttonOk.setActionCommand("FontSizeChanged");
-		buttonOk.addActionListener(this);
-		buttonOk.setSize(55, 30);
-		buttonOk.setLocation(125, 230);
-		
-		JLabel labelFontSize;
-		labelFontSize = new JLabel();
-		labelFontSize.setText("Font Size");
-		labelFontSize.setSize(75, 20);
-		labelFontSize.setLocation(10, 5);
-		labelFontSize.setForeground(this.MenuForeGroundColor);
-		this.editorConfigFrame.add(labelFontSize);
-		
-		this.fontSizeSpinner = new JSpinner();
-		this.fontSizeSpinner.setValue(this.fontSize);
-		this.fontSizeSpinner.setSize(35, 20);
-		this.fontSizeSpinner.setLocation(100, 7);
-		this.editorConfigFrame.add(this.fontSizeSpinner);
-		
-		JLabel labelFontType;
-		labelFontType = new JLabel();
-		labelFontType.setText("Font Type");
-		labelFontType.setSize(75, 20);
-		labelFontType.setLocation(10, 40);
-		labelFontType.setForeground(this.MenuForeGroundColor);
-		this.editorConfigFrame.add(labelFontType);
-		
-		@SuppressWarnings("deprecation")
-		String fontTypes[] = Toolkit.getDefaultToolkit().getFontList();
-		
-		this.fontTypeList = new JComboBox(fontTypes);
-		this.fontTypeList.setSelectedItem(this.fontType);
-		this.fontTypeList.setSize(120, 20);
-		this.fontTypeList.setLocation(100, 42);
-		this.editorConfigFrame.add(this.fontTypeList);
-		
-		this.editorConfigFrame.add(buttonOk);
-		
-		this.editorConfigFrame.setVisible(true);
-	}
-	
-	private void saveFile() {
-		if(this.currentFile != null) {
-			String contentToSave = this.editorPane.getText();
-			FileWriter writer;
-			try {
-				writer = new FileWriter(this.currentFile.toString());
-				PrintWriter print_line = new PrintWriter(writer);
-				print_line.printf("%s", contentToSave);
-				print_line.close();
-				JOptionPane.showMessageDialog(null, "File Saved");
-			} catch (IOException e) {
-				JOptionPane.showMessageDialog(null, "Error while trying to save the file");
-			}
-		}
-	}
-	
-	private void saveFileAs(){
-		if(this.currentFile != null) {
-			String fileSeparator = System.getProperty("file.separator");
-			
-			this.saveFileFrame = new JDialog();
-			this.saveFileFrame.getContentPane().setBackground(this.sideAreasColor);
-			this.saveFileFrame.setSize(600, 600);
-			this.saveFileFrame.setLocationRelativeTo(null);
-			this.saveFileFrame.setTitle("Save File As");
-			
-			String contentToSave;
-			contentToSave = this.editorPane.getText();
-			
-			JFileChooser chooseSaveDirectory;
-			chooseSaveDirectory = new JFileChooser();
-			chooseSaveDirectory.setCurrentDirectory(new File("."));
-			chooseSaveDirectory.setDialogTitle("Save to");
-			chooseSaveDirectory.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-			int result = chooseSaveDirectory.showOpenDialog(null);
-			if(result == JFileChooser.APPROVE_OPTION) { //Salvar o arquivo
-				File directory = chooseSaveDirectory.getSelectedFile();
-				String fileName;
-				fileName = JOptionPane.showInputDialog("File Name");
-				File newFile = new File(directory.toString() + fileSeparator + fileName);
-				try {
-					if(newFile.createNewFile()) {
-						FileWriter writer = new FileWriter(directory.toString() + fileSeparator + fileName, false);
-						PrintWriter print_line = new PrintWriter(writer);
-						print_line.printf("%s", contentToSave);
-						print_line.close();
-						JOptionPane.showMessageDialog(null, "File Saved");
-					}else {
-						JOptionPane.showMessageDialog(null, "File Already Exists");
-					}
-				} catch (IOException e) {
-					JOptionPane.showMessageDialog(null, "Error while trying to save the file");
-				}
-			}
-			this.saveFileFrame.add(chooseSaveDirectory);
-			
-			this.saveFileFrame.setVisible(true);
-			this.saveFileFrame.dispose();
-		}else {
-			JOptionPane.showMessageDialog(null, "No Files Open");
-		}
-	}
-	
-	private void openFile() {			
-		this.openFileFrame = new JDialog();
-		this.openFileFrame.getContentPane().setBackground(this.sideAreasColor);
-		this.openFileFrame.setSize(600, 600);
-		this.openFileFrame.setLocationRelativeTo(null);
-		this.openFileFrame.setTitle("Save File");
-			
-		JFileChooser chooseOpenFile;
-		chooseOpenFile = new JFileChooser();
-		chooseOpenFile.setCurrentDirectory(new File("."));
-		chooseOpenFile.setDialogTitle("Save to");
-		chooseOpenFile.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-		int result = chooseOpenFile.showOpenDialog(null);
-		if(result == JFileChooser.APPROVE_OPTION) { //Abre o arquivo
-			File file = new File(chooseOpenFile.getSelectedFile().toString());
-			try {
-				BufferedReader br = new BufferedReader(new FileReader(file));
-				String contentToLoad="",aux;
-				try {
-					while((aux = br.readLine()) != null) {
-						contentToLoad+=aux;
-						contentToLoad+="\n";
-					}
-					this.editorPane.setText(contentToLoad);
-					this.currentFile = file;
-					this.editorPane.setEnabled(true);
-				} catch (IOException e) {
-					//do Nothing
-				}
-				
-			} catch (FileNotFoundException e) {
-				JOptionPane.showMessageDialog(null, "Error while trying to load file");
-			}
-		}else {
-			JOptionPane.showMessageDialog(null, "Invalid File Type");
-		}
-		this.openFileFrame.add(chooseOpenFile);
-		
-		this.openFileFrame.setVisible(true);
-		this.openFileFrame.dispose();
-	}
-	
-	private void updateFont() {
-		this.editorConfigFrame.dispose();
-		this.fontSize = Integer.parseInt(this.fontSizeSpinner.getValue().toString());
-		this.fontType = this.fontTypeList.getSelectedItem().toString();
-		this.editorPane.setFont(new Font(this.fontType, Font.PLAIN, this.fontSize));
-	}
-	
-	private void createNewFile() {
-		if(this.currentFile == null) {
-			String fileSeparator = System.getProperty("file.separator");
-			
-			this.createNewFileFrame = new JDialog();
-			this.createNewFileFrame.getContentPane().setBackground(this.sideAreasColor);
-			this.createNewFileFrame.setSize(600, 600);
-			this.createNewFileFrame.setLocationRelativeTo(null);
-			this.createNewFileFrame.setTitle("Save File As");
-			
-			JFileChooser chooseNewFileDirectory;
-			chooseNewFileDirectory = new JFileChooser();
-			chooseNewFileDirectory.setCurrentDirectory(new File("."));
-			chooseNewFileDirectory.setDialogTitle("Save to");
-			chooseNewFileDirectory.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-			int result = chooseNewFileDirectory.showOpenDialog(null);
-			if(result == JFileChooser.APPROVE_OPTION) { //Salvar o arquivo
-				File directory = chooseNewFileDirectory.getSelectedFile();
-				String fileName;
-				fileName = JOptionPane.showInputDialog("File Name");
-				File newFile = new File(directory.toString() + fileSeparator + fileName);
-				try {
-					if(newFile.createNewFile()) {
-						JOptionPane.showMessageDialog(null, "File Created");
-						this.currentFile = newFile;
-						this.editorPane.setEnabled(true);
-					}else {
-						JOptionPane.showMessageDialog(null, "File Already Exists");
-					}
-				} catch (IOException e) {
-					JOptionPane.showMessageDialog(null, "Error while trying to create the file");
-				}
-			}
-			this.createNewFileFrame.add(chooseNewFileDirectory);
-			
-			this.createNewFileFrame.setVisible(true);
-			this.createNewFileFrame.dispose();
-		}else {
-			this.saveFile();
-			this.currentFile = null;
-			this.createNewFile();
-		}
-	}
+public class Gui{
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		if("buttonThemesPressed".equals(e.getActionCommand())) {
-			JOptionPane.showMessageDialog(null, "Button Themes Pressed");
-		}else if("buttonEditorPressed".equals(e.getActionCommand())) {
-			this.launchEditorConfigFrame();
-		}else if("buttonNewFilePressed".equals(e.getActionCommand())) {
-			this.createNewFile();
-		}else if("FontSizeChanged".equals(e.getActionCommand())) {
-			this.updateFont();
-		}else if("buttonSaveAsPressed".equals(e.getActionCommand())) {
-			this.saveFileAs();
-		}else if("buttonOpenFilePressed".equals(e.getActionCommand())) {
-			this.openFile();
-		}else if("buttonSavePressed".equals(e.getActionCommand())) {
-			this.saveFile();
-		}
-	}
-	
-	private void initialize() {
-		//Definições dos elementos principais da tela
-		this.defineMainFrame();
-		this.definePanelTop();
-		this.definePanelCentral();
-		this.definePanelLeft();
-		this.definePanelRight();
-		this.definePanelDown();
-		
-		//Definições dos elementos secundários de cada espaço na tela
-		this.defineEditorPane();
-		this.defineMenuBar();
-		
-		//Definições finais do Main Frame
-		this.frame.setBackground(Color.LIGHT_GRAY);
-		this.frame.setBounds(100, 100, 450, 300);
-		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	}
+    //Frame e Painéis principais
+    private JFrame frame;
+    private JPanel panelCentral;
+    private JPanel panelLeft;
+    private JPanel panelTop;
+    private JPanel panelDown;
+    private JPanel panelRight;
 
-	@Override
-	public void keyPressed(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+    //Constantes
+    private Constants constants;
 
-	@Override
-	public void keyReleased(KeyEvent e) {
-		if (e.isControlDown() && e.getKeyChar() != 's' && e.getKeyCode() == 83) {
-			this.saveFile();
-		}	
-	}
+    //Variáveis "globais"
+    private File currentFile;
+    private String currentFolder;
+    private Map<String, RoundedPanel> addedFilesPanel;
+    private String lastClickedFilePath;
 
-	@Override
-	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+    //Fonte
+    private Integer fontSize;
+    private String fontType;
+
+    //Gerenciador do editorPane
+    private EditorPane editorPane;
+
+    //Gerenciador da tela de configuração do editorPane
+    private EditorPaneConfig editorPaneConfig;
+
+    //Gerenciador do painel do visualisador de arquivos abertos
+    private OpenFilesPanel openFiles;
+
+    //Gerenciador do visualisador de arquivos abertos
+    private CreateNewFileOpenPanel createNewFileOpenPanel;
+
+    //Gerenciador do salvamento de arquivos
+    private SaveFile saveFile;
+
+    //Gerenciador do abridor de arquivos
+    private OpenFile openFile;
+
+    //Gerenciador do criador de arquivos
+    private NewFile newFile;
+
+    //Gerenciador do abridor de pastas
+    private OpenFolder openFolder;
+    
+    //Listener da interface principal
+    private ListenerGui listenerGui;
+    
+    //Listener do menu
+    private ListenerMenu listenerMenu;
+    
+    //Listener do editorPanel
+    private ListenerEditorPanel listenerEditorPanel;
+    
+    //Listener do editorPanelConfig
+    private ListenerEditorPanelConfig listenerEditorPanelConfig;
+    
+    //Listener do openFilesPanel
+    private OpenFilesListener listenerOpenFilesPanel;
+    
+    //Variável utilizada para guardar a única instância da classe
+    private static Gui instance;
+
+    //Gerenciado do criador de diretórios
+    private NewFolder newFolder;
+
+    //Construtor da classe
+    private Gui() {
+        //Variáveis globais
+        this.currentFile = null;
+        this.currentFolder = ".";
+        this.addedFilesPanel = new LinkedHashMap<>();
+        lastClickedFilePath = null;
+
+        //Fonte padrão
+        this.fontSize = 12;
+        this.fontType = "Monospaced";
+
+        //Constantes
+        this.constants = new Constants();
+
+        //Utilitários
+        this.saveFile = new SaveFile();
+        
+        //Listeners
+        this.listenerGui = new ListenerGui();
+        this.listenerMenu = new ListenerMenu();
+        this.listenerEditorPanel = new ListenerEditorPanel();
+        this.listenerEditorPanelConfig = new ListenerEditorPanelConfig();
+        this.listenerOpenFilesPanel = new OpenFilesListener();
+
+        //Iniciando os componentes visuais
+        initialize();
+    }
+
+    //Função que inicializa todos os componentes visuais da interface
+    //Entrada: Nenhuma
+    //Retorno: Nenhum
+    //Pŕe-condição: Nenhuma
+    //Pós-condição: Todas as interfaces são inicializadas
+    private void initialize() {
+        //Definições dos elementos principais da tela
+        this.defineMainFrame();
+        this.definePanelTop();
+        this.definePanelCentral();
+        this.definePanelLeft();
+        this.definePanelRight();
+        this.definePanelDown();
+
+        //Definições dos elementos secundários de cada espaço na tela
+        this.includeOpenFilesPanel();
+        this.includeEditorPane();
+        this.includeMenuBar();
+
+        //Definições finais do Main Frame
+        this.frame.setBackground(Color.LIGHT_GRAY);
+        this.frame.setBounds(100, 100, 450, 300);
+        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
+    //Getter do frame principal
+    public JFrame getMainFrame() {
+        return this.frame;
+    }
+
+    //***********************
+    //* Funções de inclusão *
+    //***********************
+    //Função que inclui a barra de menu na interface
+    //Entrada: Nenhuma
+    //Retorno: Nenhum
+    //Pré-condição: O Frame principal deve estar instanciado e configurado corretamente
+    //Pós-condição: A barra de menu é adicionada à interface
+    private void includeMenuBar() {
+        new MenuBar(this.listenerMenu, this.frame);
+    }
+
+    //Função que inclui o painel de arquivos abertos à interface
+    //Entrada: Nenhuma
+    //Retorno: Nenhum
+    //Pré-condição: O painel central deve estar instanciado e configurado.
+    //Pós-condição: O painel que gerencia os arquivos abertos é adicionado à interface
+    private void includeOpenFilesPanel() {
+        this.openFiles = new OpenFilesPanel(this.panelCentral);
+    }
+
+    //Função que inclui o editroPane na interface
+    //Entrada: Nenhuma
+    //Retorno: Nenhum
+    /*Pré-condição: O painel central deve estar instanciado e configurado. A classe Gui deve implementar a classe
+     * KeyListener para tratar atalhos pressionados no editor
+     */
+    //Pós-condição: O editor é adicionado à interface
+    private void includeEditorPane() {
+        this.editorPane = new EditorPane(this.fontType, this.fontSize, this.panelCentral, this.listenerEditorPanel);
+        this.decideEditorEnabled(false);
+    }
+
+    //Função que inclui a tela de configuração do editorPane na interface
+    //Entrada: Nenhuma
+    //Retorno: Nenhum
+    /*Pré-condição: As variáveis this.fontTypee this.fontSize devem estar instanciadas e configuradas.
+     * A classe Gui deve implementar as classes ActionListener e KeyListener para tratar interações
+     */
+    //Pós-condição: A tela de configuração do editorPane é incluida à interface
+    public void includeEditorPaneConfig() {
+        this.editorPaneConfig = new EditorPaneConfig(this.fontType, this.fontSize);
+        this.editorPaneConfig.getOkButton().addActionListener(this.listenerEditorPanelConfig);
+        this.editorPaneConfig.getEditorConfigFrame().addKeyListener(this.listenerEditorPanelConfig);
+    }
+
+    //************************
+    //* Funções de definição *
+    //************************
+    //Função que configura e inicializa o frame principal
+    //Entrada: Nenhuma
+    //Retorno: Nenhum
+    //Pré-condição: Nenhuma
+    ///Pós-condição: O frame principal é criado e configurado
+    private void defineMainFrame() {
+        this.frame = new JFrame("Text Editor");
+        this.frame.getContentPane().setBackground(this.constants.getSideAreasColor());
+        this.frame.getContentPane().setLayout(new BorderLayout(0, 0));
+        this.frame.addKeyListener(this.listenerGui);
+        this.frame.setFocusable(true);
+    }
+
+    //Função que configura e inicializa o painel central
+    //Entrada: Nenhuma
+    //Retorno: Nenhum
+    //Pré-condição: O frame principal deve estar instanciado e configurado
+    private void definePanelCentral() {
+        this.panelCentral = new JPanel();
+        this.panelCentral.setBackground(this.constants.getPaneEditorColor());
+        this.frame.getContentPane().add(this.panelCentral, BorderLayout.CENTER);
+
+        GridBagLayout gbl_panelCentral = new GridBagLayout();
+        gbl_panelCentral.columnWidths = new int[]{0, 0};
+        gbl_panelCentral.rowHeights = new int[]{18, 0, 0};
+        gbl_panelCentral.columnWeights = new double[]{1.0, Double.MIN_VALUE};
+        gbl_panelCentral.rowWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
+        this.panelCentral.setLayout(gbl_panelCentral);
+    }
+
+    //Função que configura e inicializa o painel da esquerda
+    //Entrada: Nenhuma
+    //Retorno: Nenhum
+    //Pré-condição: O frame principal deve estar instanciado e configurado
+    private void definePanelLeft() {
+        this.panelLeft = new JPanel();
+        this.panelLeft.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
+        this.panelLeft.setBackground(this.constants.getSideAreasColor());
+        this.frame.getContentPane().add(this.panelLeft, BorderLayout.WEST);
+
+        Component horizontalStrut = Box.createHorizontalStrut(110);
+
+        this.panelLeft.add(horizontalStrut);
+    }
+
+    //Função que configura e inicializa o painel do topo
+    //Entrada: Nenhuma
+    //Retorno: Nenhum
+    //Pré-condição: O frame principal deve estar instanciado e configurado
+    private void definePanelTop() {
+        this.panelTop = new JPanel();
+        this.panelTop.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
+        this.panelTop.setBackground(this.constants.getSideAreasColor());
+        this.frame.getContentPane().add(this.panelTop, BorderLayout.NORTH);
+
+        Component verticalStrut = Box.createVerticalStrut(50);
+
+        this.panelTop.add(verticalStrut);
+    }
+
+    //Função que configura e inicializa o painel de baixo
+    //Entrada: Nenhuma
+    //Retorno: Nenhum
+    //Pré-condição: O frame principal deve estar instanciado e configurado
+    private void definePanelDown() {
+        this.panelDown = new JPanel();
+        this.panelDown.setBackground(this.constants.getSideAreasColor());
+        this.frame.getContentPane().add(this.panelDown, BorderLayout.SOUTH);
+    }
+
+    //Função que configura e inicializa o painel da direita
+    //Entrada: Nenhuma
+    //Retorno: Nenhum
+    //Pré-condição: O frame principal deve estar instanciado e configurado
+    private void definePanelRight() {
+        this.panelRight = new JPanel();
+        this.panelRight.setBackground(this.constants.getSideAreasColor());
+        this.frame.getContentPane().add(this.panelRight, BorderLayout.EAST);
+    }
+
+    //*************************
+    //* Funções de auxiliares *
+    //*************************
+    //Função que fecha o arquivo que está aberto
+    //Entrada: Nenhuma
+    //Retorno: Nenhum
+    /*Pŕe-condição: As variáveis this.addedFilesPanel, this.saveFile, this.lastClickedFilePath, this.currentFile,
+     * this.editorPane e this.currentFile devem estar instanciadas e configuradas corretamente.
+     */
+    //Pós-condição: O arquivo aberto atualmente é fechado
+    public void closeFile() {
+        if (this.currentFile != null) {
+            int result = JOptionPane.showConfirmDialog(null, "Save File?", "Save", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (result != 2) {
+                RoundedPanel aux = this.addedFilesPanel.remove(this.currentFile.getAbsolutePath());
+                this.openFiles.getOpenFilesPanel().remove(aux);
+                SwingUtilities.updateComponentTreeUI(this.panelCentral);
+                
+                //Tenta abrir o próximo arquivo, aberto anteriormente, se existir
+                try { //Existe arquivo para abrir
+                    this.lastClickedFilePath = ((RoundedPanel) this.addedFilesPanel.values().toArray()[0]).getName();
+                    this.runOpenFile(((RoundedPanel) this.addedFilesPanel.values().toArray()[0]).getName());
+                } catch (Exception e) { //Não existe arquivo para abrir
+                    if (result == 0) { //Salva o arquivo atual antes de fechar
+                        this.saveFile.saveFile(false, this.currentFile, this.editorPane.getEditorPane().getText());
+                    }
+                    this.currentFile = null;
+                    this.lastClickedFilePath = null;
+                    this.decideEditorEnabled(false);
+                }
+            }
+        }
+    }
+
+    //Função que atualiza a fonte utilizada no editor
+    //Entrada: Nenhuma
+    //Retorno: Nenhum
+    /*Pŕe-condição: O editorPane deve estar instanciado e configurado. as variáveis this.fontSize e this.fontType
+     * devem estar instanciadas e configuradas
+     */
+    //Pós-condição: A fonte é atualizada para as opções definidas no menu
+    public void updateFont() {
+        this.fontSize = Integer.parseInt(this.editorPaneConfig.getFontSizeSpinner().getValue().toString());
+        this.fontType = this.editorPaneConfig.getFontTypeList().getSelectedItem().toString();
+        this.editorPane.getEditorPane().setFont(new Font(this.fontType, Font.PLAIN, this.fontSize));
+    }
+
+    //Função que decide se o editor de texto vai estar habilitado ou não baseado se existe ou não um arquivo aberto
+    //Entrada: Verdadeiro ou falso que o arquivo em this.currentFile já está aberto
+    //Retorno: Nenhum
+    //Pré-condição: O editorPane deve estar configurado e instanciado.
+    private void decideEditorEnabled(Boolean isFileAlreadyOpen) {
+        if (this.currentFile != null) {
+            this.editorPane.getEditorPane().setEnabled(true);
+            if (!isFileAlreadyOpen) {
+                this.createNewFileOpenPanel();
+            }else{
+                if (lastClickedFilePath != null) {
+                    for (Component c : addedFilesPanel.get(this.lastClickedFilePath).getComponents()) {
+                        if (c instanceof JLabel) {
+                            ((JLabel) c).setForeground(Color.WHITE);
+                        }
+                    }
+                }
+            }
+        } else {
+            this.editorPane.getEditorPane().setEnabled(false);
+            this.editorPane.getEditorPane().setText("");
+        }
+    }
+
+    //Função que adiciona um novo painel ao visualisador de arquivos abertos
+    //Entrada: Nome do arquivo e caminho do arquivo
+    //Retorno: Nenhum
+    /*Pré-condição: As variáveis this.lastClickedPath e this.addedFilesPanel devem estar instanciadas e configuradas
+     * corretamentes. O frame principal deve estar instanciado e configurado corretamente. Não deve existir previamente
+     * um painel de arquivos abertos com o mesmo fileName e o mesmo filePath.
+     */
+    //Pós-condição: Um novo painel com o nome fileName é criado e adicionado à interface
+    private void createNewFileOpenPanel() {
+        this.createNewFileOpenPanel = new CreateNewFileOpenPanel(
+                this.lastClickedFilePath, 
+                this.addedFilesPanel,
+                this.currentFile.getName(),
+                this.currentFile.getAbsolutePath(),
+                this.listenerOpenFilesPanel,
+                this.listenerOpenFilesPanel,
+                this.openFiles
+        );
+        this.lastClickedFilePath = this.createNewFileOpenPanel.getLastClickedFilePath();
+
+        this.createNewFileOpenPanel = null;
+
+        SwingUtilities.updateComponentTreeUI(frame);
+    }
+
+    //Função que aplica as rotinas para abrir um arquivo
+    //Entrada: Nenhuma
+    //Retorno: Nenhum
+    /*Pré-condição: As variáveis this.currentFile, this.editorPane, this.addedFilesPanel e this.currentFolder devem
+     * estar instanciadas e configuradas.
+     */
+    //Pós-condição: Abre um arquivo e o coloca na interface para edição
+    public void runOpenFile() {
+        this.openFile = new OpenFile(this.currentFile);
+        this.currentFile = this.openFile.openFile(this.currentFolder, this.editorPane);
+        this.openFile = null;
+        
+        //Confere se o arquivo já está aberto no visualisador
+        if (this.currentFile != null && this.addedFilesPanel.get(this.currentFile.getAbsolutePath()) != null) {
+            this.decideEditorEnabled(true);
+        } else {
+            this.decideEditorEnabled(false);
+        }
+    }
+
+    //Função que aplica as rotinas para abrir um arquivo
+    //Entrada: Caminho para o arquivo a ser aberto
+    //Retorno: Nenhum
+    /*Pré-condição: As variáveis this.currentFile, this.editorPane, this.addedFilesPanel e this.currentFolder devem
+     * estar instanciadas e configuradas.
+     */
+    //Pós-condição: Abre um arquivo e o coloca na interface para edição
+    public void runOpenFile(String filePath) {
+        this.openFile = new OpenFile(this.currentFile);
+        this.currentFile = this.openFile.openFileUsingPath(filePath, this.editorPane);
+        this.openFile = null;
+        
+        //Confere se o arquivo já está aberto no visualisador
+        if (this.currentFile != null && this.addedFilesPanel.get(this.currentFile.getAbsolutePath()) != null) {
+            this.decideEditorEnabled(true);
+        } else {
+            this.decideEditorEnabled(false);
+        }
+    }
+
+    //Função que executa as rotinas para criar um novo arquivo
+    //Entrada: Nenhuma
+    //Retorno: Nenhum
+    /*Pré-condição: O editorPane deve estar instanciado e configurado. As variáveis this.currentFile e this.currentFolder
+     * devem estar instanciadas e configuradas
+     */
+    //Pós-condição: Um novo arquivo é criado
+    public void runCreateNewFile() {
+        this.newFile = new NewFile(this.currentFile, this.editorPane, this.currentFolder);
+        this.currentFile = this.newFile.getCurrentFile();
+        this.newFile = null;
+        this.decideEditorEnabled(false);
+    }
+
+    //Função que abre uma pasta como diretório padrão
+    //Entrada: Nenhuma
+    //Retorno: Nenhum
+    //Pré-condição: A variável this.currentFolder deve estar instanciada e configurada corretamente.
+    //Pós-condição: A pasta escolhida é aberta como diretório padrão
+    public void runOpenFolder() {
+        this.openFolder = new OpenFolder();
+        this.currentFolder = this.openFolder.openFolder(this.currentFolder);
+        this.openFolder = null;
+        JOptionPane.showMessageDialog(null, this.currentFolder);
+    }
+
+    //Função que roda o arquivo atualmente aberto. Somente em Python3 ou em C
+    //Entrada: Nenhuma
+    //Retorno: Nenhum
+    /*Pré-condição: O arquivo deve ter a extensão .py ou .c. O arquivo deve ser um código fonte escrito em c ou em python3.
+         * O sistema Operacional deve ser Linux.
+     */
+    //Pós-condição: O programa é rodado no bash
+    public void runSelectedFile() {
+        Process process;
+        if (this.currentFile.getName().split("[.]")[1].equals("py")) {
+            try {
+                process = Runtime.getRuntime().exec("python3 " + this.currentFile.getAbsolutePath());
+                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+                String inputText = "", aux;
+                while ((aux = reader.readLine()) != null) {
+                    inputText += aux;
+                }
+                JOptionPane.showMessageDialog(null, inputText, "Output", JOptionPane.INFORMATION_MESSAGE);
+                reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                inputText = "";
+                while ((aux = reader.readLine()) != null) {
+                    inputText += aux;
+                }
+                JOptionPane.showMessageDialog(null, inputText, "Output", JOptionPane.INFORMATION_MESSAGE);
+            } catch (IOException ex) {
+            }
+        } else if (this.currentFile.getName().split("[.]")[1].equals("c")) {
+            try {
+                process = Runtime.getRuntime().exec("gcc " + this.currentFile.getAbsolutePath() + " -o " + this.currentFile.getParent() + "/" + this.currentFile.getName().split("[.]")[0]);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+                String inputText = "", aux;
+                while ((aux = reader.readLine()) != null) {
+                    inputText += aux;
+                }
+                if (!inputText.equals("")) {
+                    JOptionPane.showMessageDialog(null, inputText, "Output", JOptionPane.INFORMATION_MESSAGE);
+                }
+                if (inputText.equals("")) {
+                    process = Runtime.getRuntime().exec(this.currentFile.getParent() + "/./" + this.currentFile.getName().split("[.]")[0]);
+                    reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                    inputText = "";
+                    while ((aux = reader.readLine()) != null) {
+                        inputText += aux;
+                    }
+                    JOptionPane.showMessageDialog(null, inputText, "Output", JOptionPane.INFORMATION_MESSAGE);
+                }
+
+            } catch (Exception e) {
+            }
+        }
+    }
+
+    //Função que cria uma nova pasta como diretório padrão
+    //Entrada: Nenhuma
+    //Retorno: Nenhum
+    //Pré-condição: Nenhuma
+    //Pós-condição: Uma nova pasta é criada e definida como diretório padrão
+    public void runCreateNewFolder(){
+        this.newFolder = new NewFolder();
+        this.currentFolder = this.newFolder.createNewFolder(this.currentFolder);
+        this.newFolder = null;
+    }
+    
+    //Getter da instância do singleton
+    public static Gui getInstance(){
+        if(instance == null){
+            instance = new Gui();
+        }
+        return instance;
+    }
+    
+    //Getter do arquivo aberto atualmente
+    public File getCurrentFile(){
+        return this.currentFile;
+    }
+    
+    //Getter da pasta aberta atualmente
+    public String getCurrentFolder(){
+        return this.currentFolder;
+    }
+    
+    //Getter do EditorPane
+    public EditorPane getEditorPane(){
+        return this.editorPane;
+    }
+    
+    //Getter saveFile
+    public SaveFile getSaveFile(){
+        return this.saveFile;
+    }
+    
+    //Getter do panelEditorConfig
+    public EditorPaneConfig getEditorPaneConfig(){
+        return this.editorPaneConfig;
+    }
+    
+    //Getter do lastClickedFilePath
+    public String getLastClickedFilePath(){
+        return this.lastClickedFilePath;
+    }
+    
+    //Setter do lastClickedFilePath
+    public void setLastClickedFilePath(String lastClickedFilePath){
+        this.lastClickedFilePath = lastClickedFilePath;
+    }
+    
+    //Getter do openFiles
+    public OpenFilesPanel getOpenFilesPanel(){
+        return this.openFiles;
+    }
+    
+    //Getter do addedFilesPanel
+    public Map<String, RoundedPanel> getAddedFilesPanel(){
+        return this.addedFilesPanel;
+    }
 }

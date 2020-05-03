@@ -1,4 +1,4 @@
-package gui;
+package gui.extragui;
 
 import java.awt.Color;
 import java.awt.Dimension;
