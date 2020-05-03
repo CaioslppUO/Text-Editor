@@ -43,7 +43,7 @@ public class OpenFilesPanel {
         this.gbc_openFilesPanel.gridx = 0;
         this.gbc_openFilesPanel.gridy = 0;
         
-        wrapPanel.add(this.openFilesPanel, this.gbc_openFilesPanel);
+        wrapPanel.add(this.scrollPane, this.gbc_openFilesPanel);
     }
     
     //Getter do visualisador
