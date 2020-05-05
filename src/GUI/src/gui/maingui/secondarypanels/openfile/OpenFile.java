@@ -87,6 +87,7 @@ public class OpenFile {
         return this.currentFile;
     }
 
+    //Função que abre um arquivo em que seja passado o caminho para abrir
     //Entrada: Caminho do arquivo a ser aberto
     //Retorno: O novo arquivo que foi aberto
     //Pŕe-condição: Nenhuma
