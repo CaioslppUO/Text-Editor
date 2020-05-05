@@ -57,7 +57,7 @@ public class SaveFile {
 
         this.chooseSaveDirectory = new JFileChooser();
         this.chooseSaveDirectory.setCurrentDirectory(new File(currentFolder));
-        this.chooseSaveDirectory.setDialogTitle("Save to");
+        this.chooseSaveDirectory.setDialogTitle("Save As");
         this.chooseSaveDirectory.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         this.saveFileFrame.getContentPane().add(chooseSaveDirectory);
         this.saveFileFrame.setVisible(true);

@@ -28,11 +28,11 @@ public class NewFolder {
         this.createNewFolderFrame.getContentPane().setBackground(this.constants.getSideAreasColor());
         this.createNewFolderFrame.setSize(600, 600);
         this.createNewFolderFrame.setLocationRelativeTo(null);
-        this.createNewFolderFrame.setTitle("Select Location");
+        this.createNewFolderFrame.setTitle("Create New Folder");
 
         this.chooseNewFolderDirectory = new JFileChooser();
         this.chooseNewFolderDirectory.setCurrentDirectory(new File(currentFolder));
-        this.chooseNewFolderDirectory.setDialogTitle("Save to");
+        this.chooseNewFolderDirectory.setDialogTitle("Create New Folder");
         this.chooseNewFolderDirectory.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         return chooseNewFolderDirectory.showOpenDialog(null);
     }

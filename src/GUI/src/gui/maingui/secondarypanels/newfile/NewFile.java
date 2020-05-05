@@ -36,11 +36,11 @@ public class NewFile {
         this.createNewFileFrame.getContentPane().setBackground(this.constants.getSideAreasColor());
         this.createNewFileFrame.setSize(600, 600);
         this.createNewFileFrame.setLocationRelativeTo(null);
-        this.createNewFileFrame.setTitle("Save File As");
+        this.createNewFileFrame.setTitle("Create New File");
 
         this.chooseNewFileDirectory = new JFileChooser();
         this.chooseNewFileDirectory.setCurrentDirectory(new File(currentFolder));
-        this.chooseNewFileDirectory.setDialogTitle("Save to");
+        this.chooseNewFileDirectory.setDialogTitle("Create New File");
         this.chooseNewFileDirectory.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         return chooseNewFileDirectory.showOpenDialog(null);
     }

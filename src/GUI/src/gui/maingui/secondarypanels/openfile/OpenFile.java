@@ -42,11 +42,11 @@ public class OpenFile {
         this.openFileFrame.getContentPane().setBackground(this.constants.getSideAreasColor());
         this.openFileFrame.setSize(600, 600);
         this.openFileFrame.setLocationRelativeTo(null);
-        this.openFileFrame.setTitle("Save File");
+        this.openFileFrame.setTitle("Open File");
 
         chooseOpenFile = new JFileChooser();
         chooseOpenFile.setCurrentDirectory(new File(currentFolder));
-        chooseOpenFile.setDialogTitle("Save to");
+        chooseOpenFile.setDialogTitle("Open File");
         chooseOpenFile.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         return chooseOpenFile.showOpenDialog(null);
     }
