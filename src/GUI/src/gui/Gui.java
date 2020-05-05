@@ -482,7 +482,7 @@ public class Gui {
     // Pós-condição: O programa é rodado no bash
     public void runSelectedFile() {
         Process process;
-        if (this.editorPane.getEditorPane() != null) {
+        if (this.editorPane.getEditorPane() != null) { //Verifica se o arquivo está aberto
             if (this.currentFile.getName().split("[.]")[1].equals("py")) {
                 try {
                     process = Runtime.getRuntime().exec("python3 " + this.currentFile.getAbsolutePath());
