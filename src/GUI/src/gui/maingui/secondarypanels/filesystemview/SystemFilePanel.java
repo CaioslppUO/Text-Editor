@@ -19,9 +19,8 @@ public class SystemFilePanel {
     private Constants constants;
     
     //Construtor
-    public SystemFilePanel(String rootPath, JPanel wrapPanel){
+    public SystemFilePanel(){
         this.constants = new Constants();
-        this.defineFilePanel(rootPath,wrapPanel);
     }
 
     //Função que define o painel de diretórios abertos
@@ -74,5 +73,26 @@ public class SystemFilePanel {
         this.systemFilesPanel.setVisible(true);
 
         wrapPanel.add(this.systemFilesPanel, BorderLayout.CENTER);
+    }
+
+    //Função que faz o update em qual pasta está atualmente aberta
+    //Entrada: Pasta de inicio da procura e painel em que serão visualisados os diretórios abertos
+    //Retorno: Nenhum
+    //Pré-condição: O rootPath e o wrapPanel devem estar devidamente instanciados e serem válidos
+    //Pós-condição: O diretório passado é processado, carregado e exposto na tela
+    public void updateFolder(String rootPath, JPanel wrapPanel, JPanel lastOpenDirectory){
+        if(lastOpenDirectory != null){
+            for(Component c:wrapPanel.getComponents()){
+                if(c instanceof JPanel){
+                    wrapPanel.remove(c);
+                }
+            }
+        }
+        this.defineFilePanel(rootPath, wrapPanel);
+    }
+
+    //Getter do painel de diretório aberto
+    public JPanel getSystemFilesPanel(){
+        return this.systemFilesPanel;
     }
 }

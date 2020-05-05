@@ -113,7 +113,7 @@ public class Gui {
     // Gerenciador do visualisador de diretórios
     private SystemFilePanel systemView;
 
-    //Pane utilizado para redimensionar as janelas
+    // Pane utilizado para redimensionar as janelas
     private JSplitPane splitPane;
 
     // Construtor da classe
@@ -133,6 +133,7 @@ public class Gui {
 
         // Utilitários
         this.saveFile = new SaveFile();
+        this.systemView = new SystemFilePanel();
 
         // Listeners
         this.listenerGui = new ListenerGui();
@@ -228,8 +229,14 @@ public class Gui {
         this.editorPaneConfig.getEditorConfigFrame().addKeyListener(this.listenerEditorPanelConfig);
     }
 
-    private void includeSystemFileView(){
-        this.systemView = new SystemFilePanel(this.currentFolder,this.panelLeft);
+    // Função que inclui a tela de diretórios abertos
+    // Entrada: Nenhuma
+    // Retorno: Nenhum
+    // Pré-condição: As variáveis this.currentFolde e this.panelLeft devem estar instanciadas e configuradas.
+    // Pós-condição: A tela de configuração do editorPane é incluida à interface
+    private void includeSystemFileView() {
+        this.systemView.updateFolder(this.currentFolder, this.panelLeft, null);
+        SwingUtilities.updateComponentTreeUI(frame);
     }
 
     // ************************
@@ -484,6 +491,8 @@ public class Gui {
     public void runOpenFolder() {
         this.openFolder = new OpenFolder();
         this.currentFolder = this.openFolder.openFolder(this.currentFolder);
+        this.systemView.updateFolder(this.currentFolder, this.panelLeft, this.systemView.getSystemFilesPanel());
+        SwingUtilities.updateComponentTreeUI(frame);
         this.openFolder = null;
     }
 
@@ -498,7 +507,7 @@ public class Gui {
     // Pós-condição: O programa é rodado no bash
     public void runSelectedFile() {
         Process process;
-        if (this.editorPane.getEditorPane().isEnabled()) { //Verifica se o arquivo está aberto
+        if (this.editorPane.getEditorPane().isEnabled()) { // Verifica se o arquivo está aberto
             if (this.currentFile.getName().split("[.]")[1].equals("py")) {
                 try {
                     process = Runtime.getRuntime().exec("python3 " + this.currentFile.getAbsolutePath());
