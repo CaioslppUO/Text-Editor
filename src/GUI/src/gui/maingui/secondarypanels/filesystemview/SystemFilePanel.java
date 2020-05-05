@@ -5,6 +5,7 @@ import javax.swing.JScrollPane;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.BorderLayout;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.JTree;
@@ -31,6 +32,7 @@ public class SystemFilePanel {
     public void defineFilePanel(String rootPath, JPanel wrapPanel){
         this.systemFilesPanel = new JPanel();
         this.systemFilesPanel.setBackground(this.constants.getSideAreasColor());
+        this.systemFilesPanel.setLayout(new BorderLayout());
 
         this.fileTree = new FileTree(rootPath);
         this.fileTree.setBackground(this.constants.getPaneEditorColor());
@@ -67,10 +69,10 @@ public class SystemFilePanel {
 
         this.scrollPane = new JScrollPane(this.fileTree);
 
-        this.systemFilesPanel.add(this.scrollPane);
+        this.systemFilesPanel.add(this.scrollPane, BorderLayout.CENTER);
 
         this.systemFilesPanel.setVisible(true);
 
-        wrapPanel.add(this.systemFilesPanel);
+        wrapPanel.add(this.systemFilesPanel, BorderLayout.CENTER);
     }
 }

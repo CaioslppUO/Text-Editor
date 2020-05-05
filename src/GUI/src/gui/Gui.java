@@ -14,9 +14,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
+import java.awt.*;
 
 import java.io.InputStreamReader;
 import java.util.LinkedHashMap;
@@ -111,6 +113,9 @@ public class Gui {
     // Gerenciador do visualisador de diretórios
     private SystemFilePanel systemView;
 
+    //Pane utilizado para redimensionar as janelas
+    private JSplitPane splitPane;
+
     // Construtor da classe
     private Gui() {
         // Variáveis globais
@@ -149,8 +154,8 @@ public class Gui {
         // Definições dos elementos principais da tela
         this.defineMainFrame();
         this.definePanelTop();
-        this.definePanelCentral();
         this.definePanelLeft();
+        this.definePanelCentral();
         this.definePanelRight();
         this.definePanelDown();
 
@@ -241,6 +246,11 @@ public class Gui {
         this.frame.getContentPane().setLayout(new BorderLayout(0, 0));
         this.frame.addKeyListener(this.listenerGui);
         this.frame.setFocusable(true);
+
+        this.splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        this.splitPane.setDividerSize(3);
+
+        this.frame.getContentPane().add(this.splitPane, BorderLayout.CENTER);
     }
 
     // Função que configura e inicializa o painel central
@@ -250,7 +260,7 @@ public class Gui {
     private void definePanelCentral() {
         this.panelCentral = new JPanel();
         this.panelCentral.setBackground(this.constants.getPaneEditorColor());
-        this.frame.getContentPane().add(this.panelCentral, BorderLayout.CENTER);
+        this.splitPane.add(this.panelCentral);
 
         GridBagLayout gbl_panelCentral = new GridBagLayout();
         gbl_panelCentral.columnWidths = new int[] { 0, 0 };
@@ -268,7 +278,9 @@ public class Gui {
         this.panelLeft = new JPanel();
         this.panelLeft.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
         this.panelLeft.setBackground(this.constants.getSideAreasColor());
-        this.frame.getContentPane().add(this.panelLeft, BorderLayout.WEST);
+        this.panelLeft.setLayout(new BorderLayout());
+
+        this.splitPane.add(this.panelLeft);
     }
 
     // Função que configura e inicializa o painel do topo
