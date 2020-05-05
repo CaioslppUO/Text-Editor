@@ -484,6 +484,8 @@ public class Gui {
     public void runCreateNewFile() {
         this.newFile = new NewFile(this.currentFile, this.editorPane, this.currentFolder);
         this.currentFile = this.newFile.getCurrentFile();
+        this.systemView.updateFolder(this.currentFolder, this.panelLeft, this.systemView.getSystemFilesPanel(), this.systemFilePanelListener);
+        SwingUtilities.updateComponentTreeUI(frame);
         this.newFile = null;
         this.decideEditorEnabled(false);
     }
@@ -522,7 +524,9 @@ public class Gui {
                     while ((aux = reader.readLine()) != null) {
                         inputText += aux;
                     }
-                    JOptionPane.showMessageDialog(null, inputText, "Output", JOptionPane.INFORMATION_MESSAGE);
+                    if (!inputText.equals("")) {
+                        JOptionPane.showMessageDialog(null, inputText, "Output", JOptionPane.INFORMATION_MESSAGE);
+                    }
                     reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
                     inputText = "";
                     while ((aux = reader.readLine()) != null) {
@@ -568,6 +572,8 @@ public class Gui {
     public void runCreateNewFolder() {
         this.newFolder = new NewFolder();
         this.currentFolder = this.newFolder.createNewFolder(this.currentFolder);
+        this.systemView.updateFolder(this.currentFolder, this.panelLeft, this.systemView.getSystemFilesPanel(), this.systemFilePanelListener);
+        SwingUtilities.updateComponentTreeUI(frame);
         this.newFolder = null;
     }
 
