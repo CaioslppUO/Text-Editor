@@ -27,7 +27,8 @@ public class SystemFilePanelListener extends MouseAdapter {
             }
             File check = new File(aux);
             if(!check.isDirectory()){
-                this.gui.runOpenFile(aux);
+                check = new File(this.gui.getCurrentFolder());
+                this.gui.runOpenFile(check.getParentFile().getAbsolutePath() + "/" + aux);
             }
         }
     }
