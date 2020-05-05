@@ -38,6 +38,7 @@ import gui.maingui.secondarypanels.editorpanel.ListenerEditorPanel;
 import gui.maingui.secondarypanels.editorpanel.ListenerEditorPanelConfig;
 import gui.maingui.secondarypanels.openfilespanel.OpenFilesListener;
 import gui.maingui.secondarypanels.newfolder.NewFolder;
+import gui.maingui.secondarypanels.filesystemview.SystemFilePanel;
 
 public class Gui {
 
@@ -107,6 +108,9 @@ public class Gui {
     // Gerenciado do criador de diretórios
     private NewFolder newFolder;
 
+    // Gerenciador do visualisador de diretórios
+    private SystemFilePanel systemView;
+
     // Construtor da classe
     private Gui() {
         // Variáveis globais
@@ -154,6 +158,7 @@ public class Gui {
         this.includeOpenFilesPanel();
         this.includeEditorPane();
         this.includeMenuBar();
+        this.includeSystemFileView();
 
         // Definições finais do Main Frame
         this.frame.setBackground(Color.LIGHT_GRAY);
@@ -218,6 +223,10 @@ public class Gui {
         this.editorPaneConfig.getEditorConfigFrame().addKeyListener(this.listenerEditorPanelConfig);
     }
 
+    private void includeSystemFileView(){
+        this.systemView = new SystemFilePanel(this.currentFolder,this.panelLeft);
+    }
+
     // ************************
     // * Funções de definição *
     // ************************
@@ -260,10 +269,6 @@ public class Gui {
         this.panelLeft.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
         this.panelLeft.setBackground(this.constants.getSideAreasColor());
         this.frame.getContentPane().add(this.panelLeft, BorderLayout.WEST);
-
-        Component horizontalStrut = Box.createHorizontalStrut(110);
-
-        this.panelLeft.add(horizontalStrut);
     }
 
     // Função que configura e inicializa o painel do topo
