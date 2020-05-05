@@ -468,7 +468,6 @@ public class Gui {
         this.openFolder = new OpenFolder();
         this.currentFolder = this.openFolder.openFolder(this.currentFolder);
         this.openFolder = null;
-        JOptionPane.showMessageDialog(null, this.currentFolder);
     }
 
     // Função que roda o arquivo atualmente aberto. Somente em Python3 ou em C
