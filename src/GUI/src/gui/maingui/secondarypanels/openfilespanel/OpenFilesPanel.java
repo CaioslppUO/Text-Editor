@@ -34,6 +34,7 @@ public class OpenFilesPanel {
         this.scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
         this.scrollPane.getHorizontalScrollBar().setPreferredSize(new Dimension(0, 0));
         this.scrollPane.setPreferredSize(new Dimension(this.scrollPane.getPreferredSize().width, 35));
+        this.scrollPane.setMinimumSize(new Dimension(this.scrollPane.getPreferredSize().width, 35));
         this.scrollPane.getHorizontalScrollBar().setUnitIncrement(16);
 
         //Configura o layout manager do openFilesPanel para inserção no painel central

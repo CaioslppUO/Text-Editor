@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridBagLayout;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +20,6 @@ import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
-import java.awt.*;
 
 import java.io.InputStreamReader;
 import java.util.LinkedHashMap;
@@ -104,7 +105,7 @@ public class Gui {
 
     // Listener do openFilesPanel
     private OpenFilesListener listenerOpenFilesPanel;
-    
+
     // Listener do systemFilePanel
     private SystemFilePanelListener systemFilePanelListener;
 
@@ -237,7 +238,8 @@ public class Gui {
     // Função que inclui a tela de diretórios abertos
     // Entrada: Nenhuma
     // Retorno: Nenhum
-    // Pré-condição: As variáveis this.currentFolde e this.panelLeft devem estar instanciadas e configuradas.
+    // Pré-condição: As variáveis this.currentFolde e this.panelLeft devem estar
+    // instanciadas e configuradas.
     // Pós-condição: A tela de configuração do editorPane é incluida à interface
     private void includeSystemFileView() {
         this.systemView.updateFolder(this.currentFolder, this.panelLeft, null, this.systemFilePanelListener);
@@ -261,6 +263,7 @@ public class Gui {
 
         this.splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         this.splitPane.setDividerSize(3);
+        this.splitPane.resetToPreferredSizes();
 
         this.frame.getContentPane().add(this.splitPane, BorderLayout.CENTER);
     }
@@ -425,7 +428,7 @@ public class Gui {
 
         this.createNewFileOpenPanel = null;
 
-        SwingUtilities.updateComponentTreeUI(frame);
+        SwingUtilities.updateComponentTreeUI(this.openFiles.getOpenFilesPanel());
     }
 
     // Função que aplica as rotinas para abrir um arquivo
