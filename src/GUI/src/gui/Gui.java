@@ -41,6 +41,7 @@ import gui.maingui.secondarypanels.editorpanel.ListenerEditorPanelConfig;
 import gui.maingui.secondarypanels.openfilespanel.OpenFilesListener;
 import gui.maingui.secondarypanels.newfolder.NewFolder;
 import gui.maingui.secondarypanels.filesystemview.SystemFilePanel;
+import gui.maingui.secondarypanels.filesystemview.SystemFilePanelListener;
 
 public class Gui {
 
@@ -103,6 +104,9 @@ public class Gui {
 
     // Listener do openFilesPanel
     private OpenFilesListener listenerOpenFilesPanel;
+    
+    // Listener do systemFilePanel
+    private SystemFilePanelListener systemFilePanelListener;
 
     // Variável utilizada para guardar a única instância da classe
     private static Gui instance;
@@ -141,6 +145,7 @@ public class Gui {
         this.listenerEditorPanel = new ListenerEditorPanel();
         this.listenerEditorPanelConfig = new ListenerEditorPanelConfig();
         this.listenerOpenFilesPanel = new OpenFilesListener();
+        this.systemFilePanelListener = new SystemFilePanelListener();
 
         // Iniciando os componentes visuais
         initialize();
@@ -235,7 +240,7 @@ public class Gui {
     // Pré-condição: As variáveis this.currentFolde e this.panelLeft devem estar instanciadas e configuradas.
     // Pós-condição: A tela de configuração do editorPane é incluida à interface
     private void includeSystemFileView() {
-        this.systemView.updateFolder(this.currentFolder, this.panelLeft, null);
+        this.systemView.updateFolder(this.currentFolder, this.panelLeft, null, this.systemFilePanelListener);
         SwingUtilities.updateComponentTreeUI(frame);
     }
 
@@ -491,7 +496,7 @@ public class Gui {
     public void runOpenFolder() {
         this.openFolder = new OpenFolder();
         this.currentFolder = this.openFolder.openFolder(this.currentFolder);
-        this.systemView.updateFolder(this.currentFolder, this.panelLeft, this.systemView.getSystemFilesPanel());
+        this.systemView.updateFolder(this.currentFolder, this.panelLeft, this.systemView.getSystemFilesPanel(), this.systemFilePanelListener);
         SwingUtilities.updateComponentTreeUI(frame);
         this.openFolder = null;
     }

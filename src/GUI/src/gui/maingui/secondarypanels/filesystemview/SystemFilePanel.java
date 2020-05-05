@@ -28,7 +28,7 @@ public class SystemFilePanel {
     //Retorno: Nenhum
     //Pré-condição: O rootPath e o wrapPanel devem estar devidamente instanciados e serem válidos
     //Pós-condição: O diretório passado é processado, carregado e exposto na tela
-    public void defineFilePanel(String rootPath, JPanel wrapPanel){
+    public void defineFilePanel(String rootPath, JPanel wrapPanel, SystemFilePanelListener listener){
         this.systemFilesPanel = new JPanel();
         this.systemFilesPanel.setBackground(this.constants.getSideAreasColor());
         this.systemFilesPanel.setLayout(new BorderLayout());
@@ -65,6 +65,7 @@ public class SystemFilePanel {
                 return ret;
             }
         });
+        this.fileTree.addMouseListener(listener);
 
         this.scrollPane = new JScrollPane(this.fileTree);
 
@@ -80,7 +81,7 @@ public class SystemFilePanel {
     //Retorno: Nenhum
     //Pré-condição: O rootPath e o wrapPanel devem estar devidamente instanciados e serem válidos
     //Pós-condição: O diretório passado é processado, carregado e exposto na tela
-    public void updateFolder(String rootPath, JPanel wrapPanel, JPanel lastOpenDirectory){
+    public void updateFolder(String rootPath, JPanel wrapPanel, JPanel lastOpenDirectory, SystemFilePanelListener listener){
         if(lastOpenDirectory != null){
             for(Component c:wrapPanel.getComponents()){
                 if(c instanceof JPanel){
@@ -88,7 +89,7 @@ public class SystemFilePanel {
                 }
             }
         }
-        this.defineFilePanel(rootPath, wrapPanel);
+        this.defineFilePanel(rootPath, wrapPanel, listener);
     }
 
     //Getter do painel de diretório aberto

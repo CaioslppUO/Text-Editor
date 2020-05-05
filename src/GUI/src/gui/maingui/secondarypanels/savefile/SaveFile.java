@@ -38,7 +38,8 @@ public class SaveFile {
                 JOptionPane.showMessageDialog(null, "Error while trying to save the file");
             }
         } else {
-            JOptionPane.showMessageDialog(null, "No Files Open");
+            if(showSaveMessage)
+                JOptionPane.showMessageDialog(null, "No Files Open");
         }
     }
 
