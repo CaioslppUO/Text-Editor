@@ -466,7 +466,7 @@ public class Gui {
     // Pós-condição: Abre um arquivo e o coloca na interface para edição
     public void runOpenFile(String filePath) {
         this.openFile = new OpenFile();
-        this.openFile.openFileUsingPath(filePath);
+        this.openFile.openFileUsingPath(filePath,this.currentFolder);
 
         // Confere se o arquivo já está aberto no visualisador
         if (this.currentFile.isOpen() && this.addedFilesPanel.get(this.currentFile.getFullPath()) != null) {

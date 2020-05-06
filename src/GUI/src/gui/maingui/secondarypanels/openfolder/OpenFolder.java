@@ -3,6 +3,10 @@ package gui.maingui.secondarypanels.openfolder;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import gui.maingui.Constants;
+import gui.maingui.interfacegenerator.JDialogGenerator;
+import gui.maingui.interfacegenerator.JFileChooserGenerator;
+
+import java.awt.Dimension;
 import java.io.File;
 
 public class OpenFolder {
@@ -11,45 +15,39 @@ public class OpenFolder {
     private JFileChooser chooseOpenDirectory;
     private Constants constants;
 
-    //Construtor
-    public OpenFolder() {
-        this.constants = new Constants();
+    // Construtor
+    public OpenFolder() {}
+
+    // Função que configura o JFileChooser
+    // Entrada: Pasta atual
+    // Retorno: Nenhum
+    // Pré-condição: As variáveis currentFile e currentFolder devem estar
+    // devidamente instanciadas e configuradas
+    // Pós-condição: O JFileChooser é configurado
+    private void configureJFileChooser(String currentFolder) {
+        this.openFolderFrame = JDialogGenerator.createJDialog(new Dimension(600, 600), null, "Open Folder",
+                this.constants.getSideAreasColor());
+        this.chooseOpenDirectory = JFileChooserGenerator.createJFileChooser(currentFolder, "Open Folder",
+                JFileChooser.DIRECTORIES_ONLY);
+        this.openFolderFrame.getContentPane().add(this.chooseOpenDirectory);
+        this.openFolderFrame.setVisible(false);
     }
-
-    //Função que define o frame da janela de abrir pastas
-    //Entrada: Pasta atualmente aberta
-    //Retorno: Nenhum
-    //Pré-condição: Nenhuma
-    //Pós-condição: A janela de escolha de pasta é criada e exposta
-    private int defineOpenFolderFrame(String currentFolder) {
-        this.openFolderFrame = new JDialog();
-        this.openFolderFrame.getContentPane().setBackground(this.constants.getSideAreasColor());
-        this.openFolderFrame.setSize(600, 600);
-        this.openFolderFrame.setLocationRelativeTo(null);
-        this.openFolderFrame.setTitle("Open Folder");
-
-        this.chooseOpenDirectory = new JFileChooser();
-        this.chooseOpenDirectory.setCurrentDirectory(new File(currentFolder));
-        this.chooseOpenDirectory.setDialogTitle("Open Folder");
-        this.chooseOpenDirectory.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        this.openFolderFrame.getContentPane().add(chooseOpenDirectory);
-        this.openFolderFrame.setVisible(true);
-        this.openFolderFrame.dispose();
-        return chooseOpenDirectory.showOpenDialog(null);
-    }
-
-    //Função que abre uma pasta, a qual será o diretório padrão
-    //Entrada: Pasta atualmente aberta
-    //Retorno: Nenhum
-    //Pré-condição: Nenhuma
-    //Pós-condição: A pasta é aberta e vira o diretório padrão
+    
+    // Função que abre uma pasta, a qual será o diretório padrão
+    // Entrada: Pasta atualmente aberta
+    // Retorno: Nenhum
+    // Pré-condição: Nenhuma
+    // Pós-condição: A pasta é aberta e vira o diretório padrão
     public String openFolder(String currentFolder) {
-        if (this.defineOpenFolderFrame(currentFolder) == JFileChooser.APPROVE_OPTION) {
+        this.constants = new Constants();
+        this.configureJFileChooser(currentFolder);
+        if (this.chooseOpenDirectory.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
             File aux = new File(this.chooseOpenDirectory.getSelectedFile().getAbsolutePath());
-            if(aux.isDirectory()){
+            if (aux.isDirectory()) {
                 currentFolder = aux.getAbsolutePath();
             }
         }
+        this.openFolderFrame.dispose();
         return currentFolder;
     }
 }

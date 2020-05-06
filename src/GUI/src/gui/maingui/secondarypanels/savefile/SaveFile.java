@@ -3,6 +3,8 @@ package gui.maingui.secondarypanels.savefile;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import gui.maingui.Constants;
+
+import java.awt.Dimension;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -10,6 +12,8 @@ import java.io.PrintWriter;
 import javax.swing.JOptionPane;
 
 import gui.maingui.entities.gFile;
+import gui.maingui.interfacegenerator.JDialogGenerator;
+import gui.maingui.interfacegenerator.JFileChooserGenerator;
 
 public class SaveFile {
 
@@ -17,16 +21,15 @@ public class SaveFile {
     private JFileChooser chooseSaveDirectory;
     private Constants constants;
 
-    //Construtor
-    public SaveFile() {
-        this.constants = new Constants();
-    }
+    // Construtor
+    public SaveFile() {}
 
-    //Função que salva o arquivo que está aberto na variável this.currentFile
-    //Entrada: Mostrar ou não a mensagem de arquivo salvo, arquivo aberto e texto para salvar
-    //Retorno: Nenhum
-    //Pŕe-condição: Nenhuma
-    //Pós-condição: O arquivo aberto na variável this.currentFile é salvo
+    // Função que salva o arquivo que está aberto na variável this.currentFile
+    // Entrada: Mostrar ou não a mensagem de arquivo salvo, arquivo aberto e texto
+    // para salvar
+    // Retorno: Nenhum
+    // Pŕe-condição: Nenhuma
+    // Pós-condição: O arquivo aberto na variável this.currentFile é salvo
     public void saveFile(Boolean showSaveMessage) {
         if (gFile.getInstance().isOpen()) {
             try {
@@ -41,43 +44,39 @@ public class SaveFile {
                 JOptionPane.showMessageDialog(null, "Error while trying to save the file");
             }
         } else {
-            if(showSaveMessage)
+            if (showSaveMessage)
                 JOptionPane.showMessageDialog(null, "No Files Open");
         }
     }
 
-    //Função que define o frame de salvar um arquivo
-    //Entrada: Nenhuma
-    //Retorno: FileChooser.APPROVE_OPTION se o diretório for escolhido ou o contrário caso não seja
-    //Pré-condição: Nenhuma
-    //Pós-condição: Nenhuma
-    private int defineSaveFileFrame(String currentFolder) {
-        this.saveFileFrame = new JDialog();
-        this.saveFileFrame.getContentPane().setBackground(this.constants.getSideAreasColor());
-        this.saveFileFrame.setSize(600, 600);
-        this.saveFileFrame.setLocationRelativeTo(null);
-        this.saveFileFrame.setTitle("Save File As");
-
-        this.chooseSaveDirectory = new JFileChooser();
-        this.chooseSaveDirectory.setCurrentDirectory(new File(currentFolder));
-        this.chooseSaveDirectory.setDialogTitle("Save As");
-        this.chooseSaveDirectory.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        this.saveFileFrame.getContentPane().add(chooseSaveDirectory);
-        this.saveFileFrame.setVisible(true);
-        this.saveFileFrame.dispose();
-        return chooseSaveDirectory.showOpenDialog(null);
+    // Função que configura o JFileChooser
+    // Entrada: Pasta atual
+    // Retorno: Nenhum
+    // Pré-condição: As variáveis currentFile e currentFolder devem estar
+    // devidamente instanciadas e configuradas
+    // Pós-condição: O JFileChooser é configurado
+    private void configureJFileChooser(String currentFolder) {
+        this.saveFileFrame = JDialogGenerator.createJDialog(new Dimension(600, 600), null, "Save As",
+                this.constants.getSideAreasColor());
+        this.chooseSaveDirectory = JFileChooserGenerator.createJFileChooser(currentFolder, "Save As",
+                JFileChooser.DIRECTORIES_ONLY);
+        this.saveFileFrame.getContentPane().add(this.chooseSaveDirectory);
+        this.saveFileFrame.setVisible(false);
     }
 
-    //Função que salva o arquivo que está aberto na variável this.currentFile
-    //Entrada: Arquivo atual, pasta atual e texto para salvar
-    //Retorno: Nenhum
-    //Pŕe-condição: Nenhum
-    //Pós-condição: É aberto um menu para escolher como e onde salvar o arquivo aberto na variável this.currentFile
+    // Função que salva o arquivo que está aberto na variável this.currentFile
+    // Entrada: Arquivo atual, pasta atual e texto para salvar
+    // Retorno: Nenhum
+    // Pŕe-condição: Nenhum
+    // Pós-condição: É aberto um menu para escolher como e onde salvar o arquivo
+    // aberto na variável this.currentFile
     public File saveFileAs(String currentFolder) {
-        if (gFile.getInstance().isOpen()){
+        this.constants = new Constants();
+        this.configureJFileChooser(currentFolder);
+        if (gFile.getInstance().isOpen()) {
             String fileSeparator = System.getProperty("file.separator");
 
-            if (this.defineSaveFileFrame(currentFolder) == JFileChooser.APPROVE_OPTION) { //Salvar o arquivo
+            if (this.chooseSaveDirectory.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) { // Salvar o arquivo
                 File directory = this.chooseSaveDirectory.getSelectedFile();
                 if (directory != null) {
                     String fileName;
