@@ -56,9 +56,6 @@ public class Gui {
     // Constantes
     private Constants constants;
 
-    // Entidades
-    private gFile currentFile;
-
     // Variáveis "globais"
     private String currentFolder;
     private Map<String, RoundedPanel> addedFilesPanel;
@@ -125,8 +122,6 @@ public class Gui {
     // Construtor da classe
     private Gui() {
         // Variáveis globais
-        this.currentFile = gFile.getInstance();
-
         this.currentFolder = ".";
         
         this.addedFilesPanel = new LinkedHashMap<>();
@@ -349,11 +344,11 @@ public class Gui {
      */
     // Pós-condição: O arquivo aberto atualmente é fechado
     public void closeFile() {
-        if (this.currentFile.isOpen()) {
+        if (gFile.getInstance().isOpen()) {
             int result = JOptionPane.showConfirmDialog(null, "Save File?", "Save", JOptionPane.YES_NO_CANCEL_OPTION,
                     JOptionPane.QUESTION_MESSAGE);
             if (result != JOptionPane.CANCEL_OPTION) {
-                RoundedPanel aux = this.addedFilesPanel.remove(this.currentFile.getFullPath());
+                RoundedPanel aux = this.addedFilesPanel.remove(gFile.getInstance().getFullPath());
                 this.openFiles.getOpenFilesPanel().remove(aux);
                 SwingUtilities.updateComponentTreeUI(this.panelCentral);
 
@@ -365,7 +360,7 @@ public class Gui {
                     if (result == JOptionPane.YES_OPTION) { // Salva o arquivo atual antes de fechar
                         this.saveFile.saveFile(false);
                     }
-                    this.currentFile.closeFile();
+                    gFile.getInstance().closeFile();
                     this.lastClickedFilePath = null;
                     this.decideEditorEnabled(false);
                 }
@@ -393,7 +388,7 @@ public class Gui {
     // Retorno: Nenhum
     // Pré-condição: O editorPane deve estar configurado e instanciado.
     private void decideEditorEnabled(Boolean isFileAlreadyOpen) {
-        if (this.currentFile.isOpen()) {
+        if (gFile.getInstance().isOpen()) {
             this.editorPane.getEditorPane().setEnabled(true);
             if (!isFileAlreadyOpen) {
                 this.createNewFileOpenPanel();
@@ -425,7 +420,7 @@ public class Gui {
     // interface
     private void createNewFileOpenPanel() {
         this.createNewFileOpenPanel = new CreateNewFileOpenPanel(this.lastClickedFilePath, this.addedFilesPanel,
-                this.currentFile.getName(), this.currentFile.getFullPath(), this.listenerOpenFilesPanel,
+                gFile.getInstance().getName(), gFile.getInstance().getFullPath(), this.listenerOpenFilesPanel,
                 this.listenerOpenFilesPanel, this.openFiles);
         this.lastClickedFilePath = this.createNewFileOpenPanel.getLastClickedFilePath();
 
@@ -448,7 +443,7 @@ public class Gui {
         this.openFile.openFile(this.currentFolder);
 
         // Confere se o arquivo já está aberto no visualisador
-        if (this.currentFile.isOpen() && this.addedFilesPanel.get(this.currentFile.getFullPath()) != null) {
+        if (gFile.getInstance().isOpen() && this.addedFilesPanel.get(gFile.getInstance().getFullPath()) != null) {
             this.decideEditorEnabled(true);
         } else {
             this.decideEditorEnabled(false);
@@ -469,7 +464,7 @@ public class Gui {
         this.openFile.openFileUsingPath(filePath,this.currentFolder);
 
         // Confere se o arquivo já está aberto no visualisador
-        if (this.currentFile.isOpen() && this.addedFilesPanel.get(this.currentFile.getFullPath()) != null) {
+        if (gFile.getInstance().isOpen() && this.addedFilesPanel.get(gFile.getInstance().getFullPath()) != null) {
             this.decideEditorEnabled(true);
         } else {
             this.decideEditorEnabled(false);
@@ -518,9 +513,9 @@ public class Gui {
     public void runSelectedFile() {
         Process process;
         if (this.editorPane.getEditorPane().isEnabled()) { // Verifica se o arquivo está aberto
-            if (this.currentFile.getName().split("[.]")[1].equals("py")) {
+            if (gFile.getInstance().getName().split("[.]")[1].equals("py")) {
                 try {
-                    process = Runtime.getRuntime().exec("python3 " + this.currentFile.getFullPath());
+                    process = Runtime.getRuntime().exec("python3 " + gFile.getInstance().getFullPath());
                     BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
                     String inputText = "", aux;
                     while ((aux = reader.readLine()) != null) {
@@ -537,10 +532,10 @@ public class Gui {
                     JOptionPane.showMessageDialog(null, inputText, "Output", JOptionPane.INFORMATION_MESSAGE);
                 } catch (IOException ex) {
                 }
-            } else if (this.currentFile.getName().split("[.]")[1].equals("c")) {
+            } else if (gFile.getInstance().getName().split("[.]")[1].equals("c")) {
                 try {
-                    process = Runtime.getRuntime().exec("gcc " + this.currentFile.getFullPath() + " -o "
-                            + this.currentFile.getFile().getParent() + "/" + this.currentFile.getName().split("[.]")[0]);
+                    process = Runtime.getRuntime().exec("gcc " + gFile.getInstance().getFullPath() + " -o "
+                            + gFile.getInstance().getFile().getParent() + "/" + gFile.getInstance().getName().split("[.]")[0]);
                     BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
                     String inputText = "", aux;
                     while ((aux = reader.readLine()) != null) {
@@ -551,7 +546,7 @@ public class Gui {
                     }
                     if (inputText.equals("")) {
                         process = Runtime.getRuntime().exec(
-                                this.currentFile.getFile().getParent() + "/./" + this.currentFile.getName().split("[.]")[0]);
+                                gFile.getInstance().getFile().getParent() + "/./" + gFile.getInstance().getName().split("[.]")[0]);
                         reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
                         inputText = "";
                         while ((aux = reader.readLine()) != null) {
@@ -589,7 +584,7 @@ public class Gui {
 
     // Getter do arquivo aberto atualmente
     public File getCurrentFile() {
-        return this.currentFile.getFile();
+        return gFile.getInstance().getFile();
     }
 
     // Getter da pasta aberta atualmente
