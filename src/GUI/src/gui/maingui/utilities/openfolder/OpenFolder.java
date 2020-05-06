@@ -1,4 +1,4 @@
-package gui.maingui.secondarypanels.openfolder;
+package gui.maingui.utilities.openfolder;
 
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;

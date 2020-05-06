@@ -1,4 +1,4 @@
-package gui.maingui.secondarypanels.openfile;
+package gui.maingui.utilities.openfile;
 
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -11,7 +11,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import javax.swing.JOptionPane;
 
-import gui.maingui.secondarypanels.savefile.SaveFile;
+import gui.maingui.utilities.savefile.SaveFile;
 import gui.maingui.entities.gFile;
 import gui.maingui.interfacegenerator.JDialogGenerator;
 import gui.maingui.interfacegenerator.JFileChooserGenerator;

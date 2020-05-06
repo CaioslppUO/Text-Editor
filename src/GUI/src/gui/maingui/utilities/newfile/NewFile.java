@@ -1,4 +1,4 @@
-package gui.maingui.secondarypanels.newfile;
+package gui.maingui.utilities.newfile;
 
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -11,7 +11,7 @@ import gui.maingui.interfacegenerator.JDialogGenerator;
 import gui.maingui.interfacegenerator.JFileChooserGenerator;
 import gui.Gui;
 import gui.maingui.Constants;
-import gui.maingui.secondarypanels.savefile.SaveFile;
+import gui.maingui.utilities.savefile.SaveFile;
 import gui.maingui.entities.gFile;
 
 public class NewFile {

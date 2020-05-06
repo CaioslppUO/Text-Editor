@@ -8,7 +8,6 @@ import java.awt.GridBagLayout;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-
 import javax.swing.Box;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -18,29 +17,30 @@ import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
-
 import java.io.InputStreamReader;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
 import gui.extragui.RoundedPanel;
 import gui.maingui.Constants;
-import gui.maingui.secondarypanels.editorpanel.EditorPane;
-import gui.maingui.secondarypanels.editorpanel.EditorPaneConfig;
-import gui.maingui.secondarypanels.openfile.OpenFile;
-import gui.maingui.secondarypanels.openfilespanel.OpenFilesPanel;
-import gui.maingui.secondarypanels.openfilespanel.CreateNewFileOpenPanel;
-import gui.maingui.secondarypanels.savefile.SaveFile;
-import gui.maingui.secondarypanels.newfile.NewFile;
-import gui.maingui.secondarypanels.openfolder.OpenFolder;
+
+import gui.maingui.utilities.openfile.OpenFile;
+import gui.maingui.utilities.savefile.SaveFile;
+import gui.maingui.utilities.newfile.NewFile;
+import gui.maingui.utilities.openfolder.OpenFolder;
+import gui.maingui.utilities.newfolder.NewFolder;
+
 import gui.maingui.secondarypanels.menu.MenuBar;
 import gui.maingui.secondarypanels.menu.ListenerMenu;
 import gui.maingui.secondarypanels.editorpanel.ListenerEditorPanel;
 import gui.maingui.secondarypanels.editorpanel.ListenerEditorPanelConfig;
 import gui.maingui.secondarypanels.openfilespanel.OpenFilesListener;
-import gui.maingui.secondarypanels.newfolder.NewFolder;
 import gui.maingui.secondarypanels.filesystemview.SystemFilePanel;
 import gui.maingui.secondarypanels.filesystemview.SystemFilePanelListener;
+import gui.maingui.secondarypanels.editorpanel.EditorPane;
+import gui.maingui.secondarypanels.editorpanel.EditorPaneConfig;
+import gui.maingui.secondarypanels.openfilespanel.OpenFilesPanel;
+import gui.maingui.secondarypanels.openfilespanel.CreateNewFileOpenPanel;
+
 import gui.maingui.entities.gFile;
 
 public class Gui {

@@ -1,4 +1,4 @@
-package gui.maingui.secondarypanels.newfolder;
+package gui.maingui.utilities.newfolder;
 
 import java.awt.Dimension;
 import java.io.File;
