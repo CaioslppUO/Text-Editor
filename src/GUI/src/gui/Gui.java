@@ -199,7 +199,7 @@ public class Gui {
     // Pós-condição: O editor é adicionado à interface
     private void includeEditorPane() {
         this.editorPane = new EditorPane(this.fontType, this.fontSize, this.panelCentral, this.listenerEditorPanel);
-        this.decideEditorEnabled(false);
+        this.decideEditorEnabled();
     }
 
     // Função que inclui a tela de configuração do editorPane na interface
@@ -346,7 +346,7 @@ public class Gui {
                     }
                     gFile.getInstance().closeFile();
                     this.lastClickedFilePath = null;
-                    this.decideEditorEnabled(false);
+                    this.decideEditorEnabled();
                 }
             }
         }
@@ -371,10 +371,10 @@ public class Gui {
     // Entrada: Verdadeiro ou falso que o arquivo em this.currentFile já está aberto
     // Retorno: Nenhum
     // Pré-condição: O editorPane deve estar configurado e instanciado.
-    private void decideEditorEnabled(Boolean isFileAlreadyOpen) {
+    private void decideEditorEnabled() {
         if (gFile.getInstance().isOpen()) {
             this.editorPane.getEditorPane().setEnabled(true);
-            if (!isFileAlreadyOpen) {
+            if (this.addedFilesPanel.get(gFile.getInstance().getFullPath()) == null) {
                 this.createNewFileOpenPanel();
             } else {
                 if (lastClickedFilePath != null) {
@@ -424,13 +424,7 @@ public class Gui {
     // Pós-condição: Abre um arquivo e o coloca na interface para edição
     public void runOpenFile() {
         OpenFile.getInstance().openFile(currentFolder);
-
-        // Confere se o arquivo já está aberto no visualisador
-        if (gFile.getInstance().isOpen() && this.addedFilesPanel.get(gFile.getInstance().getFullPath()) != null) {
-            this.decideEditorEnabled(true);
-        } else {
-            this.decideEditorEnabled(false);
-        }
+        this.decideEditorEnabled();
     }
 
     // Função que aplica as rotinas para abrir um arquivo
@@ -444,13 +438,7 @@ public class Gui {
     // Pós-condição: Abre um arquivo e o coloca na interface para edição
     public void runOpenFile(String filePath) {
         OpenFile.getInstance().openFileUsingPath(filePath,this.currentFolder);
-
-        // Confere se o arquivo já está aberto no visualisador
-        if (gFile.getInstance().isOpen() && this.addedFilesPanel.get(gFile.getInstance().getFullPath()) != null) {
-            this.decideEditorEnabled(true);
-        } else {
-            this.decideEditorEnabled(false);
-        }
+        this.decideEditorEnabled();
     }
 
     // Função que executa as rotinas para criar um novo arquivo
@@ -465,7 +453,7 @@ public class Gui {
         NewFile.getInstance().createNewFile(currentFolder);
         this.systemView.updateFolder(this.currentFolder, this.panelLeft, this.systemView.getSystemFilesPanel(), this.systemFilePanelListener);
         SwingUtilities.updateComponentTreeUI(frame);
-        this.decideEditorEnabled(false);
+        this.decideEditorEnabled();
     }
 
     // Função que abre uma pasta como diretório padrão

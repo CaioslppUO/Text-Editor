@@ -61,8 +61,7 @@ public class NewFile {
                 File directory = this.chooseNewFileDirectory.getSelectedFile();
                 if (directory != null && directory.isDirectory()) { // Pasta válida
                     String fileName = JOptionPane.showInputDialog("File Name");
-                    if (fileName != null && !fileName.equals("") && directory != null && directory.isDirectory()) { // Nome
-                                                                                                                    // válido
+                    if (fileName != null && !fileName.equals("") && directory != null && directory.isDirectory()) {
                         File newFile = new File(directory.toString() + this.fileSeparator + fileName);
                         try { // Tenta criar o novo arquivo
                             if (newFile.createNewFile()) {
@@ -81,12 +80,13 @@ public class NewFile {
                 } else { // Pasta inválida
                     JOptionPane.showMessageDialog(null, "Invalid Folder");
                 }
-                this.createNewFileFrame.dispose();
             }
         } else { // Existe arquivo aberto previamente
             SaveFile.getInstance().saveFile(false);
+            gFile.getInstance().closeFile();
             this.createNewFile(currentFolder);
         }
+        this.createNewFileFrame.dispose();
     }
 
     // Getter da instância
