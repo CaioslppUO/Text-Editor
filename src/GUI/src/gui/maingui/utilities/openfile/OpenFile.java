@@ -55,8 +55,8 @@ public class OpenFile {
     // Pós-condição: O arquivo é aberto no editor
     public void openFile(String currentFolder) {
         this.constants = new Constants();
-        this.configureJFileChooser(currentFolder);
         if (!gFile.getInstance().isOpen()) { // Não existe arquivo aberto previamente
+            this.configureJFileChooser(currentFolder);
             if (this.chooseOpenFile.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) { // Abre o arquivo
                 File file = new File(chooseOpenFile.getSelectedFile().toString());
                 try {
@@ -80,12 +80,12 @@ public class OpenFile {
                     }
                 }
             }
+            this.openFileFrame.dispose();
         } else { // Existe arquivo aberto previamente
             SaveFile.getInstance().saveFile(false);
             gFile.getInstance().closeFile();
             this.openFile(currentFolder);
         }
-        this.openFileFrame.dispose();
     }
 
     // Função que abre um arquivo em que seja passado o caminho para abrir

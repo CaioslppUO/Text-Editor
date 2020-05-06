@@ -55,8 +55,8 @@ public class NewFile {
     public void createNewFile(String currentFolder) {
         this.constants = new Constants();
         this.fileSeparator = System.getProperty("file.separator");
-        this.configureFileChooser(currentFolder);
         if (!gFile.getInstance().isOpen()) { // Não existe arquivo aberto previamente
+            this.configureFileChooser(currentFolder);
             if (this.chooseNewFileDirectory.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
                 File directory = this.chooseNewFileDirectory.getSelectedFile();
                 if (directory != null && directory.isDirectory()) { // Pasta válida
@@ -80,12 +80,12 @@ public class NewFile {
                     JOptionPane.showMessageDialog(null, "Invalid Folder");
                 }
             }
+            this.createNewFileFrame.dispose();
         } else { // Existe arquivo aberto previamente
             SaveFile.getInstance().saveFile(false);
             gFile.getInstance().closeFile();
             this.createNewFile(currentFolder);
         }
-        this.createNewFileFrame.dispose();
     }
 
     // Getter da instância
