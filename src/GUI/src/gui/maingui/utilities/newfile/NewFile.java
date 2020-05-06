@@ -65,7 +65,6 @@ public class NewFile {
                         File newFile = new File(directory.toString() + this.fileSeparator + fileName);
                         try { // Tenta criar o novo arquivo
                             if (newFile.createNewFile()) {
-                                JOptionPane.showMessageDialog(null, "File Created");
                                 gFile.getInstance().setFile(newFile);
                                 Gui.getInstance().getEditorPane().getEditorPane().setText("");
                             } else { // Arquivo já existente

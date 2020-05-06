@@ -43,7 +43,7 @@ public class OpenFile {
     // Pós-condição: O JFileChooser é configurado
     private void configureJFileChooser(String currentFolder){
         this.openFileFrame = JDialogGenerator.createJDialog(new Dimension(600, 600), null, "Open File", this.constants.getSideAreasColor());
-        this.chooseOpenFile = JFileChooserGenerator.createJFileChooser(currentFolder, "Open File", JFileChooser.DIRECTORIES_ONLY);
+        this.chooseOpenFile = JFileChooserGenerator.createJFileChooser(currentFolder, "Open File", JFileChooser.FILES_AND_DIRECTORIES);
         this.openFileFrame.getContentPane().add(this.chooseOpenFile);
         this.openFileFrame.setVisible(false);
     }
@@ -80,14 +80,12 @@ public class OpenFile {
                     }
                 }
             }
-            this.openFileFrame.getContentPane().add(chooseOpenFile);
-            this.openFileFrame.setVisible(true);
-            this.openFileFrame.dispose();
         } else { // Existe arquivo aberto previamente
             SaveFile.getInstance().saveFile(false);
+            gFile.getInstance().closeFile();
             this.openFile(currentFolder);
         }
-
+        this.openFileFrame.dispose();
     }
 
     // Função que abre um arquivo em que seja passado o caminho para abrir
