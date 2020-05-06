@@ -1,11 +1,14 @@
 package gui.maingui.secondarypanels.newfolder;
 
+import java.awt.Dimension;
 import java.io.File;
-
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import gui.maingui.Constants;
+
+import gui.maingui.interfacegenerator.JDialogGenerator;
+import gui.maingui.interfacegenerator.JFileChooserGenerator;
 
 public class NewFolder {
 
@@ -14,27 +17,19 @@ public class NewFolder {
     private JFileChooser chooseNewFolderDirectory;
 
     // Construtor
-    public NewFolder() {
-        this.constants = new Constants();
-    }
+    public NewFolder() {}
 
-    //Função que define o frame de criar um novo diretório
-    //Entrada: Pasta atualmente aberto
-    //Retorno: FileChooser.APPROVE_OPTION se o diretório for escolhido ou o contrário caso não seja
-    //Pré-condição: Nenhuma
-    //Pós-condição: Nenhuma
-    public int defineCreateNewFolderFrame(String currentFolder) {
-        this.createNewFolderFrame = new JDialog();
-        this.createNewFolderFrame.getContentPane().setBackground(this.constants.getSideAreasColor());
-        this.createNewFolderFrame.setSize(600, 600);
-        this.createNewFolderFrame.setLocationRelativeTo(null);
-        this.createNewFolderFrame.setTitle("Create New Folder");
-
-        this.chooseNewFolderDirectory = new JFileChooser();
-        this.chooseNewFolderDirectory.setCurrentDirectory(new File(currentFolder));
-        this.chooseNewFolderDirectory.setDialogTitle("Create New Folder");
-        this.chooseNewFolderDirectory.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        return chooseNewFolderDirectory.showOpenDialog(null);
+    // Função que configura o JFileChooser
+    // Entrada: Pasta atual
+    // Retorno: Nenhum
+    // Pré-condição: As variáveis currentFile e currentFolder devem estar
+    // devidamente instanciadas e configuradas
+    // Pós-condição: O JFileChooser é configurado
+    private void configureJFileChooser(String currentFolder){
+        this.createNewFolderFrame = JDialogGenerator.createJDialog(new Dimension(600, 600), null, "Create New Folder", this.constants.getSideAreasColor());
+        this.chooseNewFolderDirectory = JFileChooserGenerator.createJFileChooser(currentFolder, "Create New folder", JFileChooser.DIRECTORIES_ONLY);
+        this.createNewFolderFrame.getContentPane().add(this.chooseNewFolderDirectory);
+        this.createNewFolderFrame.setVisible(false);
     }
 
     // Função que cria um diretório padrão caso já não exista
@@ -43,22 +38,21 @@ public class NewFolder {
     // Pŕe-condição: Nenhuma
     // Pós-condição: O diretório é criado
     public String createNewFolder(String currentFolder) {
-       if(this.defineCreateNewFolderFrame(currentFolder) == JFileChooser.APPROVE_OPTION){
+        this.constants = new Constants();
+        this.configureJFileChooser(currentFolder);
+        if (this.chooseNewFolderDirectory.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
             File newFolder;
             String folderName = JOptionPane.showInputDialog("Folder Name");
             newFolder = new File(this.chooseNewFolderDirectory.getSelectedFile() + "/" + folderName);
-            if(newFolder.mkdir()){
+            if (newFolder.mkdir()) {
                 JOptionPane.showMessageDialog(null, "folder successfully created");
                 currentFolder = newFolder.getAbsolutePath();
-            }else{
+            } else {
                 JOptionPane.showMessageDialog(null, "folder already exist");
             }
-
-            this.createNewFolderFrame.getContentPane().add(this.chooseNewFolderDirectory);
-            this.createNewFolderFrame.setVisible(true);
-       }
-       this.createNewFolderFrame.dispose();  
-       return currentFolder;
+        }
+        this.createNewFolderFrame.dispose();
+        return currentFolder;
     }
 
 }

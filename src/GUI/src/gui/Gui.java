@@ -485,10 +485,10 @@ public class Gui {
      */
     // Pós-condição: Um novo arquivo é criado
     public void runCreateNewFile() {
-        this.newFile = new NewFile(this.currentFolder);
+        this.newFile = new NewFile();
+        this.newFile.createNewFile(this.currentFolder);
         this.systemView.updateFolder(this.currentFolder, this.panelLeft, this.systemView.getSystemFilesPanel(), this.systemFilePanelListener);
         SwingUtilities.updateComponentTreeUI(frame);
-        this.newFile = null;
         this.decideEditorEnabled(false);
     }
 

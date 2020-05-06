@@ -28,16 +28,10 @@ public class NewFile {
     // Pré-condição: As variáveis currentFile, editorPane e currentFolder devem
     // estar devidamente instanciadas e configuradas
     // Pós-condição: A classe é instanciada
-    public NewFile(String currentFolder) {
-        this.constants = new Constants();
-        this.fileSeparator = System.getProperty("file.separator");
-        this.saveFile = new SaveFile();
-        this.configureFileChooser(currentFolder);
-        this.createNewFile();
-    }
+    public NewFile() {}
 
     // Função que configura o JFileChooser
-    // Entrada: Arquivo atual e pasta atual
+    // Entrada: Pasta atual
     // Retorno: Nenhum
     // Pré-condição: As variáveis currentFile e currentFolder devem estar
     // devidamente instanciadas e configuradas
@@ -56,7 +50,11 @@ public class NewFile {
     // Retorno: Nenhum
     // Pŕe-condição: Nenhuma
     // Pós-condição: O arquivo é criado e salvo no disco
-    public void createNewFile() {
+    public void createNewFile(String currentFolder) {
+        this.constants = new Constants();
+        this.fileSeparator = System.getProperty("file.separator");
+        this.saveFile = new SaveFile();
+        this.configureFileChooser(currentFolder);
         if (!gFile.getInstance().isOpen()) { // Não existe arquivo aberto previamente
             if (this.chooseNewFileDirectory.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
                 File directory = this.chooseNewFileDirectory.getSelectedFile(); 
@@ -85,7 +83,7 @@ public class NewFile {
             }
         } else { // Existe arquivo aberto previamente
             this.saveFile.saveFile(false);
-            this.createNewFile();
+            this.createNewFile(currentFolder);
         }
     }
 }
