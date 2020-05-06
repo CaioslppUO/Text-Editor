@@ -23,6 +23,7 @@ public class OpenFile {
     private JDialog openFileFrame;
     private JFileChooser chooseOpenFile;
     private Constants constants;
+    private File tempFile;
 
     private static OpenFile instance;
 
@@ -79,10 +80,15 @@ public class OpenFile {
                         JOptionPane.showMessageDialog(null, "Error while trying to load file");
                     }
                 }
+            }else{ // Cancelamento da abertura de arquivo
+                if(this.tempFile != null)
+                    Gui.getInstance().runOpenFile(this.tempFile.getAbsolutePath());
+                this.tempFile = null;
             }
             this.openFileFrame.dispose();
         } else { // Existe arquivo aberto previamente
             SaveFile.getInstance().saveFile(false);
+            this.tempFile = new File(gFile.getInstance().getFullPath());
             gFile.getInstance().closeFile();
             this.openFile(currentFolder);
         }
@@ -120,6 +126,7 @@ public class OpenFile {
             }
         } else { // Existe arquivo aberto previamente
             SaveFile.getInstance().saveFile(false);
+            gFile.getInstance().closeFile();
             this.openFileUsingPath(filePath,currentFolder);
         }
     }

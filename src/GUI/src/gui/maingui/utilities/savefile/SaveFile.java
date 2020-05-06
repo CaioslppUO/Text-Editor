@@ -72,12 +72,11 @@ public class SaveFile {
     // Pŕe-condição: Nenhum
     // Pós-condição: É aberto um menu para escolher como e onde salvar o arquivo
     // aberto na variável this.currentFile
-    public File saveFileAs(String currentFolder) {
+    public void saveFileAs(String currentFolder) {
         this.constants = new Constants();
-        this.configureJFileChooser(currentFolder);
         if (gFile.getInstance().isOpen()) {
+            this.configureJFileChooser(currentFolder);
             String fileSeparator = System.getProperty("file.separator");
-
             if (this.chooseSaveDirectory.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) { // Salvar o arquivo
                 File directory = this.chooseSaveDirectory.getSelectedFile();
                 if (directory != null) {
@@ -102,10 +101,10 @@ public class SaveFile {
                     JOptionPane.showMessageDialog(null, "Invalid Directory");
                 }
             }
+            this.saveFileFrame.dispose();
         } else {
             JOptionPane.showMessageDialog(null, "No Files Open");
         }
-        return gFile.getInstance().getFile();
     }
 
     // Getter da instância
