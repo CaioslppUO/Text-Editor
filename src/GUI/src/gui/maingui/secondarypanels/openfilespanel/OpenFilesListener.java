@@ -9,8 +9,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import gui.maingui.Constants;
+
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.border.BevelBorder;
@@ -30,7 +32,7 @@ public class OpenFilesListener implements ActionListener, MouseListener {
         if (null != e.getActionCommand()) {
             switch (e.getActionCommand()) {
                 case "buttonCloseFilePressed":
-                    aux.closeFile();
+                    aux.closeFile(((JButton) e.getSource()).getName().split(":")[1]);
                     break;
                 default:
                     break;
@@ -81,29 +83,37 @@ public class OpenFilesListener implements ActionListener, MouseListener {
     @Override
     public void mouseEntered(MouseEvent me) {
         Gui aux = Gui.getInstance();
-        if ("closeButton".equals(me.getComponent().getName())) {
-            ((JButton) me.getComponent()).setBackground(this.constants.getButtonCloseEnteredColor());
-            ((JButton) me.getComponent()).setForeground(this.constants.getEditorPaneFontColor());
-            SwingUtilities.updateComponentTreeUI(aux.getOpenFilesPanel().getOpenFilesPanel());
-        }
-        if (!"closeButton".equals(me.getComponent().getName())) {
-            ((RoundedPanel) me.getComponent()).setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
-            SwingUtilities.updateComponentTreeUI(aux.getOpenFilesPanel().getOpenFilesPanel());
-        }
+        String[] aux2 = null;
+        try{
+            aux2 = me.getComponent().getName().split(":"); 
+            if ("closeButton".equals(aux2[0])) {
+                ((JButton) me.getComponent()).setBackground(this.constants.getButtonCloseEnteredColor());
+                ((JButton) me.getComponent()).setForeground(this.constants.getEditorPaneFontColor());
+                SwingUtilities.updateComponentTreeUI(aux.getOpenFilesPanel().getOpenFilesPanel());
+            }
+            if (!"closeButton".equals(aux2[0])) {
+                ((RoundedPanel) me.getComponent()).setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+                SwingUtilities.updateComponentTreeUI(aux.getOpenFilesPanel().getOpenFilesPanel());
+            }
+        }catch(Exception e){}
     }
 
     @Override
     public void mouseExited(MouseEvent me) {
         Gui aux = Gui.getInstance();
-        if ("closeButton".equals(me.getComponent().getName())) {
-            ((JButton) me.getComponent()).setBackground(null);
-            ((JButton) me.getComponent()).setForeground(null);
-            SwingUtilities.updateComponentTreeUI(aux.getOpenFilesPanel().getOpenFilesPanel());
-        }
-        if (!"closeButton".equals(me.getComponent().getName())) {
-            ((RoundedPanel) me.getComponent()).setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
-            SwingUtilities.updateComponentTreeUI(aux.getOpenFilesPanel().getOpenFilesPanel());
-        }
+        String[] aux2 = null;
+        try{
+            aux2 = me.getComponent().getName().split(":"); 
+            if ("closeButton".equals(aux2[0])) {
+                ((JButton) me.getComponent()).setBackground(null);
+                ((JButton) me.getComponent()).setForeground(null);
+                SwingUtilities.updateComponentTreeUI(aux.getOpenFilesPanel().getOpenFilesPanel());
+            }
+            if (!"closeButton".equals(aux2[0])) {
+                ((RoundedPanel) me.getComponent()).setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
+                SwingUtilities.updateComponentTreeUI(aux.getOpenFilesPanel().getOpenFilesPanel());
+            }
+        }catch(Exception e){}
     }
 
 }

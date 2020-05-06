@@ -29,7 +29,7 @@ public class ListenerEditorPanel implements KeyListener {
         // Salva o arquivo aberto ao apertar ctrl+s
         if (aux.getEditorPane().getEditorPane().isEnabled() && e.isShiftDown() == false && e.isControlDown()
                 && e.getKeyChar() != 's' && e.getKeyCode() == 83) {
-            SaveFile.getInstance().saveFile(true);
+            SaveFile.getInstance().saveFile(true,true);
         }
 
         // Salva como o arquivo ao apertar ctrl+shift+s

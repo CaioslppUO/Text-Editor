@@ -34,7 +34,7 @@ public class SaveFile {
     // Retorno: Nenhum
     // Pŕe-condição: Nenhuma
     // Pós-condição: O arquivo aberto na variável this.currentFile é salvo
-    public void saveFile(Boolean showSaveMessage) {
+    public void saveFile(Boolean showSaveMessage, Boolean updateOpenDirectories) {
         if (gFile.getInstance().isOpen()) {
             try {
                 PrintWriter print_line = new PrintWriter(new FileWriter(gFile.getInstance().getFile().toString()));
@@ -43,7 +43,8 @@ public class SaveFile {
                 if (showSaveMessage) {
                     JOptionPane.showMessageDialog(null, "File Saved");
                 }
-                Gui.getInstance().runUpdateFileSystemView();
+                if(updateOpenDirectories)
+                    Gui.getInstance().runUpdateFileSystemView();
                 gFile.getInstance().setIsSaved(true);
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "Error while trying to save the file");
@@ -90,7 +91,7 @@ public class SaveFile {
                         try {
                             if (newFile.createNewFile()) {
                                 gFile.getInstance().setFile(newFile);
-                                this.saveFile(false);
+                                this.saveFile(false,true);
                             } else {
                                 JOptionPane.showMessageDialog(null, "File Already Exists");
                             }

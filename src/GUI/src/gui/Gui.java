@@ -6,7 +6,6 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import javax.swing.Box;
 import javax.swing.JFrame;
@@ -107,8 +106,8 @@ public class Gui {
     // Construtor da classe
     private Gui() {
         // Variáveis globais
-        this.currentFolder = ".";
-        
+        this.currentFolder = System.getProperty("user.dir");
+
         this.addedFilesPanel = new LinkedHashMap<>();
         lastClickedFilePath = null;
 
@@ -199,7 +198,7 @@ public class Gui {
     // Pós-condição: O editor é adicionado à interface
     private void includeEditorPane() {
         this.editorPane = new EditorPane(this.fontType, this.fontSize, this.panelCentral, this.listenerEditorPanel);
-        this.decideEditorEnabled();
+        this.decideEditorEnabled(false);
     }
 
     // Função que inclui a tela de configuração do editorPane na interface
@@ -326,30 +325,46 @@ public class Gui {
      * this.currentFile devem estar instanciadas e configuradas corretamente.
      */
     // Pós-condição: O arquivo aberto atualmente é fechado
-    public void closeFile() {
-        if (gFile.getInstance().isOpen()) {
-            int result;
-            if(gFile.getInstance().isSaved())
-                result = JOptionPane.NO_OPTION;
-            else
-                result = JOptionPane.showConfirmDialog(null, "Save File?", "Save", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE);
-            if (result != JOptionPane.CANCEL_OPTION) {
-                RoundedPanel aux = this.addedFilesPanel.remove(gFile.getInstance().getFullPath());
-                this.openFiles.getOpenFilesPanel().remove(aux);
-                SwingUtilities.updateComponentTreeUI(this.panelCentral);
+    public void closeFile(String fileToClose) {
+        if (fileToClose.equals(gFile.getInstance().getFullPath())) {
+            if (gFile.getInstance().isOpen()) {
+                int result;
+                if (gFile.getInstance().isSaved())
+                    result = JOptionPane.NO_OPTION;
+                else
+                    result = JOptionPane.showConfirmDialog(null, "Save File?", "Save", JOptionPane.YES_NO_CANCEL_OPTION,
+                            JOptionPane.QUESTION_MESSAGE);
+                if (result != JOptionPane.CANCEL_OPTION) {
+                    RoundedPanel aux = this.addedFilesPanel.remove(gFile.getInstance().getFullPath());
+                    this.openFiles.getOpenFilesPanel().remove(aux);
+                    SwingUtilities.updateComponentTreeUI(this.panelCentral);
 
-                // Tenta abrir o próximo arquivo, aberto anteriormente, se existir
-                try { // Existe arquivo para abrir
-                    this.lastClickedFilePath = ((RoundedPanel) this.addedFilesPanel.values().toArray()[0]).getName();
-                    this.runOpenFile(((RoundedPanel) this.addedFilesPanel.values().toArray()[0]).getName());
-                } catch (Exception e) { // Não existe arquivo para abrir
-                    if (result == JOptionPane.YES_OPTION) { // Salva o arquivo atual antes de fechar
-                        SaveFile.getInstance().saveFile(false);
+                    // Tenta abrir o próximo arquivo, aberto anteriormente, se existir
+                    try { // Existe arquivo para abrir
+                        this.lastClickedFilePath = ((RoundedPanel) this.addedFilesPanel.values().toArray()[0])
+                                .getName();
+                        this.runOpenFile(((RoundedPanel) this.addedFilesPanel.values().toArray()[0]).getName());
+                    } catch (Exception e) { // Não existe arquivo para abrir
+                        if (result == JOptionPane.YES_OPTION) { // Salva o arquivo atual antes de fechar
+                            SaveFile.getInstance().saveFile(false,false);
+                        }
+                        gFile.getInstance().closeFile();
+                        this.lastClickedFilePath = null;
+                        this.decideEditorEnabled(false);
                     }
-                    gFile.getInstance().closeFile();
-                    this.lastClickedFilePath = null;
-                    this.decideEditorEnabled();
                 }
+            }
+        } else {
+            RoundedPanel aux = this.addedFilesPanel.remove(fileToClose);
+            this.openFiles.getOpenFilesPanel().remove(aux);
+            SwingUtilities.updateComponentTreeUI(this.panelCentral);
+
+            // Tenta abrir o próximo arquivo, aberto anteriormente, se existir
+            try { // Existe arquivo para abrir
+                this.runOpenFile(((RoundedPanel) this.addedFilesPanel.values().toArray()[0]).getName());
+            } catch (Exception e) { // Não existe arquivo para abrir
+                this.lastClickedFilePath = null;
+                this.decideEditorEnabled(true);
             }
         }
     }
@@ -373,7 +388,7 @@ public class Gui {
     // Entrada: Verdadeiro ou falso que o arquivo em this.currentFile já está aberto
     // Retorno: Nenhum
     // Pré-condição: O editorPane deve estar configurado e instanciado.
-    private void decideEditorEnabled() {
+    private void decideEditorEnabled(Boolean forceDisabled) {
         if (gFile.getInstance().isOpen()) {
             this.editorPane.getEditorPane().setEnabled(true);
             if (this.addedFilesPanel.get(gFile.getInstance().getFullPath()) == null) {
@@ -388,6 +403,10 @@ public class Gui {
                 }
             }
         } else {
+            this.editorPane.getEditorPane().setEnabled(false);
+            this.editorPane.getEditorPane().setText("");
+        }
+        if(forceDisabled){
             this.editorPane.getEditorPane().setEnabled(false);
             this.editorPane.getEditorPane().setText("");
         }
@@ -426,7 +445,7 @@ public class Gui {
     // Pós-condição: Abre um arquivo e o coloca na interface para edição
     public void runOpenFile() {
         OpenFile.getInstance().openFile(currentFolder);
-        this.decideEditorEnabled();
+        this.decideEditorEnabled(false);
     }
 
     // Função que aplica as rotinas para abrir um arquivo
@@ -439,8 +458,8 @@ public class Gui {
      */
     // Pós-condição: Abre um arquivo e o coloca na interface para edição
     public void runOpenFile(String filePath) {
-        OpenFile.getInstance().openFileUsingPath(filePath,this.currentFolder);
-        this.decideEditorEnabled();
+        OpenFile.getInstance().openFileUsingPath(filePath, this.currentFolder);
+        this.decideEditorEnabled(false);
     }
 
     // Função que executa as rotinas para criar um novo arquivo
@@ -454,7 +473,7 @@ public class Gui {
     public void runCreateNewFile() {
         NewFile.getInstance().createNewFile(currentFolder);
         this.runUpdateFileSystemView();
-        this.decideEditorEnabled();
+        this.decideEditorEnabled(false);
     }
 
     // Função que abre uma pasta como diretório padrão
@@ -501,8 +520,10 @@ public class Gui {
                 }
             } else if (gFile.getInstance().getName().split("[.]")[1].equals("c")) {
                 try {
-                    process = Runtime.getRuntime().exec("gcc " + gFile.getInstance().getFullPath() + " -o "
-                            + gFile.getInstance().getFile().getParent() + "/" + gFile.getInstance().getName().split("[.]")[0]);
+                    process = Runtime.getRuntime()
+                            .exec("gcc " + gFile.getInstance().getFullPath() + " -o "
+                                    + gFile.getInstance().getFile().getParent() + "/"
+                                    + gFile.getInstance().getName().split("[.]")[0]);
                     BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
                     String inputText = "", aux;
                     while ((aux = reader.readLine()) != null) {
@@ -512,8 +533,8 @@ public class Gui {
                         JOptionPane.showMessageDialog(null, inputText, "Output", JOptionPane.INFORMATION_MESSAGE);
                     }
                     if (inputText.equals("")) {
-                        process = Runtime.getRuntime().exec(
-                                gFile.getInstance().getFile().getParent() + "/./" + gFile.getInstance().getName().split("[.]")[0]);
+                        process = Runtime.getRuntime().exec(gFile.getInstance().getFile().getParent() + "/./"
+                                + gFile.getInstance().getName().split("[.]")[0]);
                         reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
                         inputText = "";
                         while ((aux = reader.readLine()) != null) {
@@ -539,8 +560,9 @@ public class Gui {
     }
 
     // Atualiza as pastas e arquivos atualmente abertos
-    public void runUpdateFileSystemView(){
-        this.systemView.updateFolder(this.currentFolder, this.panelLeft, this.systemView.getSystemFilesPanel(), this.systemFilePanelListener);
+    public void runUpdateFileSystemView() {
+        this.systemView.updateFolder(this.currentFolder, this.panelLeft, this.systemView.getSystemFilesPanel(),
+                this.systemFilePanelListener);
         SwingUtilities.updateComponentTreeUI(frame);
     }
 

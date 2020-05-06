@@ -87,7 +87,7 @@ public class OpenFile {
             }
             this.openFileFrame.dispose();
         } else { // Existe arquivo aberto previamente
-            SaveFile.getInstance().saveFile(false);
+            SaveFile.getInstance().saveFile(false,false);
             this.tempFile = new File(gFile.getInstance().getFullPath());
             gFile.getInstance().closeFile();
             this.openFile(currentFolder);
@@ -125,7 +125,7 @@ public class OpenFile {
                 }
             }
         } else { // Existe arquivo aberto previamente
-            SaveFile.getInstance().saveFile(false);
+            SaveFile.getInstance().saveFile(false,false);
             gFile.getInstance().closeFile();
             this.openFileUsingPath(filePath,currentFolder);
         }

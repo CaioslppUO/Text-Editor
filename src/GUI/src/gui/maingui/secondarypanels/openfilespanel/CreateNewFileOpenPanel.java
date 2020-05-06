@@ -92,7 +92,7 @@ public class CreateNewFileOpenPanel {
         this.lastClickedFilePath = filePath;
         
         this.closeButton = new JButton("x");
-        this.closeButton.setName("closeButton");
+        this.closeButton.setName("closeButton:"+filePath);
         this.closeButton.setBorder(new RoundedBorder(5));
         this.closeButton.setFont(new Font(Font.MONOSPACED, Font.BOLD, 10));
         this.closeButton.setActionCommand("buttonCloseFilePressed");

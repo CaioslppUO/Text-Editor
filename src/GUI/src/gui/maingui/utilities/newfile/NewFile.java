@@ -82,7 +82,7 @@ public class NewFile {
             }
             this.createNewFileFrame.dispose();
         } else { // Existe arquivo aberto previamente
-            SaveFile.getInstance().saveFile(false);
+            SaveFile.getInstance().saveFile(false,true);
             gFile.getInstance().closeFile();
             this.createNewFile(currentFolder);
         }
