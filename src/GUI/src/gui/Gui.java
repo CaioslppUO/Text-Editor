@@ -224,8 +224,7 @@ public class Gui {
     // instanciadas e configuradas.
     // Pós-condição: A tela de configuração do editorPane é incluida à interface
     private void includeSystemFileView() {
-        this.systemView.updateFolder(this.currentFolder, this.panelLeft, null, this.systemFilePanelListener);
-        SwingUtilities.updateComponentTreeUI(frame);
+        this.runUpdateFileSystemView();
     }
 
     // ************************
@@ -451,8 +450,7 @@ public class Gui {
     // Pós-condição: Um novo arquivo é criado
     public void runCreateNewFile() {
         NewFile.getInstance().createNewFile(currentFolder);
-        this.systemView.updateFolder(this.currentFolder, this.panelLeft, this.systemView.getSystemFilesPanel(), this.systemFilePanelListener);
-        SwingUtilities.updateComponentTreeUI(frame);
+        this.runUpdateFileSystemView();
         this.decideEditorEnabled();
     }
 
@@ -464,8 +462,7 @@ public class Gui {
     // Pós-condição: A pasta escolhida é aberta como diretório padrão
     public void runOpenFolder() {
         this.currentFolder = OpenFolder.getInstance().openFolder(this.currentFolder);
-        this.systemView.updateFolder(this.currentFolder, this.panelLeft, this.systemView.getSystemFilesPanel(), this.systemFilePanelListener);
-        SwingUtilities.updateComponentTreeUI(frame);
+        this.runUpdateFileSystemView();
     }
 
     // Função que roda o arquivo atualmente aberto. Somente em Python3 ou em C
@@ -535,6 +532,11 @@ public class Gui {
     // Pós-condição: Uma nova pasta é criada e definida como diretório padrão
     public void runCreateNewFolder() {
         this.currentFolder = NewFolder.getInstance().createNewFolder(this.currentFolder);
+        this.runUpdateFileSystemView();
+    }
+
+    // Atualiza as pastas e arquivos atualmente abertos
+    public void runUpdateFileSystemView(){
         this.systemView.updateFolder(this.currentFolder, this.panelLeft, this.systemView.getSystemFilesPanel(), this.systemFilePanelListener);
         SwingUtilities.updateComponentTreeUI(frame);
     }

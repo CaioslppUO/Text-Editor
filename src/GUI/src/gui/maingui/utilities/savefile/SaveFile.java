@@ -2,6 +2,8 @@ package gui.maingui.utilities.savefile;
 
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+
+import gui.Gui;
 import gui.maingui.Constants;
 
 import java.awt.Dimension;
@@ -41,6 +43,7 @@ public class SaveFile {
                 if (showSaveMessage) {
                     JOptionPane.showMessageDialog(null, "File Saved");
                 }
+                Gui.getInstance().runUpdateFileSystemView();
                 gFile.getInstance().setIsSaved(true);
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "Error while trying to save the file");
@@ -87,7 +90,7 @@ public class SaveFile {
                         try {
                             if (newFile.createNewFile()) {
                                 gFile.getInstance().setFile(newFile);
-                                this.saveFile(true);
+                                this.saveFile(false);
                             } else {
                                 JOptionPane.showMessageDialog(null, "File Already Exists");
                             }
