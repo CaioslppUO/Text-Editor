@@ -2,6 +2,8 @@ package gui.maingui.secondarypanels.editorpanel;
 
 import gui.Gui;
 import gui.maingui.utilities.savefile.SaveFile;
+import gui.maingui.entities.gFile;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -44,6 +46,10 @@ public class ListenerEditorPanel implements KeyListener {
         // Cria um novo arquivo ao apertar ctr+n
         if (aux.getEditorPane().getEditorPane().isEnabled() && e.isControlDown() && e.getKeyChar() != 'n' && e.getKeyCode() == 78) {
             Gui.getInstance().runCreateNewFile();
+        }
+
+        if(aux.getEditorPane().getEditorPane().isEnabled()){
+            gFile.getInstance().checkModification();
         }
     }
 

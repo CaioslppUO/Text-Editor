@@ -41,6 +41,7 @@ public class gFile {
                 this.isModified = false;
             } else {
                 this.isModified = true;
+                this.isSaved = false;
             }
         } else {
             this.isModified = null;

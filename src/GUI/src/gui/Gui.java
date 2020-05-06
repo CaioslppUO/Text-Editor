@@ -328,8 +328,11 @@ public class Gui {
     // Pós-condição: O arquivo aberto atualmente é fechado
     public void closeFile() {
         if (gFile.getInstance().isOpen()) {
-            int result = JOptionPane.showConfirmDialog(null, "Save File?", "Save", JOptionPane.YES_NO_CANCEL_OPTION,
-                    JOptionPane.QUESTION_MESSAGE);
+            int result;
+            if(gFile.getInstance().isSaved())
+                result = JOptionPane.NO_OPTION;
+            else
+                result = JOptionPane.showConfirmDialog(null, "Save File?", "Save", JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE);
             if (result != JOptionPane.CANCEL_OPTION) {
                 RoundedPanel aux = this.addedFilesPanel.remove(gFile.getInstance().getFullPath());
                 this.openFiles.getOpenFilesPanel().remove(aux);
