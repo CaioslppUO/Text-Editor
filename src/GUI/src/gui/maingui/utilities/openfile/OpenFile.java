@@ -24,7 +24,7 @@ public class OpenFile {
     private JFileChooser chooseOpenFile;
     private Constants constants;
 
-    private SaveFile saveFile;
+    private static OpenFile instance;
 
     // Construtor
     // Entrada: Pasta atual, painel de edição, map de arquivos já adicionados ao
@@ -33,7 +33,7 @@ public class OpenFile {
     // Pré-condição: As variáveis recebidas devem estar devidamente instanciadas e
     // configuradas
     // Pós-condição: A classe é instanciada
-    public OpenFile() {}
+    private OpenFile() {}
 
     // Função que configura o JFileChooser
     // Entrada: Pasta atual
@@ -55,7 +55,6 @@ public class OpenFile {
     // Pós-condição: O arquivo é aberto no editor
     public void openFile(String currentFolder) {
         this.constants = new Constants();
-        this.saveFile = new SaveFile();
         this.configureJFileChooser(currentFolder);
         if (!gFile.getInstance().isOpen()) { // Não existe arquivo aberto previamente
             if (this.chooseOpenFile.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) { // Abre o arquivo
@@ -85,7 +84,7 @@ public class OpenFile {
             this.openFileFrame.setVisible(true);
             this.openFileFrame.dispose();
         } else { // Existe arquivo aberto previamente
-            this.saveFile.saveFile(false);
+            SaveFile.getInstance().saveFile(false);
             this.openFile(currentFolder);
         }
 
@@ -98,7 +97,6 @@ public class OpenFile {
     // Pós-condição: O arquivo é aberto no editor
     public void openFileUsingPath(String filePath, String currentFolder) {
         this.constants = new Constants();
-        this.saveFile = new SaveFile();
         this.configureJFileChooser(currentFolder);
         if (!gFile.getInstance().isOpen()) { // Não existe arquivo aberto previamente
             File file = new File(filePath);
@@ -123,8 +121,15 @@ public class OpenFile {
                 }
             }
         } else { // Existe arquivo aberto previamente
-            this.saveFile.saveFile(false);
+            SaveFile.getInstance().saveFile(false);
             this.openFileUsingPath(filePath,currentFolder);
         }
+    }
+
+    // Getter da instância
+    public static OpenFile getInstance(){
+        if(instance == null)
+            instance = new OpenFile();
+        return instance;
     }
 }

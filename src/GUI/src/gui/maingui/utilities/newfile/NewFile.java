@@ -20,7 +20,8 @@ public class NewFile {
     private JFileChooser chooseNewFileDirectory;
     private Constants constants;
     private String fileSeparator;
-    private SaveFile saveFile;
+
+    private static NewFile instance;
 
     // Construtor
     // Entrada: Arquivo atual, o painel de edição e a pasta atual
@@ -28,7 +29,8 @@ public class NewFile {
     // Pré-condição: As variáveis currentFile, editorPane e currentFolder devem
     // estar devidamente instanciadas e configuradas
     // Pós-condição: A classe é instanciada
-    public NewFile() {}
+    private NewFile() {
+    }
 
     // Função que configura o JFileChooser
     // Entrada: Pasta atual
@@ -53,14 +55,14 @@ public class NewFile {
     public void createNewFile(String currentFolder) {
         this.constants = new Constants();
         this.fileSeparator = System.getProperty("file.separator");
-        this.saveFile = new SaveFile();
         this.configureFileChooser(currentFolder);
         if (!gFile.getInstance().isOpen()) { // Não existe arquivo aberto previamente
             if (this.chooseNewFileDirectory.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-                File directory = this.chooseNewFileDirectory.getSelectedFile(); 
-                if(directory != null && directory.isDirectory()){ // Pasta válida
+                File directory = this.chooseNewFileDirectory.getSelectedFile();
+                if (directory != null && directory.isDirectory()) { // Pasta válida
                     String fileName = JOptionPane.showInputDialog("File Name");
-                    if (fileName != null && !fileName.equals("") && directory != null && directory.isDirectory()) { // Nome válido
+                    if (fileName != null && !fileName.equals("") && directory != null && directory.isDirectory()) { // Nome
+                                                                                                                    // válido
                         File newFile = new File(directory.toString() + this.fileSeparator + fileName);
                         try { // Tenta criar o novo arquivo
                             if (newFile.createNewFile()) {
@@ -76,14 +78,21 @@ public class NewFile {
                     } else { // Nome inválido
                         JOptionPane.showMessageDialog(null, "Invalid File Name");
                     }
-                }else{ // Pasta inválida
+                } else { // Pasta inválida
                     JOptionPane.showMessageDialog(null, "Invalid Folder");
                 }
                 this.createNewFileFrame.dispose();
             }
         } else { // Existe arquivo aberto previamente
-            this.saveFile.saveFile(false);
+            SaveFile.getInstance().saveFile(false);
             this.createNewFile(currentFolder);
         }
+    }
+
+    // Getter da instância
+    public static NewFile getInstance() {
+        if (instance == null)
+            instance = new NewFile();
+        return instance;
     }
 }

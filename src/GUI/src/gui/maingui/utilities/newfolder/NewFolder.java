@@ -16,8 +16,10 @@ public class NewFolder {
     private Constants constants;
     private JFileChooser chooseNewFolderDirectory;
 
+    private static NewFolder instance;
+
     // Construtor
-    public NewFolder() {}
+    private NewFolder() {}
 
     // Função que configura o JFileChooser
     // Entrada: Pasta atual
@@ -53,6 +55,13 @@ public class NewFolder {
         }
         this.createNewFolderFrame.dispose();
         return currentFolder;
+    }
+
+    // Getter da instância
+    public static NewFolder getInstance(){
+        if(instance == null)
+            instance = new NewFolder();
+        return instance;
     }
 
 }

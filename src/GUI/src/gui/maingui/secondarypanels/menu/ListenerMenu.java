@@ -3,6 +3,7 @@ package gui.maingui.secondarypanels.menu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import gui.Gui;
+import gui.maingui.utilities.savefile.SaveFile;
 
 public class ListenerMenu implements ActionListener {
 
@@ -19,14 +20,14 @@ public class ListenerMenu implements ActionListener {
                     break;
                 case "buttonSaveAsPressed":
                     aux = Gui.getInstance();
-                    Gui.getInstance().getSaveFile().saveFileAs(aux.getCurrentFolder());
+                    SaveFile.getInstance().saveFileAs(aux.getCurrentFolder());
                     break;
                 case "buttonOpenFilePressed":
                     Gui.getInstance().runOpenFile();
                     break;
                 case "buttonSavePressed":
                     aux = Gui.getInstance();
-                    Gui.getInstance().getSaveFile().saveFile(true);
+                    SaveFile.getInstance().saveFile(true);
                     break;
                 case "buttonRunPressed":
                     Gui.getInstance().runSelectedFile();

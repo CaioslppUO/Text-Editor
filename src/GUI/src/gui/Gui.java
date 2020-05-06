@@ -77,18 +77,6 @@ public class Gui {
     // Gerenciador do visualisador de arquivos abertos
     private CreateNewFileOpenPanel createNewFileOpenPanel;
 
-    // Gerenciador do salvamento de arquivos
-    private SaveFile saveFile;
-
-    // Gerenciador do abridor de arquivos
-    private OpenFile openFile;
-
-    // Gerenciador do criador de arquivos
-    private NewFile newFile;
-
-    // Gerenciador do abridor de pastas
-    private OpenFolder openFolder;
-
     // Listener da interface principal
     private ListenerGui listenerGui;
 
@@ -109,9 +97,6 @@ public class Gui {
 
     // Variável utilizada para guardar a única instância da classe
     private static Gui instance;
-
-    // Gerenciado do criador de diretórios
-    private NewFolder newFolder;
 
     // Gerenciador do visualisador de diretórios
     private SystemFilePanel systemView;
@@ -135,7 +120,6 @@ public class Gui {
         this.constants = new Constants();
 
         // Utilitários
-        this.saveFile = new SaveFile();
         this.systemView = new SystemFilePanel();
 
         // Listeners
@@ -358,7 +342,7 @@ public class Gui {
                     this.runOpenFile(((RoundedPanel) this.addedFilesPanel.values().toArray()[0]).getName());
                 } catch (Exception e) { // Não existe arquivo para abrir
                     if (result == JOptionPane.YES_OPTION) { // Salva o arquivo atual antes de fechar
-                        this.saveFile.saveFile(false);
+                        SaveFile.getInstance().saveFile(false);
                     }
                     gFile.getInstance().closeFile();
                     this.lastClickedFilePath = null;
@@ -439,8 +423,7 @@ public class Gui {
      */
     // Pós-condição: Abre um arquivo e o coloca na interface para edição
     public void runOpenFile() {
-        this.openFile = new OpenFile();
-        this.openFile.openFile(this.currentFolder);
+        OpenFile.getInstance().openFile(currentFolder);
 
         // Confere se o arquivo já está aberto no visualisador
         if (gFile.getInstance().isOpen() && this.addedFilesPanel.get(gFile.getInstance().getFullPath()) != null) {
@@ -460,8 +443,7 @@ public class Gui {
      */
     // Pós-condição: Abre um arquivo e o coloca na interface para edição
     public void runOpenFile(String filePath) {
-        this.openFile = new OpenFile();
-        this.openFile.openFileUsingPath(filePath,this.currentFolder);
+        OpenFile.getInstance().openFileUsingPath(filePath,this.currentFolder);
 
         // Confere se o arquivo já está aberto no visualisador
         if (gFile.getInstance().isOpen() && this.addedFilesPanel.get(gFile.getInstance().getFullPath()) != null) {
@@ -480,8 +462,7 @@ public class Gui {
      */
     // Pós-condição: Um novo arquivo é criado
     public void runCreateNewFile() {
-        this.newFile = new NewFile();
-        this.newFile.createNewFile(this.currentFolder);
+        NewFile.getInstance().createNewFile(currentFolder);
         this.systemView.updateFolder(this.currentFolder, this.panelLeft, this.systemView.getSystemFilesPanel(), this.systemFilePanelListener);
         SwingUtilities.updateComponentTreeUI(frame);
         this.decideEditorEnabled(false);
@@ -494,11 +475,9 @@ public class Gui {
     // configurada corretamente.
     // Pós-condição: A pasta escolhida é aberta como diretório padrão
     public void runOpenFolder() {
-        this.openFolder = new OpenFolder();
-        this.currentFolder = this.openFolder.openFolder(this.currentFolder);
+        this.currentFolder = OpenFolder.getInstance().openFolder(this.currentFolder);
         this.systemView.updateFolder(this.currentFolder, this.panelLeft, this.systemView.getSystemFilesPanel(), this.systemFilePanelListener);
         SwingUtilities.updateComponentTreeUI(frame);
-        this.openFolder = null;
     }
 
     // Função que roda o arquivo atualmente aberto. Somente em Python3 ou em C
@@ -567,11 +546,9 @@ public class Gui {
     // Pré-condição: Nenhuma
     // Pós-condição: Uma nova pasta é criada e definida como diretório padrão
     public void runCreateNewFolder() {
-        this.newFolder = new NewFolder();
-        this.currentFolder = this.newFolder.createNewFolder(this.currentFolder);
+        this.currentFolder = NewFolder.getInstance().createNewFolder(this.currentFolder);
         this.systemView.updateFolder(this.currentFolder, this.panelLeft, this.systemView.getSystemFilesPanel(), this.systemFilePanelListener);
         SwingUtilities.updateComponentTreeUI(frame);
-        this.newFolder = null;
     }
 
     // Getter da instância do singleton
@@ -582,11 +559,6 @@ public class Gui {
         return instance;
     }
 
-    // Getter do arquivo aberto atualmente
-    public File getCurrentFile() {
-        return gFile.getInstance().getFile();
-    }
-
     // Getter da pasta aberta atualmente
     public String getCurrentFolder() {
         return this.currentFolder;
@@ -595,11 +567,6 @@ public class Gui {
     // Getter do EditorPane
     public EditorPane getEditorPane() {
         return this.editorPane;
-    }
-
-    // Getter saveFile
-    public SaveFile getSaveFile() {
-        return this.saveFile;
     }
 
     // Getter do panelEditorConfig

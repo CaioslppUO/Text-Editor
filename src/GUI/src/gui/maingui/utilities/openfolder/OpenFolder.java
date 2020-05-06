@@ -15,8 +15,10 @@ public class OpenFolder {
     private JFileChooser chooseOpenDirectory;
     private Constants constants;
 
+    private static OpenFolder instance;
+
     // Construtor
-    public OpenFolder() {}
+    private OpenFolder() {}
 
     // Função que configura o JFileChooser
     // Entrada: Pasta atual
@@ -49,5 +51,12 @@ public class OpenFolder {
         }
         this.openFolderFrame.dispose();
         return currentFolder;
+    }
+
+    // Getter da instância
+    public static OpenFolder getInstance(){
+        if(instance == null)
+            instance = new OpenFolder();
+        return instance;
     }
 }

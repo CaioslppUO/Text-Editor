@@ -21,8 +21,10 @@ public class SaveFile {
     private JFileChooser chooseSaveDirectory;
     private Constants constants;
 
+    private static SaveFile instance;
+
     // Construtor
-    public SaveFile() {}
+    private SaveFile() {}
 
     // Função que salva o arquivo que está aberto na variável this.currentFile
     // Entrada: Mostrar ou não a mensagem de arquivo salvo, arquivo aberto e texto
@@ -104,5 +106,12 @@ public class SaveFile {
             JOptionPane.showMessageDialog(null, "No Files Open");
         }
         return gFile.getInstance().getFile();
+    }
+
+    // Getter da instância
+    public static SaveFile getInstance(){
+        if(instance == null)
+            instance = new SaveFile();
+        return instance;
     }
 }

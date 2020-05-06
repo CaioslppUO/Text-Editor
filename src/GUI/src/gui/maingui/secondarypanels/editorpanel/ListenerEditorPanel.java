@@ -1,6 +1,7 @@
 package gui.maingui.secondarypanels.editorpanel;
 
 import gui.Gui;
+import gui.maingui.utilities.savefile.SaveFile;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -26,13 +27,13 @@ public class ListenerEditorPanel implements KeyListener {
         // Salva o arquivo aberto ao apertar ctrl+s
         if (aux.getEditorPane().getEditorPane().isEnabled() && e.isShiftDown() == false && e.isControlDown()
                 && e.getKeyChar() != 's' && e.getKeyCode() == 83) {
-            aux.getSaveFile().saveFile(true);
+            SaveFile.getInstance().saveFile(true);
         }
 
         // Salva como o arquivo ao apertar ctrl+shift+s
         if (aux.getEditorPane().getEditorPane().isEnabled() && e.isShiftDown() && e.isControlDown() && e.getKeyChar() != 's'
                 && e.getKeyCode() == 83) {
-            aux.getSaveFile().saveFileAs(aux.getCurrentFolder());
+            SaveFile.getInstance().saveFileAs(aux.getCurrentFolder());
         }
 
         // Abre um arquivo ao apertar ctrl+o
