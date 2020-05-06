@@ -1,6 +1,7 @@
 package gui.maingui.secondarypanels.filesystemview;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.JOptionPane;
 import javax.swing.JTree;
 import java.io.File;
 import java.awt.event.MouseAdapter;
@@ -20,16 +21,18 @@ public class SystemFilePanelListener extends MouseAdapter {
             this.gui = Gui.getInstance();
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) ((JTree) e.getSource())
                     .getLastSelectedPathComponent();
-            String aux = "";
-            int i;
-            for(i = 1; i < node.getPath().length; i++){
-                aux += node.getPath()[i].toString();
-                if(i != node.getPath().length -1 )
-                    aux += "/";
-            }
-            File check = new File(this.gui.getCurrentFolder() + "/" + aux);
-            if(!check.isDirectory()){
-                this.gui.runOpenFile(check.getAbsolutePath());
+            if(node != null){
+                String aux = "";
+                int i;
+                for(i = 1; i < node.getPath().length; i++){
+                    aux += node.getPath()[i].toString();
+                    if(i != node.getPath().length -1 )
+                        aux += "/";
+                }
+                File check = new File(this.gui.getCurrentFolder() + "/" + aux);
+                if(!check.isDirectory()){
+                    this.gui.runOpenFile(check.getAbsolutePath());
+                }
             }
         }
     }
