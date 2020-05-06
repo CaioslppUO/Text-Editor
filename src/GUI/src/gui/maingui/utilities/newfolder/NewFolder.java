@@ -47,10 +47,9 @@ public class NewFolder {
             String folderName = JOptionPane.showInputDialog("Folder Name");
             newFolder = new File(this.chooseNewFolderDirectory.getSelectedFile() + "/" + folderName);
             if (newFolder.mkdir()) {
-                JOptionPane.showMessageDialog(null, "folder successfully created");
                 currentFolder = newFolder.getAbsolutePath();
             } else {
-                JOptionPane.showMessageDialog(null, "folder already exist");
+                JOptionPane.showMessageDialog(null, "A file or folder with this name already exist");
             }
         }
         this.createNewFolderFrame.dispose();
