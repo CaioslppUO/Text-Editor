@@ -2,6 +2,8 @@ package gui.maingui.utilities.openfolder;
 
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+
 import gui.maingui.Constants;
 import gui.maingui.interfacegenerator.JDialogGenerator;
 import gui.maingui.interfacegenerator.JFileChooserGenerator;
@@ -47,7 +49,11 @@ public class OpenFolder {
             File aux = new File(this.chooseOpenDirectory.getSelectedFile().getAbsolutePath());
             if (aux.isDirectory()) {
                 currentFolder = aux.getAbsolutePath();
+            }else{
+                JOptionPane.showMessageDialog(null, "The selected file is not a folder");
             }
+        }else{
+            JOptionPane.showMessageDialog(null, "Could not open the folder");
         }
         this.openFolderFrame.dispose();
         return currentFolder;
