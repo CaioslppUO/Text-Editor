@@ -26,14 +26,13 @@ public class ListenerEditorPanel implements KeyListener {
         // Salva o arquivo aberto ao apertar ctrl+s
         if (aux.getEditorPane().getEditorPane().isEnabled() && e.isShiftDown() == false && e.isControlDown()
                 && e.getKeyChar() != 's' && e.getKeyCode() == 83) {
-            aux.getSaveFile().saveFile(true, aux.getCurrentFile(), aux.getEditorPane().getEditorPane().getText());
+            aux.getSaveFile().saveFile(true);
         }
 
         // Salva como o arquivo ao apertar ctrl+shift+s
         if (aux.getEditorPane().getEditorPane().isEnabled() && e.isShiftDown() && e.isControlDown() && e.getKeyChar() != 's'
                 && e.getKeyCode() == 83) {
-            aux.getSaveFile().saveFileAs(aux.getCurrentFile(), aux.getCurrentFolder(),
-                    aux.getEditorPane().getEditorPane().getText());
+            aux.getSaveFile().saveFileAs(aux.getCurrentFolder());
         }
 
         // Abre um arquivo ao apertar ctrl+o

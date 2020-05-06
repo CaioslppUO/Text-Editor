@@ -41,6 +41,7 @@ import gui.maingui.secondarypanels.openfilespanel.OpenFilesListener;
 import gui.maingui.secondarypanels.newfolder.NewFolder;
 import gui.maingui.secondarypanels.filesystemview.SystemFilePanel;
 import gui.maingui.secondarypanels.filesystemview.SystemFilePanelListener;
+import gui.maingui.entities.gFile;
 
 public class Gui {
 
@@ -55,8 +56,10 @@ public class Gui {
     // Constantes
     private Constants constants;
 
+    // Entidades
+    private gFile currentFile;
+
     // Variáveis "globais"
-    private File currentFile;
     private String currentFolder;
     private Map<String, RoundedPanel> addedFilesPanel;
     private String lastClickedFilePath;
@@ -122,8 +125,10 @@ public class Gui {
     // Construtor da classe
     private Gui() {
         // Variáveis globais
-        this.currentFile = null;
+        this.currentFile = gFile.getInstance();
+
         this.currentFolder = ".";
+        
         this.addedFilesPanel = new LinkedHashMap<>();
         lastClickedFilePath = null;
 
@@ -344,11 +349,11 @@ public class Gui {
      */
     // Pós-condição: O arquivo aberto atualmente é fechado
     public void closeFile() {
-        if (this.currentFile != null) {
+        if (this.currentFile.isOpen()) {
             int result = JOptionPane.showConfirmDialog(null, "Save File?", "Save", JOptionPane.YES_NO_CANCEL_OPTION,
                     JOptionPane.QUESTION_MESSAGE);
-            if (result != 2) {
-                RoundedPanel aux = this.addedFilesPanel.remove(this.currentFile.getAbsolutePath());
+            if (result != JOptionPane.CANCEL_OPTION) {
+                RoundedPanel aux = this.addedFilesPanel.remove(this.currentFile.getFullPath());
                 this.openFiles.getOpenFilesPanel().remove(aux);
                 SwingUtilities.updateComponentTreeUI(this.panelCentral);
 
@@ -357,10 +362,10 @@ public class Gui {
                     this.lastClickedFilePath = ((RoundedPanel) this.addedFilesPanel.values().toArray()[0]).getName();
                     this.runOpenFile(((RoundedPanel) this.addedFilesPanel.values().toArray()[0]).getName());
                 } catch (Exception e) { // Não existe arquivo para abrir
-                    if (result == 0) { // Salva o arquivo atual antes de fechar
-                        this.saveFile.saveFile(false, this.currentFile, this.editorPane.getEditorPane().getText());
+                    if (result == JOptionPane.YES_OPTION) { // Salva o arquivo atual antes de fechar
+                        this.saveFile.saveFile(false);
                     }
-                    this.currentFile = null;
+                    this.currentFile.closeFile();
                     this.lastClickedFilePath = null;
                     this.decideEditorEnabled(false);
                 }
@@ -388,7 +393,7 @@ public class Gui {
     // Retorno: Nenhum
     // Pré-condição: O editorPane deve estar configurado e instanciado.
     private void decideEditorEnabled(Boolean isFileAlreadyOpen) {
-        if (this.currentFile != null) {
+        if (this.currentFile.isOpen()) {
             this.editorPane.getEditorPane().setEnabled(true);
             if (!isFileAlreadyOpen) {
                 this.createNewFileOpenPanel();
@@ -420,7 +425,7 @@ public class Gui {
     // interface
     private void createNewFileOpenPanel() {
         this.createNewFileOpenPanel = new CreateNewFileOpenPanel(this.lastClickedFilePath, this.addedFilesPanel,
-                this.currentFile.getName(), this.currentFile.getAbsolutePath(), this.listenerOpenFilesPanel,
+                this.currentFile.getName(), this.currentFile.getFullPath(), this.listenerOpenFilesPanel,
                 this.listenerOpenFilesPanel, this.openFiles);
         this.lastClickedFilePath = this.createNewFileOpenPanel.getLastClickedFilePath();
 
@@ -439,12 +444,11 @@ public class Gui {
      */
     // Pós-condição: Abre um arquivo e o coloca na interface para edição
     public void runOpenFile() {
-        this.openFile = new OpenFile(this.currentFile);
-        this.currentFile = this.openFile.openFile(this.currentFolder, this.editorPane);
-        this.openFile = null;
+        this.openFile = new OpenFile();
+        this.openFile.openFile(this.currentFolder);
 
         // Confere se o arquivo já está aberto no visualisador
-        if (this.currentFile != null && this.addedFilesPanel.get(this.currentFile.getAbsolutePath()) != null) {
+        if (this.currentFile.isOpen() && this.addedFilesPanel.get(this.currentFile.getFullPath()) != null) {
             this.decideEditorEnabled(true);
         } else {
             this.decideEditorEnabled(false);
@@ -461,12 +465,11 @@ public class Gui {
      */
     // Pós-condição: Abre um arquivo e o coloca na interface para edição
     public void runOpenFile(String filePath) {
-        this.openFile = new OpenFile(this.currentFile);
-        this.currentFile = this.openFile.openFileUsingPath(filePath, this.editorPane);
-        this.openFile = null;
+        this.openFile = new OpenFile();
+        this.openFile.openFileUsingPath(filePath);
 
         // Confere se o arquivo já está aberto no visualisador
-        if (this.currentFile != null && this.addedFilesPanel.get(this.currentFile.getAbsolutePath()) != null) {
+        if (this.currentFile.isOpen() && this.addedFilesPanel.get(this.currentFile.getFullPath()) != null) {
             this.decideEditorEnabled(true);
         } else {
             this.decideEditorEnabled(false);
@@ -482,8 +485,7 @@ public class Gui {
      */
     // Pós-condição: Um novo arquivo é criado
     public void runCreateNewFile() {
-        this.newFile = new NewFile(this.currentFile, this.editorPane, this.currentFolder);
-        this.currentFile = this.newFile.getCurrentFile();
+        this.newFile = new NewFile(this.currentFolder);
         this.systemView.updateFolder(this.currentFolder, this.panelLeft, this.systemView.getSystemFilesPanel(), this.systemFilePanelListener);
         SwingUtilities.updateComponentTreeUI(frame);
         this.newFile = null;
@@ -518,7 +520,7 @@ public class Gui {
         if (this.editorPane.getEditorPane().isEnabled()) { // Verifica se o arquivo está aberto
             if (this.currentFile.getName().split("[.]")[1].equals("py")) {
                 try {
-                    process = Runtime.getRuntime().exec("python3 " + this.currentFile.getAbsolutePath());
+                    process = Runtime.getRuntime().exec("python3 " + this.currentFile.getFullPath());
                     BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
                     String inputText = "", aux;
                     while ((aux = reader.readLine()) != null) {
@@ -537,8 +539,8 @@ public class Gui {
                 }
             } else if (this.currentFile.getName().split("[.]")[1].equals("c")) {
                 try {
-                    process = Runtime.getRuntime().exec("gcc " + this.currentFile.getAbsolutePath() + " -o "
-                            + this.currentFile.getParent() + "/" + this.currentFile.getName().split("[.]")[0]);
+                    process = Runtime.getRuntime().exec("gcc " + this.currentFile.getFullPath() + " -o "
+                            + this.currentFile.getFile().getParent() + "/" + this.currentFile.getName().split("[.]")[0]);
                     BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
                     String inputText = "", aux;
                     while ((aux = reader.readLine()) != null) {
@@ -549,7 +551,7 @@ public class Gui {
                     }
                     if (inputText.equals("")) {
                         process = Runtime.getRuntime().exec(
-                                this.currentFile.getParent() + "/./" + this.currentFile.getName().split("[.]")[0]);
+                                this.currentFile.getFile().getParent() + "/./" + this.currentFile.getName().split("[.]")[0]);
                         reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
                         inputText = "";
                         while ((aux = reader.readLine()) != null) {
@@ -587,7 +589,7 @@ public class Gui {
 
     // Getter do arquivo aberto atualmente
     public File getCurrentFile() {
-        return this.currentFile;
+        return this.currentFile.getFile();
     }
 
     // Getter da pasta aberta atualmente

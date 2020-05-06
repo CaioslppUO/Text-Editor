@@ -1,7 +1,6 @@
 package gui.maingui.secondarypanels.filesystemview;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.JOptionPane;
 import javax.swing.JTree;
 import java.io.File;
 import java.awt.event.MouseAdapter;

@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import javax.swing.JOptionPane;
 
+import gui.maingui.entities.gFile;
+
 public class SaveFile {
 
     private JDialog saveFileFrame;
@@ -25,15 +27,16 @@ public class SaveFile {
     //Retorno: Nenhum
     //Pŕe-condição: Nenhuma
     //Pós-condição: O arquivo aberto na variável this.currentFile é salvo
-    public void saveFile(Boolean showSaveMessage, File currentFile, String textToSave) {
-        if (currentFile != null) {
+    public void saveFile(Boolean showSaveMessage) {
+        if (gFile.getInstance().isOpen()) {
             try {
-                PrintWriter print_line = new PrintWriter(new FileWriter(currentFile.toString()));
-                print_line.printf("%s", textToSave);
+                PrintWriter print_line = new PrintWriter(new FileWriter(gFile.getInstance().getFile().toString()));
+                print_line.printf("%s", gFile.getInstance().getCurrentContent());
                 print_line.close();
                 if (showSaveMessage) {
                     JOptionPane.showMessageDialog(null, "File Saved");
                 }
+                gFile.getInstance().setIsSaved(true);
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(null, "Error while trying to save the file");
             }
@@ -70,8 +73,8 @@ public class SaveFile {
     //Retorno: Nenhum
     //Pŕe-condição: Nenhum
     //Pós-condição: É aberto um menu para escolher como e onde salvar o arquivo aberto na variável this.currentFile
-    public File saveFileAs(File currentFile, String currentFolder, String textToSave) {
-        if (currentFile != null) {
+    public File saveFileAs(String currentFolder) {
+        if (gFile.getInstance().isOpen()){
             String fileSeparator = System.getProperty("file.separator");
 
             if (this.defineSaveFileFrame(currentFolder) == JFileChooser.APPROVE_OPTION) { //Salvar o arquivo
@@ -83,8 +86,8 @@ public class SaveFile {
                         File newFile = new File(directory.toString() + fileSeparator + fileName);
                         try {
                             if (newFile.createNewFile()) {
-                                currentFile = newFile;
-                                this.saveFile(true, currentFile, textToSave);
+                                gFile.getInstance().setFile(newFile);
+                                this.saveFile(true);
                             } else {
                                 JOptionPane.showMessageDialog(null, "File Already Exists");
                             }
@@ -101,6 +104,6 @@ public class SaveFile {
         } else {
             JOptionPane.showMessageDialog(null, "No Files Open");
         }
-        return currentFile;
+        return gFile.getInstance().getFile();
     }
 }

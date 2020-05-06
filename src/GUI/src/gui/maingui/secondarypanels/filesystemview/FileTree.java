@@ -8,7 +8,9 @@ import javax.swing.tree.MutableTreeNode;
 
 public class FileTree extends JTree{
 
-    //Construtor
+    private static final long serialVersionUID = 1L;
+
+    // Construtor
     public FileTree(String rootPath){
         super(scan(new File(rootPath)));
     }

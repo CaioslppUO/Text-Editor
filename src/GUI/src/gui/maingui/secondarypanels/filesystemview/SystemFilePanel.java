@@ -36,6 +36,8 @@ public class SystemFilePanel {
         this.fileTree = new FileTree(rootPath);
         this.fileTree.setBackground(this.constants.getPaneEditorColor());
         this.fileTree.setCellRenderer(new DefaultTreeCellRenderer(){
+            private static final long serialVersionUID = 1L;
+
             @Override
             public Color getBackgroundNonSelectionColor() {
                 return (null);

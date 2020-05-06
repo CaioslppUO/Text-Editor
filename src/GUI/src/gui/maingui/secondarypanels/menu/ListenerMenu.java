@@ -19,14 +19,14 @@ public class ListenerMenu implements ActionListener {
                     break;
                 case "buttonSaveAsPressed":
                     aux = Gui.getInstance();
-                    Gui.getInstance().getSaveFile().saveFileAs(aux.getCurrentFile(), aux.getCurrentFolder(), aux.getEditorPane().getEditorPane().getText());
+                    Gui.getInstance().getSaveFile().saveFileAs(aux.getCurrentFolder());
                     break;
                 case "buttonOpenFilePressed":
                     Gui.getInstance().runOpenFile();
                     break;
                 case "buttonSavePressed":
                     aux = Gui.getInstance();
-                    Gui.getInstance().getSaveFile().saveFile(true, aux.getCurrentFile(), aux.getEditorPane().getEditorPane().getText());
+                    Gui.getInstance().getSaveFile().saveFile(true);
                     break;
                 case "buttonRunPressed":
                     Gui.getInstance().runSelectedFile();
