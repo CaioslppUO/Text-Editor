@@ -45,7 +45,9 @@ public class OpenFolder {
     public String openFolder(String currentFolder) {
         this.constants = new Constants();
         this.configureJFileChooser(currentFolder);
-        if (this.chooseOpenDirectory.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+        int result;
+        result=this.chooseOpenDirectory.showOpenDialog(null);
+        if (result == JFileChooser.APPROVE_OPTION) {
             File aux = new File(this.chooseOpenDirectory.getSelectedFile().getAbsolutePath());
             if (aux.isDirectory()) {
                 currentFolder = aux.getAbsolutePath();
@@ -53,7 +55,8 @@ public class OpenFolder {
                 JOptionPane.showMessageDialog(null, "The selected file is not a folder");
             }
         }else{
-            JOptionPane.showMessageDialog(null, "Could not open the folder");
+            if(result != JFileChooser.CANCEL_OPTION)
+                JOptionPane.showMessageDialog(null, "Could not open the folder");
         }
         this.openFolderFrame.dispose();
         return currentFolder;
