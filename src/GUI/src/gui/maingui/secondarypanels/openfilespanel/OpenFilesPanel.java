@@ -1,6 +1,6 @@
 package gui.maingui.secondarypanels.openfilespanel;
 
-import gui.maingui.Constants;
+import gui.maingui.utilities.Constants;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
@@ -10,13 +10,11 @@ import javax.swing.JScrollPane;
 
 public class OpenFilesPanel {
     private JPanel openFilesPanel;
-    private Constants constants;
     private JScrollPane scrollPane;
     private GridBagConstraints gbc_openFilesPanel;
     
     //Construtor
     public OpenFilesPanel(JPanel wrapPanel){
-        this.constants = new Constants();
         this.defineOpenFilesPanel(wrapPanel);
     }
     
@@ -27,7 +25,7 @@ public class OpenFilesPanel {
     private void defineOpenFilesPanel(JPanel wrapPanel){
         //Configurando o painel que retém os arquivos que estão abertos no momento
         this.openFilesPanel = new JPanel();
-        this.openFilesPanel.setBackground(this.constants.getSideAreasColor());
+        this.openFilesPanel.setBackground(Constants.getInstance().getSideAreasColor());
         this.openFilesPanel.setLayout(new BoxLayout(this.openFilesPanel, BoxLayout.LINE_AXIS));
         
         this.scrollPane = new JScrollPane(this.openFilesPanel, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);

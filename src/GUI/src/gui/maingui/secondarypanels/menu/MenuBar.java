@@ -5,12 +5,11 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.border.EtchedBorder;
-import gui.maingui.Constants;
+import gui.maingui.utilities.Constants;
 import java.awt.event.ActionListener;
 import javax.swing.JFrame;
 
 public class MenuBar {
-    private Constants constants;
     
     //Construtor da barra de menu
     //Entrada: Listener que irá tratar as ações executadas no menu
@@ -18,7 +17,6 @@ public class MenuBar {
     //Pré-condição: Nenhuma
     //Pós-condição: A classe é instanciada
     public MenuBar(ActionListener listener, JFrame menuWrap){
-        this.constants = new Constants();
         this.defineMenuBar(listener,menuWrap);
     }
     
@@ -30,8 +28,8 @@ public class MenuBar {
     private JMenuItem createMenuItem(String name, String actionCommand, String toolTip, ActionListener listener) {
         JMenuItem menuItem;
         menuItem = new JMenuItem(name);
-        menuItem.setForeground(this.constants.getMenuForeGroundColor());
-        menuItem.setBackground(this.constants.getSideAreasColor());
+        menuItem.setForeground(Constants.getInstance().getMenuForeGroundColor());
+        menuItem.setBackground(Constants.getInstance().getSideAreasColor());
         menuItem.setToolTipText(toolTip);
         menuItem.setActionCommand(actionCommand);
         menuItem.addActionListener(listener);
@@ -46,8 +44,8 @@ public class MenuBar {
     private JMenu createMenu(String name, JMenuItem[] itens) {
         JMenu menu;
         menu = new JMenu(name);
-        menu.setBackground(this.constants.getSideAreasColor());
-        menu.setForeground(this.constants.getMenuForeGroundColor());
+        menu.setBackground(Constants.getInstance().getSideAreasColor());
+        menu.setForeground(Constants.getInstance().getMenuForeGroundColor());
         for (JMenuItem j : itens) {
             menu.add(j);
         }
@@ -64,7 +62,7 @@ public class MenuBar {
         //Inicializando a barra do menu
         menuBar = new JMenuBar();
         menuBar.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-        menuBar.setBackground(this.constants.getMenuBarColor());
+        menuBar.setBackground(Constants.getInstance().getMenuBarColor());
 
         //Botão File
         menuBar.add(

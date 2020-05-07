@@ -20,7 +20,7 @@ import java.io.InputStreamReader;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import gui.extragui.RoundedPanel;
-import gui.maingui.Constants;
+import gui.maingui.utilities.Constants;
 
 import gui.maingui.utilities.openfile.OpenFile;
 import gui.maingui.utilities.savefile.SaveFile;
@@ -51,9 +51,6 @@ public class Gui {
     private JPanel panelTop;
     private JPanel panelDown;
     private JPanel panelRight;
-
-    // Constantes
-    private Constants constants;
 
     // Variáveis "globais"
     private String currentFolder;
@@ -114,9 +111,6 @@ public class Gui {
         // Fonte padrão
         this.fontSize = 12;
         this.fontType = "Monospaced";
-
-        // Constantes
-        this.constants = new Constants();
 
         // Utilitários
         this.systemView = new SystemFilePanel();
@@ -197,7 +191,7 @@ public class Gui {
     // Função que configura e inicializa o frame principal
     private void defineMainFrame() {
         this.frame = new JFrame("Text Editor");
-        this.frame.getContentPane().setBackground(this.constants.getSideAreasColor());
+        this.frame.getContentPane().setBackground(Constants.getInstance().getSideAreasColor());
         this.frame.getContentPane().setLayout(new BorderLayout(0, 0));
         this.frame.addKeyListener(this.listenerGui);
         this.frame.setFocusable(true);
@@ -212,7 +206,7 @@ public class Gui {
     // Função que configura e inicializa o painel central
     private void definePanelCentral() {
         this.panelCentral = new JPanel();
-        this.panelCentral.setBackground(this.constants.getPaneEditorColor());
+        this.panelCentral.setBackground(Constants.getInstance().getPaneEditorColor());
         this.splitPane.add(this.panelCentral);
 
         GridBagLayout gbl_panelCentral = new GridBagLayout();
@@ -227,7 +221,7 @@ public class Gui {
     private void definePanelLeft() {
         this.panelLeft = new JPanel();
         this.panelLeft.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
-        this.panelLeft.setBackground(this.constants.getSideAreasColor());
+        this.panelLeft.setBackground(Constants.getInstance().getSideAreasColor());
         this.panelLeft.setLayout(new BorderLayout());
 
         this.splitPane.add(this.panelLeft);
@@ -237,7 +231,7 @@ public class Gui {
     private void definePanelTop() {
         this.panelTop = new JPanel();
         this.panelTop.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
-        this.panelTop.setBackground(this.constants.getSideAreasColor());
+        this.panelTop.setBackground(Constants.getInstance().getSideAreasColor());
         this.frame.getContentPane().add(this.panelTop, BorderLayout.NORTH);
 
         Component verticalStrut = Box.createVerticalStrut(50);
@@ -248,14 +242,14 @@ public class Gui {
     // Função que configura e inicializa o painel de baixo
     private void definePanelDown() {
         this.panelDown = new JPanel();
-        this.panelDown.setBackground(this.constants.getSideAreasColor());
+        this.panelDown.setBackground(Constants.getInstance().getSideAreasColor());
         this.frame.getContentPane().add(this.panelDown, BorderLayout.SOUTH);
     }
 
     // Função que configura e inicializa o painel da direita
     private void definePanelRight() {
         this.panelRight = new JPanel();
-        this.panelRight.setBackground(this.constants.getSideAreasColor());
+        this.panelRight.setBackground(Constants.getInstance().getSideAreasColor());
         this.frame.getContentPane().add(this.panelRight, BorderLayout.EAST);
     }
 

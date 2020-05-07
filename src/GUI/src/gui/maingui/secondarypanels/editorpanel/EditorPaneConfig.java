@@ -1,7 +1,7 @@
 package gui.maingui.secondarypanels.editorpanel;
 
 import javax.swing.JDialog;
-import gui.maingui.Constants;
+import gui.maingui.utilities.Constants;
 import java.awt.Toolkit;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -10,7 +10,6 @@ import javax.swing.JSpinner;
 
 public class EditorPaneConfig {
     private JDialog editorConfigFrame;
-    private Constants constants;
     private JSpinner fontSizeSpinner;
     private JComboBox<String> fontTypeList;
     private JButton buttonOk;
@@ -23,7 +22,6 @@ public class EditorPaneConfig {
     //Pré-condição: Nenhuma
     //Pós-condição: A janela de configuração do editor é instanciada e configurada
     public EditorPaneConfig(String fontType, Integer fontSize){
-        this.constants = new Constants();
         this.defineEditorPaneConfig(fontType,fontSize);
     }
     
@@ -36,7 +34,7 @@ public class EditorPaneConfig {
     */
     private void defineEditorPaneConfig(String fontType, Integer fontSize){
         this.editorConfigFrame = new JDialog();
-        this.editorConfigFrame.getContentPane().setBackground(this.constants.getSideAreasColor());
+        this.editorConfigFrame.getContentPane().setBackground(Constants.getInstance().getSideAreasColor());
         this.editorConfigFrame.setSize(300, 300);
         this.editorConfigFrame.setLocationRelativeTo(null);
         this.editorConfigFrame.setTitle("Editor Settings");
@@ -55,7 +53,7 @@ public class EditorPaneConfig {
         this.labelFontSize.setText("Font Size");
         this.labelFontSize.setSize(75, 20);
         this.labelFontSize.setLocation(10, 5);
-        this.labelFontSize.setForeground(this.constants.getMenuForeGroundColor());
+        this.labelFontSize.setForeground(Constants.getInstance().getMenuForeGroundColor());
         this.editorConfigFrame.getContentPane().add(this.labelFontSize);
 
         //Spinner para escolher o tamanho da fonte
@@ -69,7 +67,7 @@ public class EditorPaneConfig {
         this.labelFontType.setText("Font Type");
         this.labelFontType.setSize(75, 20);
         this.labelFontType.setLocation(10, 40);
-        this.labelFontType.setForeground(this.constants.getMenuForeGroundColor());
+        this.labelFontType.setForeground(Constants.getInstance().getMenuForeGroundColor());
         this.editorConfigFrame.getContentPane().add(this.labelFontType);
 
         //ComboBox para escolher o tipo da fonte

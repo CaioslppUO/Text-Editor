@@ -2,7 +2,7 @@ package gui.maingui.secondarypanels.openfilespanel;
 
 import gui.extragui.RoundedBorder;
 import gui.extragui.RoundedPanel;
-import gui.maingui.Constants;
+import gui.maingui.utilities.Constants;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -19,8 +19,6 @@ import javax.swing.border.SoftBevelBorder;
 public class CreateNewFileOpenPanel {
 
     private RoundedPanel newFilePanel;
-    ;
-    private Constants constants;
     private Component separator;
     private JButton closeButton;
     private JLabel fName;
@@ -42,7 +40,6 @@ public class CreateNewFileOpenPanel {
             ActionListener actionListener,
             OpenFilesPanel openFiles
     ) {
-        this.constants = new Constants();
 
         this.createNewFileOpenPanel(
                 lastClickedFilePath,
@@ -72,7 +69,7 @@ public class CreateNewFileOpenPanel {
             OpenFilesPanel openFiles
     ) {
         this.newFilePanel = new RoundedPanel();
-        this.newFilePanel.setBackground(this.constants.getSideAreasColor());
+        this.newFilePanel.setBackground(Constants.getInstance().getSideAreasColor());
         this.newFilePanel.setBorder(new SoftBevelBorder(BevelBorder.RAISED, null, null, null, null));
         this.newFilePanel.setLayout(new BoxLayout(newFilePanel, BoxLayout.LINE_AXIS));
         this.newFilePanel.setName(filePath);
@@ -85,7 +82,7 @@ public class CreateNewFileOpenPanel {
         if (lastClickedFilePath != null) {
             for (Component c : addedFilesPanel.get(lastClickedFilePath).getComponents()) {
                 if (c instanceof JLabel) {
-                    ((JLabel) c).setForeground(this.constants.getMenuForeGroundColor());
+                    ((JLabel) c).setForeground(Constants.getInstance().getMenuForeGroundColor());
                 }
             }
         }

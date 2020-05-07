@@ -2,7 +2,7 @@ package gui.maingui.secondarypanels.editorpanel;
 
 import gui.extragui.TextLineNumber;
 import javax.swing.JEditorPane;
-import gui.maingui.Constants;
+import gui.maingui.utilities.Constants;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -12,7 +12,6 @@ import javax.swing.JScrollPane;
 import javax.swing.text.PlainDocument;
 
 public class EditorPane {
-    private Constants constants;
     private JEditorPane editorPane;
     private JScrollPane scrollPane ;
     private TextLineNumber tln ;
@@ -24,7 +23,6 @@ public class EditorPane {
     //Pré-condição: Nenhuma
     //Pós-condição: A Classe é instanciada e o painel de edição é definido
     public EditorPane(String fontType, Integer fontSize, JPanel wrapPanel, KeyListener keyListener){
-        constants = new Constants();
         this.defineEditorPane(fontType,fontSize,wrapPanel,keyListener);
     }
     
@@ -37,8 +35,8 @@ public class EditorPane {
     */
     private void defineEditorPane(String fontType, Integer fontSize, JPanel wrapPanel, KeyListener keyListener){
         this.editorPane = new JEditorPane();
-        this.editorPane.setForeground(this.constants.getEditorPaneFontColor());
-        this.editorPane.setBackground(this.constants.getPaneEditorColor());
+        this.editorPane.setForeground(Constants.getInstance().getEditorPaneFontColor());
+        this.editorPane.setBackground(Constants.getInstance().getPaneEditorColor());
         this.editorPane.addKeyListener(keyListener);
 
         this.gbc_editorPane = new GridBagConstraints();

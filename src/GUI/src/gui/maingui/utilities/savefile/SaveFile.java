@@ -4,7 +4,7 @@ import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 
 import gui.Gui;
-import gui.maingui.Constants;
+import gui.maingui.utilities.Constants;
 
 import java.awt.Dimension;
 import java.io.File;
@@ -21,12 +21,12 @@ public class SaveFile {
 
     private JDialog saveFileFrame;
     private JFileChooser chooseSaveDirectory;
-    private Constants constants;
 
     private static SaveFile instance;
 
     // Construtor
-    private SaveFile() {}
+    private SaveFile() {
+    }
 
     // Função que salva o arquivo que está aberto na variável this.currentFile
     // Entrada: Mostrar ou não a mensagem de arquivo salvo, arquivo aberto e texto
@@ -43,7 +43,7 @@ public class SaveFile {
                 if (showSaveMessage) {
                     JOptionPane.showMessageDialog(null, "File Saved");
                 }
-                if(updateOpenDirectories)
+                if (updateOpenDirectories)
                     Gui.getInstance().runUpdateFileSystemView();
                 gFile.getInstance().setIsSaved(true);
             } catch (IOException e) {
@@ -63,7 +63,7 @@ public class SaveFile {
     // Pós-condição: O JFileChooser é configurado
     private void configureJFileChooser(String currentFolder) {
         this.saveFileFrame = JDialogGenerator.createJDialog(new Dimension(600, 600), null, "Save As",
-                this.constants.getSideAreasColor());
+                Constants.getInstance().getSideAreasColor());
         this.chooseSaveDirectory = JFileChooserGenerator.createJFileChooser(currentFolder, "Save As",
                 JFileChooser.DIRECTORIES_ONLY);
         this.saveFileFrame.getContentPane().add(this.chooseSaveDirectory);
@@ -77,7 +77,6 @@ public class SaveFile {
     // Pós-condição: É aberto um menu para escolher como e onde salvar o arquivo
     // aberto na variável this.currentFile
     public void saveFileAs(String currentFolder) {
-        this.constants = new Constants();
         if (gFile.getInstance().isOpen()) {
             this.configureJFileChooser(currentFolder);
             String fileSeparator = System.getProperty("file.separator");
@@ -91,7 +90,7 @@ public class SaveFile {
                         try {
                             if (newFile.createNewFile()) {
                                 gFile.getInstance().setFile(newFile);
-                                this.saveFile(false,true);
+                                this.saveFile(false, true);
                             } else {
                                 JOptionPane.showMessageDialog(null, "File Already Exists");
                             }
@@ -112,8 +111,8 @@ public class SaveFile {
     }
 
     // Getter da instância
-    public static SaveFile getInstance(){
-        if(instance == null)
+    public static SaveFile getInstance() {
+        if (instance == null)
             instance = new SaveFile();
         return instance;
     }

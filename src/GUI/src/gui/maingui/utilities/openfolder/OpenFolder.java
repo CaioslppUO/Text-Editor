@@ -4,7 +4,7 @@ import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-import gui.maingui.Constants;
+import gui.maingui.utilities.Constants;
 import gui.maingui.interfacegenerator.JDialogGenerator;
 import gui.maingui.interfacegenerator.JFileChooserGenerator;
 
@@ -15,7 +15,6 @@ public class OpenFolder {
 
     private JDialog openFolderFrame;
     private JFileChooser chooseOpenDirectory;
-    private Constants constants;
 
     private static OpenFolder instance;
 
@@ -30,7 +29,7 @@ public class OpenFolder {
     // Pós-condição: O JFileChooser é configurado
     private void configureJFileChooser(String currentFolder) {
         this.openFolderFrame = JDialogGenerator.createJDialog(new Dimension(600, 600), null, "Open Folder",
-                this.constants.getSideAreasColor());
+                Constants.getInstance().getSideAreasColor());
         this.chooseOpenDirectory = JFileChooserGenerator.createJFileChooser(currentFolder, "Open Folder",
                 JFileChooser.DIRECTORIES_ONLY);
         this.openFolderFrame.getContentPane().add(this.chooseOpenDirectory);
@@ -43,7 +42,6 @@ public class OpenFolder {
     // Pré-condição: Nenhuma
     // Pós-condição: A pasta é aberta e vira o diretório padrão
     public String openFolder(String currentFolder) {
-        this.constants = new Constants();
         this.configureJFileChooser(currentFolder);
         int result;
         result=this.chooseOpenDirectory.showOpenDialog(null);

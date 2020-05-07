@@ -10,18 +10,15 @@ import java.awt.BorderLayout;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.JTree;
 
-import gui.maingui.Constants;
+import gui.maingui.utilities.Constants;
 
 public class SystemFilePanel {
     private JPanel systemFilesPanel;
     private FileTree fileTree;
     private JScrollPane scrollPane;
-    private Constants constants;
     
     //Construtor
-    public SystemFilePanel(){
-        this.constants = new Constants();
-    }
+    public SystemFilePanel(){}
 
     //Função que define o painel de diretórios abertos
     //Entrada: Pasta de inicio da procura e painel em que serão visualisados os diretórios abertos
@@ -30,11 +27,11 @@ public class SystemFilePanel {
     //Pós-condição: O diretório passado é processado, carregado e exposto na tela
     public void defineFilePanel(String rootPath, JPanel wrapPanel, SystemFilePanelListener listener){
         this.systemFilesPanel = new JPanel();
-        this.systemFilesPanel.setBackground(this.constants.getSideAreasColor());
+        this.systemFilesPanel.setBackground(Constants.getInstance().getSideAreasColor());
         this.systemFilesPanel.setLayout(new BorderLayout());
 
         this.fileTree = new FileTree(rootPath);
-        this.fileTree.setBackground(this.constants.getPaneEditorColor());
+        this.fileTree.setBackground(Constants.getInstance().getPaneEditorColor());
         this.fileTree.setCellRenderer(new DefaultTreeCellRenderer(){
             private static final long serialVersionUID = 1L;
 
@@ -55,7 +52,7 @@ public class SystemFilePanel {
 
             @Override
             public Color getForeground(){
-                return constants.getMenuForeGroundColor();
+                return Constants.getInstance().getMenuForeGroundColor();
             }
         
             @Override

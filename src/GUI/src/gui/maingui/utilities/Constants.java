@@ -1,4 +1,4 @@
-package gui.maingui;
+package gui.maingui.utilities;
 
 import java.awt.Color;
 
@@ -10,8 +10,9 @@ public class Constants {
     private Color MenuForeGroundColor;
     private Color editorPaneFontColor;
     private Color buttonCloseEnteredColor;
+    private static Constants instance;
     
-    public Constants(){
+    private Constants(){
         //Definição das cores
         this.PaneEditorColor = new Color(51, 51, 51);
         this.sideAreasColor = new Color(82, 82, 82);
@@ -79,5 +80,11 @@ public class Constants {
     //Setter da dor do botão de fechar quando o mouse passa por cima
     public void setButtonCloseEnteredColor(Color buttonCloseEnteredColor) {
         this.buttonCloseEnteredColor = buttonCloseEnteredColor;
+    }
+
+    public static Constants getInstance(){
+        if(instance == null)
+            instance = new Constants();
+        return instance;
     }
 }

@@ -9,9 +9,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import gui.maingui.Constants;
+import gui.maingui.utilities.Constants;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -19,12 +18,7 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
 
 public class OpenFilesListener implements ActionListener, MouseListener {
-
-    private Constants constants;
-
-    public OpenFilesListener() {
-        this.constants = new Constants();
-    }
+    public OpenFilesListener() {}
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -57,7 +51,7 @@ public class OpenFilesListener implements ActionListener, MouseListener {
             } else {
                 for (Component c : ((RoundedPanel) aux.getAddedFilesPanel().get(aux.getLastClickedFilePath())).getComponents()) {
                     if (c instanceof JLabel) {
-                        ((JLabel) c).setForeground(this.constants.getMenuForeGroundColor());
+                        ((JLabel) c).setForeground(Constants.getInstance().getMenuForeGroundColor());
                     }
                 }
                 SwingUtilities.updateComponentTreeUI(aux.getOpenFilesPanel().getOpenFilesPanel());
@@ -87,8 +81,8 @@ public class OpenFilesListener implements ActionListener, MouseListener {
         try{
             aux2 = me.getComponent().getName().split(":"); 
             if ("closeButton".equals(aux2[0])) {
-                ((JButton) me.getComponent()).setBackground(this.constants.getButtonCloseEnteredColor());
-                ((JButton) me.getComponent()).setForeground(this.constants.getEditorPaneFontColor());
+                ((JButton) me.getComponent()).setBackground(Constants.getInstance().getButtonCloseEnteredColor());
+                ((JButton) me.getComponent()).setForeground(Constants.getInstance().getEditorPaneFontColor());
                 SwingUtilities.updateComponentTreeUI(aux.getOpenFilesPanel().getOpenFilesPanel());
             }
             if (!"closeButton".equals(aux2[0])) {

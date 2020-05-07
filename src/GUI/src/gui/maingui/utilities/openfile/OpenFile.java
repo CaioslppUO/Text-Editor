@@ -16,13 +16,12 @@ import gui.maingui.entities.gFile;
 import gui.maingui.interfacegenerator.JDialogGenerator;
 import gui.maingui.interfacegenerator.JFileChooserGenerator;
 import gui.Gui;
-import gui.maingui.Constants;
+import gui.maingui.utilities.Constants;
 
 public class OpenFile {
 
     private JDialog openFileFrame;
     private JFileChooser chooseOpenFile;
-    private Constants constants;
     private File tempFile;
 
     private static OpenFile instance;
@@ -43,7 +42,7 @@ public class OpenFile {
     // devidamente instanciadas e configuradas
     // Pós-condição: O JFileChooser é configurado
     private void configureJFileChooser(String currentFolder){
-        this.openFileFrame = JDialogGenerator.createJDialog(new Dimension(600, 600), null, "Open File", this.constants.getSideAreasColor());
+        this.openFileFrame = JDialogGenerator.createJDialog(new Dimension(600, 600), null, "Open File", Constants.getInstance().getSideAreasColor());
         this.chooseOpenFile = JFileChooserGenerator.createJFileChooser(currentFolder, "Open File", JFileChooser.FILES_AND_DIRECTORIES);
         this.openFileFrame.getContentPane().add(this.chooseOpenFile);
         this.openFileFrame.setVisible(false);
@@ -55,7 +54,6 @@ public class OpenFile {
     // Pŕe-condição: Nenhuma
     // Pós-condição: O arquivo é aberto no editor
     public void openFile(String currentFolder) {
-        this.constants = new Constants();
         if (!gFile.getInstance().isOpen()) { // Não existe arquivo aberto previamente
             this.configureJFileChooser(currentFolder);
             if (this.chooseOpenFile.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) { // Abre o arquivo
@@ -100,7 +98,6 @@ public class OpenFile {
     // Pŕe-condição: Nenhuma
     // Pós-condição: O arquivo é aberto no editor
     public void openFileUsingPath(String filePath, String currentFolder) {
-        this.constants = new Constants();
         this.configureJFileChooser(currentFolder);
         if (!gFile.getInstance().isOpen()) { // Não existe arquivo aberto previamente
             File file = new File(filePath);

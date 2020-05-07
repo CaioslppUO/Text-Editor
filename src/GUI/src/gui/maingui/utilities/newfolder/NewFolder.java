@@ -5,7 +5,7 @@ import java.io.File;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import gui.maingui.Constants;
+import gui.maingui.utilities.Constants;
 
 import gui.maingui.interfacegenerator.JDialogGenerator;
 import gui.maingui.interfacegenerator.JFileChooserGenerator;
@@ -13,7 +13,6 @@ import gui.maingui.interfacegenerator.JFileChooserGenerator;
 public class NewFolder {
 
     private JDialog createNewFolderFrame;
-    private Constants constants;
     private JFileChooser chooseNewFolderDirectory;
 
     private static NewFolder instance;
@@ -28,7 +27,7 @@ public class NewFolder {
     // devidamente instanciadas e configuradas
     // Pós-condição: O JFileChooser é configurado
     private void configureJFileChooser(String currentFolder){
-        this.createNewFolderFrame = JDialogGenerator.createJDialog(new Dimension(600, 600), null, "Create New Folder", this.constants.getSideAreasColor());
+        this.createNewFolderFrame = JDialogGenerator.createJDialog(new Dimension(600, 600), null, "Create New Folder", Constants.getInstance().getSideAreasColor());
         this.chooseNewFolderDirectory = JFileChooserGenerator.createJFileChooser(currentFolder, "Create New folder", JFileChooser.DIRECTORIES_ONLY);
         this.createNewFolderFrame.getContentPane().add(this.chooseNewFolderDirectory);
         this.createNewFolderFrame.setVisible(false);
@@ -40,7 +39,6 @@ public class NewFolder {
     // Pŕe-condição: Nenhuma
     // Pós-condição: O diretório é criado
     public String createNewFolder(String currentFolder) {
-        this.constants = new Constants();
         this.configureJFileChooser(currentFolder);
         if (this.chooseNewFolderDirectory.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
             File newFolder;

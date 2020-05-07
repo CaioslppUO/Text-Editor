@@ -10,7 +10,7 @@ import javax.swing.JOptionPane;
 import gui.maingui.interfacegenerator.JDialogGenerator;
 import gui.maingui.interfacegenerator.JFileChooserGenerator;
 import gui.Gui;
-import gui.maingui.Constants;
+import gui.maingui.utilities.Constants;
 import gui.maingui.utilities.savefile.SaveFile;
 import gui.maingui.entities.gFile;
 
@@ -18,7 +18,6 @@ public class NewFile {
 
     private JDialog createNewFileFrame;
     private JFileChooser chooseNewFileDirectory;
-    private Constants constants;
     private String fileSeparator;
 
     private static NewFile instance;
@@ -29,8 +28,7 @@ public class NewFile {
     // Pré-condição: As variáveis currentFile, editorPane e currentFolder devem
     // estar devidamente instanciadas e configuradas
     // Pós-condição: A classe é instanciada
-    private NewFile() {
-    }
+    private NewFile() {}
 
     // Função que configura o JFileChooser
     // Entrada: Pasta atual
@@ -40,7 +38,7 @@ public class NewFile {
     // Pós-condição: O JFileChooser é configurado
     private void configureFileChooser(String currentFolder) {
         this.createNewFileFrame = JDialogGenerator.createJDialog(new Dimension(600, 600), null, "Create New File",
-                this.constants.getSideAreasColor());
+                Constants.getInstance().getSideAreasColor());
         this.chooseNewFileDirectory = JFileChooserGenerator.createJFileChooser(currentFolder, "Create New File",
                 JFileChooser.DIRECTORIES_ONLY);
         this.createNewFileFrame.getContentPane().add(chooseNewFileDirectory);
@@ -53,7 +51,6 @@ public class NewFile {
     // Pŕe-condição: Nenhuma
     // Pós-condição: O arquivo é criado e salvo no disco
     public void createNewFile(String currentFolder) {
-        this.constants = new Constants();
         this.fileSeparator = System.getProperty("file.separator");
         if (!gFile.getInstance().isOpen()) { // Não existe arquivo aberto previamente
             this.configureFileChooser(currentFolder);
