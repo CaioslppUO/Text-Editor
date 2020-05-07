@@ -39,11 +39,9 @@ import gui.maingui.secondarypanels.editorpanel.EditorPane;
 import gui.maingui.secondarypanels.editorpanel.EditorPaneConfig;
 import gui.maingui.secondarypanels.openfilespanel.OpenFilesPanel;
 import gui.maingui.secondarypanels.openfilespanel.CreateNewFileOpenPanel;
-
 import gui.maingui.entities.gFile;
 
 public class Gui {
-
     // Frame e Painéis principais
     private JFrame frame;
     private JPanel panelCentral;
@@ -56,55 +54,34 @@ public class Gui {
     private String currentFolder;
     private Map<String, RoundedPanel> addedFilesPanel;
     private String lastClickedFilePath;
+    private JSplitPane centralSplitPane;
 
     // Fonte
     private Integer fontSize;
     private String fontType;
 
-    // Gerenciador do editorPane
+    // Gerenciadores de interface
     private EditorPane editorPane;
-
-    // Gerenciador da tela de configuração do editorPane
     private EditorPaneConfig editorPaneConfig;
-
-    // Gerenciador do painel do visualisador de arquivos abertos
     private OpenFilesPanel openFiles;
-
-    // Gerenciador do visualisador de arquivos abertos
     private CreateNewFileOpenPanel createNewFileOpenPanel;
+    private SystemFilePanel systemView;
 
-    // Listener da interface principal
+    // Listeners
     private ListenerGui listenerGui;
-
-    // Listener do menu
     private ListenerMenu listenerMenu;
-
-    // Listener do editorPanel
     private ListenerEditorPanel listenerEditorPanel;
-
-    // Listener do editorPanelConfig
     private ListenerEditorPanelConfig listenerEditorPanelConfig;
-
-    // Listener do openFilesPanel
     private OpenFilesListener listenerOpenFilesPanel;
-
-    // Listener do systemFilePanel
     private SystemFilePanelListener systemFilePanelListener;
 
     // Variável utilizada para guardar a única instância da classe
     private static Gui instance;
 
-    // Gerenciador do visualisador de diretórios
-    private SystemFilePanel systemView;
-
-    // Pane utilizado para redimensionar as janelas
-    private JSplitPane splitPane;
-
     // Construtor da classe
     private Gui() {
         // Variáveis globais
         this.currentFolder = System.getProperty("user.dir");
-
         this.addedFilesPanel = new LinkedHashMap<>();
         lastClickedFilePath = null;
 
@@ -112,7 +89,7 @@ public class Gui {
         this.fontSize = 12;
         this.fontType = "Monospaced";
 
-        // Utilitários
+        // Gerenciadores
         this.systemView = new SystemFilePanel();
 
         // Listeners
@@ -196,18 +173,18 @@ public class Gui {
         this.frame.addKeyListener(this.listenerGui);
         this.frame.setFocusable(true);
 
-        this.splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        this.splitPane.setDividerSize(3);
-        this.splitPane.resetToPreferredSizes();
+        this.centralSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        this.centralSplitPane.setDividerSize(3);
+        this.centralSplitPane.resetToPreferredSizes();
 
-        this.frame.getContentPane().add(this.splitPane, BorderLayout.CENTER);
+        this.frame.getContentPane().add(this.centralSplitPane, BorderLayout.CENTER);
     }
 
     // Função que configura e inicializa o painel central
     private void definePanelCentral() {
         this.panelCentral = new JPanel();
         this.panelCentral.setBackground(Constants.getInstance().getPaneEditorColor());
-        this.splitPane.add(this.panelCentral);
+        this.centralSplitPane.add(this.panelCentral);
 
         GridBagLayout gbl_panelCentral = new GridBagLayout();
         gbl_panelCentral.columnWidths = new int[] { 0, 0 };
@@ -223,8 +200,7 @@ public class Gui {
         this.panelLeft.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
         this.panelLeft.setBackground(Constants.getInstance().getSideAreasColor());
         this.panelLeft.setLayout(new BorderLayout());
-
-        this.splitPane.add(this.panelLeft);
+        this.centralSplitPane.add(this.panelLeft);
     }
 
     // Função que configura e inicializa o painel do topo
@@ -256,7 +232,7 @@ public class Gui {
     // *************************
     // * Funções de auxiliares *
     // *************************
-    // Função que fecha o arquivo que está aberto no visualisador de arquivos abertos
+    // Função que fecha o arquivo que está aberto no visualisador de arquivos
     public void closeFile(String fileToClose) {
         if (fileToClose.equals(gFile.getInstance().getFullPath())) {
             if (gFile.getInstance().isOpen()) {
@@ -278,7 +254,7 @@ public class Gui {
                         this.runOpenFile(((RoundedPanel) this.addedFilesPanel.values().toArray()[0]).getName());
                     } catch (Exception e) { // Não existe arquivo para abrir
                         if (result == JOptionPane.YES_OPTION) { // Salva o arquivo atual antes de fechar
-                            SaveFile.getInstance().saveFile(false,false);
+                            SaveFile.getInstance().saveFile(false, false);
                         }
                         gFile.getInstance().closeFile();
                         this.lastClickedFilePath = null;
@@ -308,7 +284,7 @@ public class Gui {
         this.editorPane.getEditorPane().setFont(new Font(this.fontType, Font.PLAIN, this.fontSize));
     }
 
-    // Função que decide se o editor de texto vai estar habilitado ou não baseado se
+    // Função que decide se o editor de texto vai estar habilitado ou não
     private void decideEditorEnabled(Boolean forceDisabled) {
         if (gFile.getInstance().isOpen()) {
             this.editorPane.getEditorPane().setEnabled(true);
@@ -327,7 +303,7 @@ public class Gui {
             this.editorPane.getEditorPane().setEnabled(false);
             this.editorPane.getEditorPane().setText("");
         }
-        if(forceDisabled){
+        if (forceDisabled) {
             this.editorPane.getEditorPane().setEnabled(false);
             this.editorPane.getEditorPane().setText("");
         }
@@ -430,7 +406,7 @@ public class Gui {
         this.runUpdateFileSystemView();
     }
 
-    // Atualiza as pastas e arquivos atualmente abertos
+    // Função que atualiza as pastas e arquivos atualmente abertos
     public void runUpdateFileSystemView() {
         this.systemView.updateFolder(this.currentFolder, this.panelLeft, this.systemView.getSystemFilesPanel(),
                 this.systemFilePanelListener);
