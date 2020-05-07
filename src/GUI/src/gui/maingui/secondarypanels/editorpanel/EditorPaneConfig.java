@@ -21,8 +21,8 @@ public class EditorPaneConfig {
     //Retorno: Nenhum
     //Pré-condição: Nenhuma
     //Pós-condição: A janela de configuração do editor é instanciada e configurada
-    public EditorPaneConfig(String fontType, Integer fontSize){
-        this.defineEditorPaneConfig(fontType,fontSize);
+    public EditorPaneConfig(String fontType, Integer fontSize,ListenerEditorPanelConfig listener){
+        this.defineEditorPaneConfig(fontType,fontSize,listener);
     }
     
     //Função que instancia e configura a janela de configuração do editor
@@ -32,14 +32,14 @@ public class EditorPaneConfig {
     /*Pós-condição: A janela de configuração do editor pane é instanciada e configurada, e suas informações são guardadas
      * em variáveis locais na classe, para depois serem colhidas por quem desejar incluir a janela de configuração
     */
-    private void defineEditorPaneConfig(String fontType, Integer fontSize){
+    private void defineEditorPaneConfig(String fontType, Integer fontSize, ListenerEditorPanelConfig listener){
         this.editorConfigFrame = new JDialog();
         this.editorConfigFrame.getContentPane().setBackground(Constants.getInstance().getSideAreasColor());
         this.editorConfigFrame.setSize(300, 300);
         this.editorConfigFrame.setLocationRelativeTo(null);
         this.editorConfigFrame.setTitle("Editor Settings");
         this.editorConfigFrame.getContentPane().setLayout(null);
-        //this.editorConfigFrame.addKeyListener(this);
+        this.editorConfigFrame.addKeyListener(listener);
         
         //Botão para salvar as configurações escolhidas
         this.buttonOk = new JButton("OK");
@@ -47,6 +47,7 @@ public class EditorPaneConfig {
         //buttonOk.addActionListener(this);
         this.buttonOk.setSize(55, 30);
         this.buttonOk.setLocation(125, 230);
+        this.buttonOk.addActionListener(listener);
         this.editorConfigFrame.getContentPane().add(this.buttonOk);
 
         this.labelFontSize = new JLabel();

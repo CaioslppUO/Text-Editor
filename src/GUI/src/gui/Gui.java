@@ -152,9 +152,7 @@ public class Gui {
 
     // Função que inclui a tela de configuração do editorPane na interface
     public void includeEditorPaneConfig() {
-        this.editorPaneConfig = new EditorPaneConfig(this.fontType, this.fontSize);
-        this.editorPaneConfig.getOkButton().addActionListener(this.listenerEditorPanelConfig);
-        this.editorPaneConfig.getEditorConfigFrame().addKeyListener(this.listenerEditorPanelConfig);
+        this.editorPaneConfig = new EditorPaneConfig(this.fontType, this.fontSize, this.listenerEditorPanelConfig);
     }
 
     // Função que inclui a tela de diretórios abertos
@@ -286,26 +284,27 @@ public class Gui {
 
     // Função que decide se o editor de texto vai estar habilitado ou não
     private void decideEditorEnabled(Boolean forceDisabled) {
-        if (gFile.getInstance().isOpen()) {
-            this.editorPane.getEditorPane().setEnabled(true);
-            if (this.addedFilesPanel.get(gFile.getInstance().getFullPath()) == null) {
-                this.createNewFileOpenPanel();
-            } else {
-                if (lastClickedFilePath != null) {
-                    for (Component c : addedFilesPanel.get(this.lastClickedFilePath).getComponents()) {
-                        if (c instanceof JLabel) {
-                            ((JLabel) c).setForeground(Color.WHITE);
-                        }
-                    }
-                }
-            }
-        } else {
-            this.editorPane.getEditorPane().setEnabled(false);
-            this.editorPane.getEditorPane().setText("");
-        }
         if (forceDisabled) {
             this.editorPane.getEditorPane().setEnabled(false);
             this.editorPane.getEditorPane().setText("");
+        }else{
+            if (gFile.getInstance().isOpen()) {
+                this.editorPane.getEditorPane().setEnabled(true);
+                if (this.addedFilesPanel.get(gFile.getInstance().getFullPath()) == null) {
+                    this.createNewFileOpenPanel();
+                } else {
+                    if (lastClickedFilePath != null) {
+                        for (Component c : addedFilesPanel.get(this.lastClickedFilePath).getComponents()) {
+                            if (c instanceof JLabel) {
+                                ((JLabel) c).setForeground(Color.WHITE);
+                            }
+                        }
+                    }
+                }
+            } else {
+                this.editorPane.getEditorPane().setEnabled(false);
+                this.editorPane.getEditorPane().setText("");
+            }
         }
     }
 
@@ -315,9 +314,7 @@ public class Gui {
                 gFile.getInstance().getName(), gFile.getInstance().getFullPath(), this.listenerOpenFilesPanel,
                 this.listenerOpenFilesPanel, this.openFiles);
         this.lastClickedFilePath = this.createNewFileOpenPanel.getLastClickedFilePath();
-
         this.createNewFileOpenPanel = null;
-
         SwingUtilities.updateComponentTreeUI(this.openFiles.getOpenFilesPanel());
     }
 
@@ -410,7 +407,7 @@ public class Gui {
     public void runUpdateFileSystemView() {
         this.systemView.updateFolder(this.currentFolder, this.panelLeft, this.systemView.getSystemFilesPanel(),
                 this.systemFilePanelListener);
-        SwingUtilities.updateComponentTreeUI(frame);
+        SwingUtilities.updateComponentTreeUI(this.panelLeft);
     }
 
     // Getter da instância do singleton
