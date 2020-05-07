@@ -134,10 +134,6 @@ public class Gui {
     }
 
     // Função que inicializa todos os componentes visuais da interface
-    // Entrada: Nenhuma
-    // Retorno: Nenhum
-    // Pŕe-condição: Nenhuma
-    // Pós-condição: Todas as interfaces são inicializadas
     private void initialize() {
         // Definições dos elementos principais da tela
         this.defineMainFrame();
@@ -168,48 +164,22 @@ public class Gui {
     // * Funções de inclusão *
     // ***********************
     // Função que inclui a barra de menu na interface
-    // Entrada: Nenhuma
-    // Retorno: Nenhum
-    // Pré-condição: O Frame principal deve estar instanciado e configurado
-    // corretamente
-    // Pós-condição: A barra de menu é adicionada à interface
     private void includeMenuBar() {
         new MenuBar(this.listenerMenu, this.frame);
     }
 
     // Função que inclui o painel de arquivos abertos à interface
-    // Entrada: Nenhuma
-    // Retorno: Nenhum
-    // Pré-condição: O painel central deve estar instanciado e configurado.
-    // Pós-condição: O painel que gerencia os arquivos abertos é adicionado à
-    // interface
     private void includeOpenFilesPanel() {
         this.openFiles = new OpenFilesPanel(this.panelCentral);
     }
 
     // Função que inclui o editroPane na interface
-    // Entrada: Nenhuma
-    // Retorno: Nenhum
-    /*
-     * Pré-condição: O painel central deve estar instanciado e configurado. A classe
-     * Gui deve implementar a classe KeyListener para tratar atalhos pressionados no
-     * editor
-     */
-    // Pós-condição: O editor é adicionado à interface
     private void includeEditorPane() {
         this.editorPane = new EditorPane(this.fontType, this.fontSize, this.panelCentral, this.listenerEditorPanel);
         this.decideEditorEnabled(false);
     }
 
     // Função que inclui a tela de configuração do editorPane na interface
-    // Entrada: Nenhuma
-    // Retorno: Nenhum
-    /*
-     * Pré-condição: As variáveis this.fontTypee this.fontSize devem estar
-     * instanciadas e configuradas. A classe Gui deve implementar as classes
-     * ActionListener e KeyListener para tratar interações
-     */
-    // Pós-condição: A tela de configuração do editorPane é incluida à interface
     public void includeEditorPaneConfig() {
         this.editorPaneConfig = new EditorPaneConfig(this.fontType, this.fontSize);
         this.editorPaneConfig.getOkButton().addActionListener(this.listenerEditorPanelConfig);
@@ -217,11 +187,6 @@ public class Gui {
     }
 
     // Função que inclui a tela de diretórios abertos
-    // Entrada: Nenhuma
-    // Retorno: Nenhum
-    // Pré-condição: As variáveis this.currentFolde e this.panelLeft devem estar
-    // instanciadas e configuradas.
-    // Pós-condição: A tela de configuração do editorPane é incluida à interface
     private void includeSystemFileView() {
         this.runUpdateFileSystemView();
     }
@@ -230,10 +195,6 @@ public class Gui {
     // * Funções de definição *
     // ************************
     // Função que configura e inicializa o frame principal
-    // Entrada: Nenhuma
-    // Retorno: Nenhum
-    // Pré-condição: Nenhuma
-    /// Pós-condição: O frame principal é criado e configurado
     private void defineMainFrame() {
         this.frame = new JFrame("Text Editor");
         this.frame.getContentPane().setBackground(this.constants.getSideAreasColor());
@@ -249,9 +210,6 @@ public class Gui {
     }
 
     // Função que configura e inicializa o painel central
-    // Entrada: Nenhuma
-    // Retorno: Nenhum
-    // Pré-condição: O frame principal deve estar instanciado e configurado
     private void definePanelCentral() {
         this.panelCentral = new JPanel();
         this.panelCentral.setBackground(this.constants.getPaneEditorColor());
@@ -266,9 +224,6 @@ public class Gui {
     }
 
     // Função que configura e inicializa o painel da esquerda
-    // Entrada: Nenhuma
-    // Retorno: Nenhum
-    // Pré-condição: O frame principal deve estar instanciado e configurado
     private void definePanelLeft() {
         this.panelLeft = new JPanel();
         this.panelLeft.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
@@ -279,9 +234,6 @@ public class Gui {
     }
 
     // Função que configura e inicializa o painel do topo
-    // Entrada: Nenhuma
-    // Retorno: Nenhum
-    // Pré-condição: O frame principal deve estar instanciado e configurado
     private void definePanelTop() {
         this.panelTop = new JPanel();
         this.panelTop.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
@@ -294,9 +246,6 @@ public class Gui {
     }
 
     // Função que configura e inicializa o painel de baixo
-    // Entrada: Nenhuma
-    // Retorno: Nenhum
-    // Pré-condição: O frame principal deve estar instanciado e configurado
     private void definePanelDown() {
         this.panelDown = new JPanel();
         this.panelDown.setBackground(this.constants.getSideAreasColor());
@@ -304,9 +253,6 @@ public class Gui {
     }
 
     // Função que configura e inicializa o painel da direita
-    // Entrada: Nenhuma
-    // Retorno: Nenhum
-    // Pré-condição: O frame principal deve estar instanciado e configurado
     private void definePanelRight() {
         this.panelRight = new JPanel();
         this.panelRight.setBackground(this.constants.getSideAreasColor());
@@ -316,15 +262,7 @@ public class Gui {
     // *************************
     // * Funções de auxiliares *
     // *************************
-    // Função que fecha o arquivo que está aberto
-    // Entrada: Nenhuma
-    // Retorno: Nenhum
-    /*
-     * Pŕe-condição: As variáveis this.addedFilesPanel, this.saveFile,
-     * this.lastClickedFilePath, this.currentFile, this.editorPane e
-     * this.currentFile devem estar instanciadas e configuradas corretamente.
-     */
-    // Pós-condição: O arquivo aberto atualmente é fechado
+    // Função que fecha o arquivo que está aberto no visualisador de arquivos abertos
     public void closeFile(String fileToClose) {
         if (fileToClose.equals(gFile.getInstance().getFullPath())) {
             if (gFile.getInstance().isOpen()) {
@@ -370,13 +308,6 @@ public class Gui {
     }
 
     // Função que atualiza a fonte utilizada no editor
-    // Entrada: Nenhuma
-    // Retorno: Nenhum
-    /*
-     * Pŕe-condição: O editorPane deve estar instanciado e configurado. as variáveis
-     * this.fontSize e this.fontType devem estar instanciadas e configuradas
-     */
-    // Pós-condição: A fonte é atualizada para as opções definidas no menu
     public void updateFont() {
         this.fontSize = Integer.parseInt(this.editorPaneConfig.getFontSizeSpinner().getValue().toString());
         this.fontType = this.editorPaneConfig.getFontTypeList().getSelectedItem().toString();
@@ -384,10 +315,6 @@ public class Gui {
     }
 
     // Função que decide se o editor de texto vai estar habilitado ou não baseado se
-    // existe ou não um arquivo aberto
-    // Entrada: Verdadeiro ou falso que o arquivo em this.currentFile já está aberto
-    // Retorno: Nenhum
-    // Pré-condição: O editorPane deve estar configurado e instanciado.
     private void decideEditorEnabled(Boolean forceDisabled) {
         if (gFile.getInstance().isOpen()) {
             this.editorPane.getEditorPane().setEnabled(true);
@@ -413,16 +340,6 @@ public class Gui {
     }
 
     // Função que adiciona um novo painel ao visualisador de arquivos abertos
-    // Entrada: Nome do arquivo e caminho do arquivo
-    // Retorno: Nenhum
-    /*
-     * Pré-condição: As variáveis this.lastClickedPath e this.addedFilesPanel devem
-     * estar instanciadas e configuradas corretamentes. O frame principal deve estar
-     * instanciado e configurado corretamente. Não deve existir previamente um
-     * painel de arquivos abertos com o mesmo fileName e o mesmo filePath.
-     */
-    // Pós-condição: Um novo painel com o nome fileName é criado e adicionado à
-    // interface
     private void createNewFileOpenPanel() {
         this.createNewFileOpenPanel = new CreateNewFileOpenPanel(this.lastClickedFilePath, this.addedFilesPanel,
                 gFile.getInstance().getName(), gFile.getInstance().getFullPath(), this.listenerOpenFilesPanel,
@@ -435,41 +352,18 @@ public class Gui {
     }
 
     // Função que aplica as rotinas para abrir um arquivo
-    // Entrada: Nenhuma
-    // Retorno: Nenhum
-    /*
-     * Pré-condição: As variáveis this.currentFile, this.editorPane,
-     * this.addedFilesPanel e this.currentFolder devem estar instanciadas e
-     * configuradas.
-     */
-    // Pós-condição: Abre um arquivo e o coloca na interface para edição
     public void runOpenFile() {
         OpenFile.getInstance().openFile(currentFolder);
         this.decideEditorEnabled(false);
     }
 
     // Função que aplica as rotinas para abrir um arquivo
-    // Entrada: Caminho para o arquivo a ser aberto
-    // Retorno: Nenhum
-    /*
-     * Pré-condição: As variáveis this.currentFile, this.editorPane,
-     * this.addedFilesPanel e this.currentFolder devem estar instanciadas e
-     * configuradas.
-     */
-    // Pós-condição: Abre um arquivo e o coloca na interface para edição
     public void runOpenFile(String filePath) {
         OpenFile.getInstance().openFileUsingPath(filePath, this.currentFolder);
         this.decideEditorEnabled(false);
     }
 
     // Função que executa as rotinas para criar um novo arquivo
-    // Entrada: Nenhuma
-    // Retorno: Nenhum
-    /*
-     * Pré-condição: O editorPane deve estar instanciado e configurado. As variáveis
-     * this.currentFile e this.currentFolder devem estar instanciadas e configuradas
-     */
-    // Pós-condição: Um novo arquivo é criado
     public void runCreateNewFile() {
         NewFile.getInstance().createNewFile(currentFolder);
         this.runUpdateFileSystemView();
@@ -477,25 +371,12 @@ public class Gui {
     }
 
     // Função que abre uma pasta como diretório padrão
-    // Entrada: Nenhuma
-    // Retorno: Nenhum
-    // Pré-condição: A variável this.currentFolder deve estar instanciada e
-    // configurada corretamente.
-    // Pós-condição: A pasta escolhida é aberta como diretório padrão
     public void runOpenFolder() {
         this.currentFolder = OpenFolder.getInstance().openFolder(this.currentFolder);
         this.runUpdateFileSystemView();
     }
 
     // Função que roda o arquivo atualmente aberto. Somente em Python3 ou em C
-    // Entrada: Nenhuma
-    // Retorno: Nenhum
-    /*
-     * Pré-condição: O arquivo deve ter a extensão .py ou .c. O arquivo deve ser um
-     * código fonte escrito em c ou em python3. O sistema Operacional deve ser
-     * Linux.
-     */
-    // Pós-condição: O programa é rodado no bash
     public void runSelectedFile() {
         Process process;
         if (this.editorPane.getEditorPane().isEnabled()) { // Verifica se o arquivo está aberto
@@ -550,10 +431,6 @@ public class Gui {
     }
 
     // Função que cria uma nova pasta como diretório padrão
-    // Entrada: Nenhuma
-    // Retorno: Nenhum
-    // Pré-condição: Nenhuma
-    // Pós-condição: Uma nova pasta é criada e definida como diretório padrão
     public void runCreateNewFolder() {
         this.currentFolder = NewFolder.getInstance().createNewFolder(this.currentFolder);
         this.runUpdateFileSystemView();
