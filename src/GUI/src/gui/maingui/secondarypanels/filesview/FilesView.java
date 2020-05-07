@@ -44,7 +44,7 @@ public class FilesView {
             checkPath = pathToKeepSelected;
         for(i = 0; i < this.fFiles.size(); i++){
             fFile aux = (fFile) this.fFiles.values().toArray()[i];
-            if(aux.getFilePath() == checkPath)
+            if(aux.getFilePath().equals(checkPath))
                 aux.setIsSelected(true);
             else
                 aux.setIsSelected(false);
