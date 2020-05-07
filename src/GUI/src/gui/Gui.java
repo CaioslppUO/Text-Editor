@@ -259,7 +259,7 @@ public class Gui {
 
             // Tenta abrir o próximo arquivo, aberto anteriormente, se existir
             try { // Existe arquivo para abrir
-                this.runOpenFile(((fFile) FilesView.getInstance().getfFiles().values().toArray()[0]).getFilePath());
+                this.runOpenFile(gFile.getInstance().getFullPath());
             } catch (Exception e) { // Não existe arquivo para abrir
                 this.decideEditorEnabled(true);
             }
