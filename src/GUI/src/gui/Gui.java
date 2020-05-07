@@ -9,7 +9,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import javax.swing.Box;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
@@ -17,28 +16,29 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
 import java.io.InputStreamReader;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import gui.extragui.RoundedPanel;
-import gui.maingui.utilities.Constants;
 
+import gui.maingui.utilities.Constants;
 import gui.maingui.utilities.openfile.OpenFile;
 import gui.maingui.utilities.savefile.SaveFile;
 import gui.maingui.utilities.newfile.NewFile;
 import gui.maingui.utilities.openfolder.OpenFolder;
 import gui.maingui.utilities.newfolder.NewFolder;
 
+import gui.extragui.RoundedPanel;
+
 import gui.maingui.secondarypanels.menu.MenuBar;
 import gui.maingui.secondarypanels.menu.ListenerMenu;
 import gui.maingui.secondarypanels.editorpanel.ListenerEditorPanel;
 import gui.maingui.secondarypanels.editorpanel.ListenerEditorPanelConfig;
-import gui.maingui.secondarypanels.openfilespanel.OpenFilesListener;
+import gui.maingui.secondarypanels.filesview.FilesPanelListener;
+import gui.maingui.secondarypanels.filesview.fFile;
 import gui.maingui.secondarypanels.filesystemview.SystemFilePanel;
 import gui.maingui.secondarypanels.filesystemview.SystemFilePanelListener;
 import gui.maingui.secondarypanels.editorpanel.EditorPane;
 import gui.maingui.secondarypanels.editorpanel.EditorPaneConfig;
-import gui.maingui.secondarypanels.openfilespanel.OpenFilesPanel;
-import gui.maingui.secondarypanels.openfilespanel.CreateNewFileOpenPanel;
+import gui.maingui.secondarypanels.filesview.FilesPanel;
+import gui.maingui.interfacegenerator.fFilePanelGenerator;
+import gui.maingui.secondarypanels.filesview.FilesView;
 import gui.maingui.entities.gFile;
 
 public class Gui {
@@ -52,8 +52,6 @@ public class Gui {
 
     // Variáveis "globais"
     private String currentFolder;
-    private Map<String, RoundedPanel> addedFilesPanel;
-    private String lastClickedFilePath;
     private JSplitPane centralSplitPane;
 
     // Fonte
@@ -63,8 +61,7 @@ public class Gui {
     // Gerenciadores de interface
     private EditorPane editorPane;
     private EditorPaneConfig editorPaneConfig;
-    private OpenFilesPanel openFiles;
-    private CreateNewFileOpenPanel createNewFileOpenPanel;
+    private FilesPanel filesPanel;
     private SystemFilePanel systemView;
 
     // Listeners
@@ -72,7 +69,7 @@ public class Gui {
     private ListenerMenu listenerMenu;
     private ListenerEditorPanel listenerEditorPanel;
     private ListenerEditorPanelConfig listenerEditorPanelConfig;
-    private OpenFilesListener listenerOpenFilesPanel;
+    private FilesPanelListener listenerFilesPanel;
     private SystemFilePanelListener systemFilePanelListener;
 
     // Variável utilizada para guardar a única instância da classe
@@ -82,8 +79,6 @@ public class Gui {
     private Gui() {
         // Variáveis globais
         this.currentFolder = System.getProperty("user.dir");
-        this.addedFilesPanel = new LinkedHashMap<>();
-        lastClickedFilePath = null;
 
         // Fonte padrão
         this.fontSize = 12;
@@ -97,7 +92,7 @@ public class Gui {
         this.listenerMenu = new ListenerMenu();
         this.listenerEditorPanel = new ListenerEditorPanel();
         this.listenerEditorPanelConfig = new ListenerEditorPanelConfig();
-        this.listenerOpenFilesPanel = new OpenFilesListener();
+        this.listenerFilesPanel = new FilesPanelListener();
         this.systemFilePanelListener = new SystemFilePanelListener();
 
         // Iniciando os componentes visuais
@@ -115,7 +110,7 @@ public class Gui {
         this.definePanelDown();
 
         // Definições dos elementos secundários de cada espaço na tela
-        this.includeOpenFilesPanel();
+        this.includeFilesPanel();
         this.includeEditorPane();
         this.includeMenuBar();
         this.includeSystemFileView();
@@ -140,8 +135,8 @@ public class Gui {
     }
 
     // Função que inclui o painel de arquivos abertos à interface
-    private void includeOpenFilesPanel() {
-        this.openFiles = new OpenFilesPanel(this.panelCentral);
+    private void includeFilesPanel() {
+        this.filesPanel = new FilesPanel(this.panelCentral);
     }
 
     // Função que inclui o editroPane na interface
@@ -241,35 +236,31 @@ public class Gui {
                     result = JOptionPane.showConfirmDialog(null, "Save File?", "Save", JOptionPane.YES_NO_CANCEL_OPTION,
                             JOptionPane.QUESTION_MESSAGE);
                 if (result != JOptionPane.CANCEL_OPTION) {
-                    RoundedPanel aux = this.addedFilesPanel.remove(gFile.getInstance().getFullPath());
-                    this.openFiles.getOpenFilesPanel().remove(aux);
+                    FilesView.getInstance().removefFile(gFile.getInstance().getFullPath());
+                    this.filesPanel.updateFiles();
                     SwingUtilities.updateComponentTreeUI(this.panelCentral);
 
                     // Tenta abrir o próximo arquivo, aberto anteriormente, se existir
                     try { // Existe arquivo para abrir
-                        this.lastClickedFilePath = ((RoundedPanel) this.addedFilesPanel.values().toArray()[0])
-                                .getName();
-                        this.runOpenFile(((RoundedPanel) this.addedFilesPanel.values().toArray()[0]).getName());
+                        this.runOpenFile(((fFile) FilesView.getInstance().getfFiles().values().toArray()[0]).getFilePath());
                     } catch (Exception e) { // Não existe arquivo para abrir
                         if (result == JOptionPane.YES_OPTION) { // Salva o arquivo atual antes de fechar
                             SaveFile.getInstance().saveFile(false, false);
                         }
                         gFile.getInstance().closeFile();
-                        this.lastClickedFilePath = null;
                         this.decideEditorEnabled(false);
                     }
                 }
             }
         } else {
-            RoundedPanel aux = this.addedFilesPanel.remove(fileToClose);
-            this.openFiles.getOpenFilesPanel().remove(aux);
+            FilesView.getInstance().removefFile(fileToClose);
+            this.filesPanel.updateFiles();
             SwingUtilities.updateComponentTreeUI(this.panelCentral);
 
             // Tenta abrir o próximo arquivo, aberto anteriormente, se existir
             try { // Existe arquivo para abrir
-                this.runOpenFile(((RoundedPanel) this.addedFilesPanel.values().toArray()[0]).getName());
+                this.runOpenFile(((fFile) FilesView.getInstance().getfFiles().values().toArray()[0]).getFilePath());
             } catch (Exception e) { // Não existe arquivo para abrir
-                this.lastClickedFilePath = null;
                 this.decideEditorEnabled(true);
             }
         }
@@ -287,19 +278,14 @@ public class Gui {
         if (forceDisabled) {
             this.editorPane.getEditorPane().setEnabled(false);
             this.editorPane.getEditorPane().setText("");
-        }else{
+        } else {
             if (gFile.getInstance().isOpen()) {
                 this.editorPane.getEditorPane().setEnabled(true);
-                if (this.addedFilesPanel.get(gFile.getInstance().getFullPath()) == null) {
+                if (!FilesView.getInstance().isInside(gFile.getInstance().getFullPath())) {
                     this.createNewFileOpenPanel();
-                } else {
-                    if (lastClickedFilePath != null) {
-                        for (Component c : addedFilesPanel.get(this.lastClickedFilePath).getComponents()) {
-                            if (c instanceof JLabel) {
-                                ((JLabel) c).setForeground(Color.WHITE);
-                            }
-                        }
-                    }
+                }else{
+                    FilesView.getInstance().selectFile(gFile.getInstance().getFullPath());
+                    this.filesPanel.updateFiles();
                 }
             } else {
                 this.editorPane.getEditorPane().setEnabled(false);
@@ -310,12 +296,12 @@ public class Gui {
 
     // Função que adiciona um novo painel ao visualisador de arquivos abertos
     private void createNewFileOpenPanel() {
-        this.createNewFileOpenPanel = new CreateNewFileOpenPanel(this.lastClickedFilePath, this.addedFilesPanel,
-                gFile.getInstance().getName(), gFile.getInstance().getFullPath(), this.listenerOpenFilesPanel,
-                this.listenerOpenFilesPanel, this.openFiles);
-        this.lastClickedFilePath = this.createNewFileOpenPanel.getLastClickedFilePath();
-        this.createNewFileOpenPanel = null;
-        SwingUtilities.updateComponentTreeUI(this.openFiles.getOpenFilesPanel());
+        RoundedPanel rPanel = fFilePanelGenerator.createNewFileOpenPanel(gFile.getInstance().getName(),
+                gFile.getInstance().getFullPath(), this.listenerFilesPanel, this.listenerFilesPanel);
+        fFile file = new fFile(gFile.getInstance().getName(),gFile.getInstance().getFullPath(),rPanel);
+        FilesView.getInstance().addfFile(gFile.getInstance().getFullPath(), file);
+        this.filesPanel.updateFiles();
+        SwingUtilities.updateComponentTreeUI(this.filesPanel.getFilesPanel());
     }
 
     // Função que aplica as rotinas para abrir um arquivo
@@ -433,23 +419,8 @@ public class Gui {
         return this.editorPaneConfig;
     }
 
-    // Getter do lastClickedFilePath
-    public String getLastClickedFilePath() {
-        return this.lastClickedFilePath;
-    }
-
-    // Setter do lastClickedFilePath
-    public void setLastClickedFilePath(String lastClickedFilePath) {
-        this.lastClickedFilePath = lastClickedFilePath;
-    }
-
     // Getter do openFiles
-    public OpenFilesPanel getOpenFilesPanel() {
-        return this.openFiles;
-    }
-
-    // Getter do addedFilesPanel
-    public Map<String, RoundedPanel> getAddedFilesPanel() {
-        return this.addedFilesPanel;
+    public FilesPanel getOpenFilesPanel() {
+        return this.filesPanel;
     }
 }

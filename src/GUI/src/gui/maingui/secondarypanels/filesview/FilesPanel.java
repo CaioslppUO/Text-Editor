@@ -1,4 +1,4 @@
-package gui.maingui.secondarypanels.openfilespanel;
+package gui.maingui.secondarypanels.filesview;
 
 import gui.maingui.utilities.Constants;
 import java.awt.Dimension;
@@ -7,14 +7,15 @@ import java.awt.Insets;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import java.awt.Component;
 
-public class OpenFilesPanel {
+public class FilesPanel {
     private JPanel openFilesPanel;
     private JScrollPane scrollPane;
     private GridBagConstraints gbc_openFilesPanel;
     
     //Construtor
-    public OpenFilesPanel(JPanel wrapPanel){
+    public FilesPanel(JPanel wrapPanel){
         this.defineOpenFilesPanel(wrapPanel);
     }
     
@@ -44,9 +45,22 @@ public class OpenFilesPanel {
         
         wrapPanel.add(this.scrollPane, this.gbc_openFilesPanel);
     }
+
+    // Método que atualiza os arquivos que estão abertos
+    public void updateFiles(){
+        for(Component c:this.openFilesPanel.getComponents()){ // Remove todos os arquivos do painel
+            this.openFilesPanel.remove(c);
+        }
+        int i;
+        for(i = 0; i < FilesView.getInstance().getfFiles().size(); i++){
+            fFile aux = (fFile) FilesView.getInstance().getfFiles().values().toArray()[i];
+            this.openFilesPanel.add(aux.getPanel());
+            this.openFilesPanel.add(aux.getSeprator());
+        }
+    }
     
     //Getter do visualisador
-    public JPanel getOpenFilesPanel(){
+    public JPanel getFilesPanel(){
         return this.openFilesPanel;
     }
     
